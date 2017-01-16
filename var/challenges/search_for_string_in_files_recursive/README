@@ -1,0 +1,6 @@
+# Search For String In Files Recursive
+# ************************************
+
+# Print all lines in all files that start with "access.log" recursively
+# under the current directory that contain the string "500".
+# 

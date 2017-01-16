@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import yaml
+import os
+from subprocess import check_output
+
+script_dir = os.path.abspath(os.path.dirname(__file__))
+files_path = os.path.join(script_dir, "..", "var", "challenges")
+y = yaml.load(open(os.path.join(script_dir, "..", "challenges.yaml")).read())
+
+for i in y:
+    d = i['slug']
+    desc = i['description']
+    dest = os.path.join(files_path, d)
+    if not os.path.exists(dest):
+        os.mkdir(dest)
+    with open(os.path.join(dest, "README"), 'w') as f:
+        f.write("# {}\n".format(' '.join([w[0].upper() + w[1:] for w in i['slug'].split('_')])))
+        f.write("# " + "*" * len(i['slug']) + "\n\n")
+        for line in desc.split("\n"):
+            f.write("# {}\n".format(line))

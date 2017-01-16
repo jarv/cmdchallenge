@@ -1,0 +1,7 @@
+# Count String In Line
+# ********************
+
+# Print the number of lines
+# in access.log that contain the string
+# "GET".
+# 

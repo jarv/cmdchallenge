@@ -1,0 +1,187 @@
+---
+
+# slug: name of the challenge (required)
+# group: beginner | intermediate | advanced (required)
+# description: describe teh challenge (required)
+# example: solution for the challenge (required)
+# expected_output:
+#   lines: lines returned from the command, as an array (required)
+#   order: whether or not order matters (optional, default is false)
+#   re_sub: regex substitution on the output (optional)
+#   regex: lines are regular expressions (optional)
+
+  - slug: hello_world
+    group: beginner
+    description: |
+      Print "hello world".
+      Hint: There are many ways to print text on the command line,
+      one way is with the 'echo' command.
+
+      Try it below and good luck!
+    example: echo 'hello world'
+    expected_output:
+      lines:
+        - 'hello world'
+  - slug: current_working_directory
+    group: beginner
+    description: |
+      Print the current working directory.
+    example: pwd
+    expected_output:
+      re_sub: ['^.*?(/var/challenges.*)', '\1']
+      lines:
+        - '/var/challenges/current_working_directory'
+  - slug: list_files
+    group: beginner
+    description: |
+      List all of the files in the current
+      directory, one file per line.
+    example: ls
+    expected_output:
+      lines:
+        - 'README'
+  - slug: print_file_contents
+    group: beginner
+    description: |
+      There is a file named "access.log" in the current
+      directory. Print the contents.
+    example: cat access.log
+    expected_output:
+      lines:
+        - 163.56.115.58 - - [09/Jan/2017:22:29:57 +0100] "GET /posts/2/display HTTP/1.0" 200 3240
+        - 75.113.188.234 - - [09/Jan/2017:22:30:43 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 1116
+        - 69.16.40.148 - - [09/Jan/2017:22:34:33 +0100] "GET /pages/create HTTP/1.0" 500 3471
+        - 225.219.54.140 - - [09/Jan/2017:22:35:30 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 500 2477
+        - 207.243.19.2 - - [09/Jan/2017:22:38:03 +0100] "GET /bar/create HTTP/1.0" 200 1116
+        - 199.37.62.156 - - [09/Jan/2017:22:42:18 +0100] "GET /posts/1/display HTTP/1.0" 200 2477
+        - 55.74.240.123 - - [09/Jan/2017:22:44:25 +0100] "POST /posts/1/display HTTP/1.0" 200 3471
+        - 251.111.109.143 - - [09/Jan/2017:22:49:02 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 2477
+        - 101.163.230.250 - - [09/Jan/2017:22:52:31 +0100] "DELETE /posts/2/display HTTP/1.0" 404 2477
+        - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
+  - slug: find_string_in_a_file
+    group: beginner
+    description: |
+      There is a file named "access.log" in the current
+      working directory. Print all lines in this file that
+      contains the string "GET".
+    example: grep 'GET' access.log
+    expected_output:
+      lines:
+        - 163.56.115.58 - - [09/Jan/2017:22:29:57 +0100] "GET /posts/2/display HTTP/1.0" 200 3240
+        - 75.113.188.234 - - [09/Jan/2017:22:30:43 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 1116
+        - 69.16.40.148 - - [09/Jan/2017:22:34:33 +0100] "GET /pages/create HTTP/1.0" 500 3471
+        - 225.219.54.140 - - [09/Jan/2017:22:35:30 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 500 2477
+        - 207.243.19.2 - - [09/Jan/2017:22:38:03 +0100] "GET /bar/create HTTP/1.0" 200 1116
+        - 199.37.62.156 - - [09/Jan/2017:22:42:18 +0100] "GET /posts/1/display HTTP/1.0" 200 2477
+        - 251.111.109.143 - - [09/Jan/2017:22:49:02 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 2477
+        - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
+  - slug: search_for_files_containing_string
+    group: beginner
+    description: |
+      Print all files, one per line that contain the string "500".
+    example: grep -l 500 *
+    expected_output:
+      order: false
+      lines:
+        - README
+        - access.log
+        - access.log.1
+  - slug: search_for_files_by_extension
+    group: beginner
+    description: |
+      Print the relative patch, one file per line that
+      that start with "access.log" in the current
+      directory.
+
+    example: find . -name 'access.log*'
+    expected_output:
+      order: false
+      re_sub: ['^\./', '']
+      lines:
+        - 'access.log'
+        - 'access.log.1'
+        - 'access.log.2'
+  - slug: search_for_string_in_files_recursive
+    group: beginner
+    description: |
+      Print all lines in all files that start with "access.log" recursively
+      under the current directory that contain the string "500".
+
+    example: find . -name "access.log*" -exec grep 500 {} \;
+    expected_output:
+      order: false
+      lines:
+        - 69.16.40.148 - - [09/Jan/2017:22:34:33 +0100] "GET /pages/create HTTP/1.0" 500 3471
+        - 225.219.54.140 - - [09/Jan/2017:22:35:30 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 500 2477
+        - 2.71.250.27 - - [09/Jan/2017:22:41:26 +0100] "GET /pages/create HTTP/1.0" 500 2477
+  - slug: extract_ip_addresses
+    group: beginner
+    description: |
+      Extract all IP addreses from files that that start
+      with "access.log" printing one IP address per line.
+    example: find . -name "access.log*" -exec grep -Po '^\d+\.\d+\.\d+\.\d+' {} \;
+    expected_output:
+      order: false
+      lines:
+        - 163.56.115.58
+        - 75.113.188.234
+        - 69.16.40.148
+        - 225.219.54.140
+        - 207.243.19.2
+        - 199.37.62.156
+        - 55.74.240.123
+        - 251.111.109.143
+        - 101.163.230.250
+        - 200.19.168.148
+        - 108.68.174.15
+        - 17.2.20.139
+        - 28.151.137.59
+        - 199.150.241.179
+        - 2.71.250.27
+        - 17.137.186.194
+        - 151.84.119.34
+        - 4.180.204.195
+        - 9.230.96.54
+        - 157.143.233.21
+  - slug: count_files
+    group: beginner
+    description: |
+      Count the number of files in the current
+      working directory. Print the number of
+      files as a single integer.
+    example: ls | wc -l
+    expected_output:
+      re_sub: ['^\s+', '']
+      lines:
+        - '2'
+  - slug: simple_sort
+    group: beginner
+    disp_title: Sort lines in a file
+    description: |
+      Print the contents of access.log
+      sorted.
+    example: sort access.log
+    expected_output:
+      lines:
+        - 101.163.230.250 - - [09/Jan/2017:22:52:31 +0100] "DELETE /posts/2/display HTTP/1.0" 404 2477
+        - 163.56.115.58 - - [09/Jan/2017:22:29:57 +0100] "GET /posts/2/display HTTP/1.0" 200 3240
+        - 199.37.62.156 - - [09/Jan/2017:22:42:18 +0100] "GET /posts/1/display HTTP/1.0" 200 2477
+        - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
+        - 207.243.19.2 - - [09/Jan/2017:22:38:03 +0100] "GET /bar/create HTTP/1.0" 200 1116
+        - 225.219.54.140 - - [09/Jan/2017:22:35:30 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 500 2477
+        - 251.111.109.143 - - [09/Jan/2017:22:49:02 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 2477
+        - 55.74.240.123 - - [09/Jan/2017:22:44:25 +0100] "POST /posts/1/display HTTP/1.0" 200 3471
+        - 69.16.40.148 - - [09/Jan/2017:22:34:33 +0100] "GET /pages/create HTTP/1.0" 500 3471
+        - 75.113.188.234 - - [09/Jan/2017:22:30:43 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 1116
+  - slug: count_string_in_line
+    group: beginner
+    disp_title: Count Unique Lines
+    description: |
+      Print the number of lines
+      in access.log that contain the string
+      "GET".
+    example: grep "GET" access.log | wc -l
+    expected_output:
+      re_sub: ['^\s+', '']
+      lines:
+        - '8'
