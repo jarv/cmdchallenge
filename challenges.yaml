@@ -28,7 +28,6 @@
       Print the current working directory.
     example: pwd
     expected_output:
-      re_sub: ['^.*?(/var/challenges.*)', '\1']
       lines:
         - '/var/challenges/current_working_directory'
   - slug: list_files
