@@ -1,7 +1,7 @@
 # Search For Files By Extension
 # *****************************
 
-# Print the relative patch, one file per line that
-# that start with "access.log" in the current
+# Print the relative file paths, one path per line
+# for all files that start with "access.log" in the current
 # directory.
 # 

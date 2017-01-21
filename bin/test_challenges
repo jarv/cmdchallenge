@@ -1,41 +1,44 @@
-#!/usr/bin/env python -u
+#!/usr/bin/env python
 
 from __future__ import print_function
 import yaml
 import os
-import re
-from subprocess import check_output, STDOUT
-from sys import platform
-from gnu_coreutils import GNU_CORE_UTILS
+import sys
 from challenge import verify_output
 from docker_cmd import output_from_cmd
 
-def main():
+
+def main(challenge_name):
     script_dir = os.path.abspath(os.path.dirname(__file__))
-    files_path = os.path.join(script_dir, "..", "var", "challenges")
     y = yaml.load(open(os.path.join(script_dir, "..", "challenges.yaml")).read())
 
     for challenge in y:
-
+        if challenge_name and challenge['slug'] != challenge_name:
+            continue
         d = challenge['slug']
-        os.chdir(os.path.join(files_path, d))
         cmd = challenge['example']
-        if platform == "Darwin":
-            cmd = darwin_cmd(cmd)
         print(d, end="")
         print("\t`{}`".format(cmd), end="")
-        output, return_code = output_from_cmd(cmd, challenge)
-        if return_code != 0:
+
+        # output, return_code, test_errors = output_from_cmd(cmd, challenge, docker_version='1.18')
+        output, return_code, test_errors = output_from_cmd(cmd, challenge)
+        if return_code != 0 or test_errors is not None:
             print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
-            print(u"\t\x1b[0;35;40m{}\x1b[0m".format(output))
+            print(u"\t\x1b[0;35;40m{}\x1b[0m".format(output.decode('utf-8')))
+            if test_errors:
+                print(u"\t\x1b[0;35;40m{}\x1b[0m".format("\n".join(test_errors)))
             continue
-        print(u"\t\x1b[1;32;40m\u2713\x1b[0m".format(d), end="")
+        print(u"\t\x1b[1;32;40m\u2713\x1b[0m", end="")
         print("\t", end="")
         correct = verify_output(challenge, output, testing=True)
         if not correct:
             print("")
-            print(output) 
+            print(output)
         print("")
 
+
 if __name__ == '__main__':
-    main()
+    challenge = None
+    if len(sys.argv) == 2:
+        challenge = sys.argv[1]
+    main(challenge)

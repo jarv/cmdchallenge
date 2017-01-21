@@ -1,0 +1,6 @@
+# Remove Extensions From Files
+# ****************************
+
+# Remove the extension from all files in
+# the current directory recursively.
+# 

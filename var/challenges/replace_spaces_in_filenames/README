@@ -1,0 +1,7 @@
+# Replace Spaces In Filenames
+# ***************************
+
+# The files in this challenge contain spaces.
+# List all of the files in the current directory but
+# replace all spaces with a '.' character.
+# 

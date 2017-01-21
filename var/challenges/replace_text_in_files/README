@@ -1,0 +1,7 @@
+# Replace Text In Files
+# *********************
+
+# This challenge has text files that contain
+# the phrase "challenges are difficult". Delete
+# this phrase recursively from all text files.
+# 
