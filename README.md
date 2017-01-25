@@ -7,12 +7,13 @@
 
 ## Create a new challenge
 
-* Add a new entry to `challenges.yaml`
-    * Pick a unique slug name
-    * Pick a description
-    * Add directory and supporting files in /var/challenges
-    * Add an example solution
-    * Add expected output or tests for the verification (see other examples).
+* Add a new entry to [challenges.yml](https://github.com/jarv/cmdchallenge/blob/master/challenges.yaml).
+    * Pick a unique slug name.
+    * Type a description.
+    * Add directory and supporting files for the challenge in the `var/challenges` dir.
+    * Add an example solution.
+    * Add expected output or tests for the verification (see other challenges for examples examples).
+* Submit a pull request
 
 ## Installation
 * Install docker on your machine
