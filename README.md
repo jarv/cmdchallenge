@@ -34,6 +34,6 @@ docker image, load it and run all tests.
 Test a single challenge using the currently built docker container or
 all challenges (faster than `make test`).
 
-## Bugs
+## Bugs / Suggestions
 
 * Open [a github issue](https://github.com/jarv/cmdline-challenges/issues).
