@@ -1,3 +1,7 @@
+# CMD Challenge
+
+This repo holds the challenges for [cmdchallenge.com](https://cmdchallenge.com)
+
 ```
  _____ _____ ____     _____ _____ _____ __    __    _____ _____ _____ _____ 
 |     |     |    \   |     |  |  |  _  |  |  |  |  |   __|   | |   __|   __|
