@@ -5,7 +5,7 @@
 |_____|_|_|_|____/   |_____|__|__|__|__|_____|_____|_____|_|___|_____|_____|
 ```
 
-## Create a new challenge
+## Contribute
 
 * Add a new entry to [challenges.yml](https://github.com/jarv/cmdchallenge/blob/master/challenges.yaml).
     * Pick a unique slug name.
