@@ -245,6 +245,8 @@
         msg: Test failed, expecting 3 text files
       - test: '[[ $(find . -name "*.txt" -print0 | xargs -0 -n1 grep "challenges are difficult") == "" ]]'
         msg: Test failed, found the string "challenges are difficult"
+      - test: 'grep -q "challenges are difficult" README'
+        msg: Test failed, files without .txt extension must remain unmodified
   - slug: sum_all_numbers
     disp_title: Sum numbers in a file.
     example: paste -sd+ sum-me.txt  | bc
