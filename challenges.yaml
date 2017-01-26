@@ -188,7 +188,7 @@
         - 69.16.40.148 - - [09/Jan/2017:22:34:33 +0100] "GET /pages/create HTTP/1.0" 500 3471
         - 75.113.188.234 - - [09/Jan/2017:22:30:43 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 1116
   - slug: count_string_in_line
-    disp_title: Count Unique Lines.
+    disp_title: Count Matching Lines.
     description: |
       Print the number of lines
       in access.log that contain the string
