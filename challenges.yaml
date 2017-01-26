@@ -259,7 +259,7 @@
     description: |
       Print all files in the current directory
       recursively without the leading directory path.
-    example: for f in $(find . -type f); do echo $(basename "$f"); done
+    example: find -type f -printf '%f\n'
     expected_output:
       order: false
       lines:
@@ -309,7 +309,7 @@
       the filenames (just the filenames) of all
       files that start with a number recursively
       in the current directory.
-    example: find . -type f -name '[[:digit:]]*' -print0 | xargs -0 -n1 -I {} sh -c 'echo $(basename "{}")'
+    example: find . -type f -name '[[:digit:]]*' -printf '%f\n'
     expected_output:
       order: false
       lines: ['974Michael Bowman', '540Katherine Jones', '436Teresa Owens', '04Carrie Alexander', '778Holly Archer',
