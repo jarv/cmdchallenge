@@ -327,8 +327,8 @@
   - slug: remove_duplicate_lines
     disp_time: Remove duplicate lines without sorting
     description: |
-      Print the file faces.txt with all duplicate lines
-      removed without sorting.
+      Print the file faces.txt, but only print the first instance of each
+      duplicate line, even if the duplicates don't appear next to each other.
     example: awk '!x[$0]++' faces.txt
     expected_output:
       lines: ['(◕‿◕)', '(^̮^)', 'ʘ‿ʘ', 'ಠ_ಠ', 'ಠ⌣ಠ', 'ಠ‿ಠ', '(ʘ‿ʘ)', '(ಠ_ಠ)', '¯\_(ツ)_/¯',
