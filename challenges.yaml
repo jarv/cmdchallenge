@@ -193,7 +193,7 @@
       Print the number of lines
       in access.log that contain the string
       "GET".
-    example: grep "GET" access.log | wc -l
+    example: grep -c "GET" access.log
     expected_output:
       re_sub: ['^\s+', '']
       lines:
