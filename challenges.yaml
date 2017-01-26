@@ -237,9 +237,9 @@
     disp_title: Replace text in files
     example: find . -name "*.txt" -exec sed -i -e 's/challenges are difficult//g' "{}" \;
     description: |
-      This challenge has text files that contain
-      the phrase "challenges are difficult". Delete
-      this phrase recursively from all text files.
+      This challenge has text files (with a .txt extension)
+      that contain the phrase "challenges are difficult".
+      Delete this phrase recursively from all text files.
     tests:
       - test: '[[ $(find . -name "*.txt" | wc -l) == 3 ]]'
         msg: Test failed, expecting 3 text files
