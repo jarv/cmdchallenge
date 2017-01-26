@@ -59,7 +59,7 @@
     disp_title: Last lines in a file.
     description: |
       Print the last 5 lines of "access.log".
-    example: tail -5 access.log
+    example: tail -n 5 access.log
     expected_output:
       lines:
         - 199.37.62.156 - - [09/Jan/2017:22:42:18 +0100] "GET /posts/1/display HTTP/1.0" 200 2477
