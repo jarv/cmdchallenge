@@ -321,7 +321,7 @@
     disp_title: Print the nth line.
     description: |
       Print the 25th line of the file faces.txt
-    example: sed '25q;d' faces.txt
+    example: sed -n '25p' faces.txt
     expected_output:
       lines: ['¯\_(ツ)_/¯']
   - slug: remove_duplicate_lines
