@@ -188,12 +188,12 @@
         - 69.16.40.148 - - [09/Jan/2017:22:34:33 +0100] "GET /pages/create HTTP/1.0" 500 3471
         - 75.113.188.234 - - [09/Jan/2017:22:30:43 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 1116
   - slug: count_string_in_line
-    disp_title: Count Unique Lines.
+    disp_title: Count Matching Lines.
     description: |
       Print the number of lines
       in access.log that contain the string
       "GET".
-    example: grep "GET" access.log | wc -l
+    example: grep -c "GET" access.log
     expected_output:
       re_sub: ['^\s+', '']
       lines:
@@ -205,7 +205,7 @@
       numbers separated by a ';' character.
       Split the numbers on the ';' character,
       one number per line.
-    example: tr ';' "\n" < split-me.txt
+    example: tr ';' '\n' < split-me.txt
     expected_output:
       lines: [1,2,3,4,5,6,7,8,9,10]
   - slug: print_number_sequence
@@ -261,7 +261,7 @@
     description: |
       Print all files in the current directory
       recursively without the leading directory path.
-    example: for f in $(find . -type f); do echo $(basename "$f"); done
+    example: find -type f -printf '%f\n'
     expected_output:
       order: false
       lines:
@@ -290,7 +290,7 @@
       List all of the files in the current
       directory but replace all spaces with a '.'
       character.
-    example: IFS=$'\n'; for n in $(ls); do echo "${n// /.}"; done
+    example: ls | tr ' ' '.'
     expected_output:
       order: false
       lines: ['Adam.Simpson', 'Alexis.Stein', 'Allison.Brown', 'Amy.Anderson', 'Angel.Saunders',
@@ -311,7 +311,7 @@
       the filenames (just the filenames) of all
       files that start with a number recursively
       in the current directory.
-    example: find . -type f -name '[[:digit:]]*' -print0 | xargs -0 -n1 -I {} sh -c 'echo $(basename "{}")'
+    example: find . -type f -name '[[:digit:]]*' -printf '%f\n'
     expected_output:
       order: false
       lines: ['974Michael Bowman', '540Katherine Jones', '436Teresa Owens', '04Carrie Alexander', '778Holly Archer',
@@ -323,7 +323,7 @@
     disp_title: Print the nth line.
     description: |
       Print the 25th line of the file faces.txt
-    example: sed '25q;d' faces.txt
+    example: sed -n '25p' faces.txt
     expected_output:
       lines: ['¯\_(ツ)_/¯']
   - slug: remove_duplicate_lines
