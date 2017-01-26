@@ -51,7 +51,7 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
     client = docker.DockerClient(version=docker_version, base_url=docker_base_url, tls=tls_config)
     b64cmd = b64encode(cmd)
     challenge_dir = path.join(WORKING_DIR, challenge['slug'])
-    docker_cmd = "cd {challenge_dir} && echo {b64cmd} | base64 -d > /tmp/script.sh && timeout {timeout} bash -ex /tmp/script.sh".format(
+    docker_cmd = "cd {challenge_dir} && echo {b64cmd} | base64 -d > /tmp/script.sh && timeout {timeout} bash -O globstar -ex /tmp/script.sh".format(
         challenge_dir=challenge_dir,
         b64cmd=b64cmd,
         timeout=CMD_TIMEOUT)
@@ -64,7 +64,7 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
                 test=t['test'],
                 msg=t['msg'])
         b64testcmd = b64encode(test_cmd)
-        docker_cmd += " && cd {challenge_dir} && echo {b64testcmd} | base64 -d > /tmp/test.sh && timeout {timeout} bash -e /tmp/test.sh".format(
+        docker_cmd += " && cd {challenge_dir} && echo {b64testcmd} | base64 -d > /tmp/test.sh && timeout {timeout} bash -O globstar -e /tmp/test.sh".format(
             challenge_dir=challenge_dir,
             b64testcmd=b64testcmd,
             timeout=CMD_TIMEOUT)

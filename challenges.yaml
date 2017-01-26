@@ -114,7 +114,7 @@
       or the file path) in all files under the current
       directory that start with "access.log" that
       contain the string "500".
-    example: find . -name "access.log*" -exec grep 500 {} \;
+    example: grep -h 500 **/access.log*
     expected_output:
       order: false
       lines:
@@ -126,7 +126,7 @@
       Extract all IP addreses from files that
       that start with "access.log" printing one
       IP address per line.
-    example: find . -name "access.log*" -exec grep -Po '^\d+\.\d+\.\d+\.\d+' {} \;
+    example: grep -Po '^\d+\.\d+\.\d+\.\d+' **/access.log*
     expected_output:
       order: false
       lines:
@@ -224,7 +224,7 @@
       different file extensions.
       Remove all files with the .doc extension
       recursively in the current working directory.
-    example: find . -name "*.doc" -exec rm -f -- {} \;
+    example: rm **/*.doc
     tests:
       - test: '[[ $(find . -type f | wc -l) == 5 ]]'
         msg: Test failed, expecting 5 files.
@@ -235,7 +235,7 @@
 ########### START INTERMEDIATE
   - slug: replace_text_in_files
     disp_title: Replace text in files
-    example: find . -name "*.txt" -exec sed -i -e 's/challenges are difficult//g' "{}" \;
+    example: sed -i 's/challenges are difficult//g' **/*.txt
     description: |
       This challenge has text files (with a .txt extension)
       that contain the phrase "challenges are difficult".
