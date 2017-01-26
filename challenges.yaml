@@ -288,7 +288,7 @@
       List all of the files in the current
       directory but replace all spaces with a '.'
       character.
-    example: IFS=$'\n'; for n in $(ls); do echo "${n// /.}"; done
+    example: ls | tr ' ' '.'
     expected_output:
       order: false
       lines: ['Adam.Simpson', 'Alexis.Stein', 'Allison.Brown', 'Amy.Anderson', 'Angel.Saunders',
