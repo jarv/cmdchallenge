@@ -128,6 +128,7 @@
       IP address per line.
     example: grep -Pho '^\d+\.\d+\.\d+\.\d+' **/access.log*
     expected_output:
+      re_sub: ['^[\w/.]*?:', '']
       order: false
       lines:
         - 163.56.115.58

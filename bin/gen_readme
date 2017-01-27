@@ -15,7 +15,10 @@ for i in y:
     if not os.path.exists(dest):
         os.mkdir(dest)
     with open(os.path.join(dest, "README"), 'w') as f:
-        f.write("# {}\n".format(' '.join([w[0].upper() + w[1:] for w in i['slug'].split('_')])))
+        if 'disp_title' in i:
+            f.write("# {}\n".format(i['disp_title']))
+        else:
+            f.write("# {}\n".format(' '.join([w[0].upper() + w[1:] for w in i['slug'].split('_')])))
         f.write("# " + "*" * len(i['slug']) + "\n\n")
         for line in desc.split("\n"):
             f.write("# {}\n".format(line))
