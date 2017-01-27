@@ -126,7 +126,7 @@
       Extract all IP addreses from files that
       that start with "access.log" printing one
       IP address per line.
-    example: grep -Po '^\d+\.\d+\.\d+\.\d+' **/access.log*
+    example: grep -Pho '^\d+\.\d+\.\d+\.\d+' **/access.log*
     expected_output:
       order: false
       lines:
