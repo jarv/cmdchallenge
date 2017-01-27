@@ -1,7 +1,7 @@
 # Extract Ip Addresses
 # ********************
 
-# Extract all IP addreses from files that
-# that start with "access.log" printing one
+# Extract all IP addresses from files that
+# start with "access.log" printing one
 # IP address per line.
 # 
