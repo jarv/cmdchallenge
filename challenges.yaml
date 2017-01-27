@@ -231,6 +231,22 @@
         msg: Test failed, expecting 5 files.
       - test: '[[ $(find . -name "*.doc" | wc -l) == 0 ]]'
         msg: Test failed, expecting 0 files with a .doc extension.
+  - slug: remove_files_without_extension
+    disp_title: Remove files without extension.
+    description: |
+      There are files in this challenge with
+      different file extensions.
+      Remove all files without the .txt and .exe extensions
+      recursively in the current working directory.
+    example: find . -type f -regextype posix-extended ! -regex ".*(\.txt|\.exe)$" -exec rm {} +
+    tests:
+      - test: '[[ $(find . -type f | wc -l) == 4 ]]'
+        msg: Test failed, expecting 4 files.
+      - test: '[[ $(find . -name "*.txt" | wc -l) == 3 ]]'
+        msg: Test failed, expecting 3 files with a .txt extension.
+      - test: '[[ $(find . -name "*.exe" | wc -l) == 1 ]]'
+        msg: Test failed, expecting 1 files with a .exe extension.
+
 ########## END BEGINNER
 
 ########### START INTERMEDIATE
