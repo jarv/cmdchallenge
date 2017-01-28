@@ -383,4 +383,16 @@
         - his vocation and crush the hydra of revolution, which
         - has become more terrible than ever in the person of this
         - murderer and villain!
+  - slug: print_common_lines
+    disp_title: Print common lines
+    example: comm -12 <(cut -d' ' -f1 access.log.1 | sort) <(cut -d' ' -f1 access.log.2 | sort)
+    description: |
+      access.log.1 and access.log.2 are http server logs. Print the IP
+      addresses common to both files, one per line.
+    expected_output:
+      lines:
+        - 108.68.174.15
+        - 17.137.186.194
+        - 2.71.250.27
+        - 28.151.137.59
 ########### END INTERMEDIATE
