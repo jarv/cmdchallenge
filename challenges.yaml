@@ -97,7 +97,7 @@
   - slug: search_for_files_by_extension
     description: |
       Print the relative file paths, one path
-      per line for all files that start with
+      per line for all filenames that start with
       "access.log" in the current directory.
 
     example: find . -name 'access.log*'
