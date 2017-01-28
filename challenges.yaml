@@ -123,7 +123,7 @@
         - 2.71.250.27 - - [09/Jan/2017:22:41:26 +0100] "GET /pages/create HTTP/1.0" 500 2477
   - slug: extract_ip_addresses
     description: |
-      Extract all IP addreses from files that
+      Extract all IP addreses from files
       that start with "access.log" printing one
       IP address per line.
     example: grep -Pho '^\d+\.\d+\.\d+\.\d+' **/access.log*
