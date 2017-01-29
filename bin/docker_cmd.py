@@ -15,7 +15,8 @@ DOCKER_TIMEOUT = 8
 CMD_TIMEOUT = 4
 WORKING_DIR = '/var/challenges'
 DOCKER_OPTS = dict(mem_limit='4MB', working_dir=WORKING_DIR,
-                   network_mode=None, network_disabled=True)
+                   network_mode=None, network_disabled=True,
+                   remove=True, stderr=True, stdout=True)
 
 
 class ValidationError(Exception):
@@ -51,7 +52,7 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
     client = docker.DockerClient(version=docker_version, base_url=docker_base_url, tls=tls_config)
     b64cmd = b64encode(cmd)
     challenge_dir = path.join(WORKING_DIR, challenge['slug'])
-    docker_cmd = "cd {challenge_dir} && echo {b64cmd} | base64 -d > /tmp/script.sh && timeout {timeout} bash -O globstar -ex /tmp/script.sh".format(
+    docker_cmd = "cd {challenge_dir} && echo {b64cmd} | base64 -d > /tmp/script.sh && timeout {timeout} bash -O globstar /tmp/script.sh".format(
         challenge_dir=challenge_dir,
         b64cmd=b64cmd,
         timeout=CMD_TIMEOUT)
