@@ -9,6 +9,7 @@ from docker_cmd import output_from_cmd
 
 
 def main(challenge_name):
+    ret = 0
     script_dir = os.path.abspath(os.path.dirname(__file__))
     y = yaml.load(open(os.path.join(script_dir, "..", "challenges.yaml")).read())
 
@@ -25,19 +26,22 @@ def main(challenge_name):
             print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
             print(u"\t\x1b[0;35;40m{}\x1b[0m".format(output.decode('utf-8')))
             if test_errors:
+                ret = 1
                 print(u"\t\x1b[0;35;40m{}\x1b[0m".format("\n".join(test_errors)))
             continue
         print(u"\t\x1b[1;32;40m\u2713\x1b[0m", end="")
         print("\t", end="")
         correct = verify_output(challenge, output, testing=True)
         if not correct:
+            ret = 1
             print("")
             print(output)
         print("")
 
+    return ret
 
 if __name__ == '__main__':
     challenge = None
     if len(sys.argv) == 2:
         challenge = sys.argv[1]
-    main(challenge)
+    sys.exit(main(challenge))
