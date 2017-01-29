@@ -98,6 +98,8 @@
         - 251.111.109.143 - - [09/Jan/2017:22:49:02 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 2477
         - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
   - slug: find_tabs_in_a_file
+    version: 1
+    author: cmdchallenge
     description: How many lines contain a tab in the file README
     example: grep -P '\t' README | wc -l
     expected_output:
