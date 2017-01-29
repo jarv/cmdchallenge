@@ -308,9 +308,9 @@
     disp_title: Replace spaces in file names.
     description: |
       The files in this challenge contain spaces.
-      List all of the files in the current
-      directory but replace all spaces with a '.'
-      character.
+      List all of the files (filenames only) in the
+      current directory but replace all spaces with
+      a '.' character.
     example: ls | tr ' ' '.'
     expected_output:
       order: false
