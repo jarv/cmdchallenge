@@ -1,7 +1,0 @@
-# Count Matching Lines.
-# ********************
-
-# Print the number of lines
-# in access.log that contain the string
-# "GET".
-# 

@@ -1,6 +1,0 @@
-# Remove Duplicate Lines
-# **********************
-
-# Print the file faces.txt, but only print the first instance of each
-# duplicate line, even if the duplicates don't appear next to each other.
-# 

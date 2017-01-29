@@ -1,6 +1,0 @@
-# Print common lines
-# ******************
-
-# access.log.1 and access.log.2 are http server logs. Print the IP
-# addresses common to both files, one per line.
-# 
