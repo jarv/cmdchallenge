@@ -352,6 +352,7 @@
     description: |
       Print the file faces.txt, but only print the first instance of each
       duplicate line, even if the duplicates don't appear next to each other.
+      Note that order matters so don't sort the lines before removing duplicates.
     example: awk '!x[$0]++' faces.txt
     expected_output:
       lines: ['(◕‿◕)', '(^̮^)', 'ʘ‿ʘ', 'ಠ_ಠ', 'ಠ⌣ಠ', 'ಠ‿ಠ', '(ʘ‿ʘ)', '(ಠ_ಠ)', '¯\_(ツ)_/¯',
