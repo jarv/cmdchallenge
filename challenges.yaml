@@ -4,7 +4,7 @@
 # example: solution for the challenge (required)
 # expected_output:
 #   lines: lines returned from the command, as an array (required)
-#   order: whether or not order matters (optional, default is false)
+#   order: whether or not order matters (optional, default is true)
 #   re_sub: regex substitution on the output lines (optional)
 #   regex: lines are regular expressions (optional)
 #   tests: tests to run after the command completes
@@ -389,7 +389,8 @@
         - murderer and villain!
   - slug: print_common_lines
     disp_title: Print common lines
-    example: comm -12 <(cut -d' ' -f1 access.log.1 | sort) <(cut -d' ' -f1 access.log.2 | sort)
+    order: false
+    example: "comm -12 <(cut -d' ' -f1 access.log.1 | sort) <(cut -d' ' -f1 access.log.2 | sort)"
     description: |
       access.log.1 and access.log.2 are http server logs. Print the IP
       addresses common to both files, one per line.
