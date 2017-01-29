@@ -8,10 +8,14 @@
 #   re_sub: regex substitution on the output lines (optional)
 #   regex: lines are regular expressions (optional)
 #   tests: tests to run after the command completes
-
+#   version: if the challenge is modified this number should be bumped
+#            refresh the cache.
+#   author: Add a field for contributions.
 ########## START BEGINNER
 
   - slug: hello_world
+    version: 1
+    author: cmdchallenge
     description: |
       Print "hello world".
       Hint: There are many ways to print text on
@@ -24,6 +28,8 @@
       lines:
         - 'hello world'
   - slug: current_working_directory
+    version: 1
+    author: cmdchallenge
     description: |
       Print the current working directory.
     example: pwd
@@ -31,6 +37,8 @@
       lines:
         - '/var/challenges/current_working_directory'
   - slug: list_files
+    version: 1
+    author: cmdchallenge
     description: |
       List all of the files in the current
       directory, one file per line.
@@ -39,6 +47,8 @@
       lines:
         - 'README'
   - slug: print_file_contents
+    version: 1
+    author: cmdchallenge
     description: |
       There is a file named "access.log" in the
       current directory. Print the contents.
@@ -56,6 +66,8 @@
         - 101.163.230.250 - - [09/Jan/2017:22:52:31 +0100] "DELETE /posts/2/display HTTP/1.0" 404 2477
         - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
   - slug: last_lines
+    version: 1
+    author: cmdchallenge
     disp_title: Last lines in a file.
     description: |
       Print the last 5 lines of "access.log".
@@ -68,6 +80,8 @@
         - 101.163.230.250 - - [09/Jan/2017:22:52:31 +0100] "DELETE /posts/2/display HTTP/1.0" 404 2477
         - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
   - slug: find_string_in_a_file
+    version: 1
+    author: cmdchallenge
     description: |
       There is a file named "access.log" in the
       current working directory. Print all lines
@@ -84,6 +98,8 @@
         - 251.111.109.143 - - [09/Jan/2017:22:49:02 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 2477
         - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
   - slug: search_for_files_containing_string
+    version: 1
+    author: cmdchallenge
     description: |
       Print all files, one per line (not the path, just the file)
       that contain the string "500".
@@ -95,6 +111,8 @@
         - access.log
         - access.log.1
   - slug: search_for_files_by_extension
+    version: 1
+    author: cmdchallenge
     description: |
       Print the relative file paths, one path
       per line for all filenames that start with
@@ -109,6 +127,8 @@
         - 'access.log.1'
         - 'access.log.2'
   - slug: search_for_string_in_files_recursive
+    version: 1
+    author: cmdchallenge
     description: |
       Print all matching lines (without the filename
       or the file path) in all files under the current
@@ -124,6 +144,8 @@
         - 225.219.54.140 - - [09/Jan/2017:22:35:30 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 500 2477
         - 2.71.250.27 - - [09/Jan/2017:22:41:26 +0100] "GET /pages/create HTTP/1.0" 500 2477
   - slug: extract_ip_addresses
+    version: 1
+    author: cmdchallenge
     description: |
       Extract all IP addreses from files
       that start with "access.log" printing one
@@ -154,6 +176,8 @@
         - 9.230.96.54
         - 157.143.233.21
   - slug: delete_files
+    version: 1
+    author: cmdchallenge
     description: |
       Delete all of the files in this challenge
       directory including all subdirectories and
@@ -163,6 +187,8 @@
         msg: Test failed, files or directories remain.
     example: find . -delete
   - slug: count_files
+    version: 1
+    author: cmdchallenge
     description: |
       Count the number of files in the current
       working directory. Print the number of
@@ -173,6 +199,8 @@
       lines:
         - '2'
   - slug: simple_sort
+    version: 1
+    author: cmdchallenge
     disp_title: Sort lines in a file.
     description: |
       Print the contents of access.log
@@ -191,6 +219,8 @@
         - 69.16.40.148 - - [09/Jan/2017:22:34:33 +0100] "GET /pages/create HTTP/1.0" 500 3471
         - 75.113.188.234 - - [09/Jan/2017:22:30:43 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 1116
   - slug: count_string_in_line
+    version: 1
+    author: cmdchallenge
     disp_title: Count Matching Lines.
     description: |
       Print the number of lines
@@ -202,6 +232,8 @@
       lines:
         - '8'
   - slug: split_on_a_char
+    version: 1
+    author: cmdchallenge
     disp_title: Split on a single character.
     description: |
       The file split-me.txt contains a list of
@@ -212,6 +244,8 @@
     expected_output:
       lines: [1,2,3,4,5,6,7,8,9,10]
   - slug: print_number_sequence
+    version: 1
+    author: cmdchallenge
     disp_title: Generate a number sequence.
     description: |
       Print the numbers 1 to 100 separated
@@ -221,6 +255,8 @@
       lines:
         - 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100
   - slug: remove_files_with_extension
+    version: 1
+    author: cmdchallenge
     disp_title: Remove files with extension.
     description: |
       There are files in this challenge with
@@ -234,6 +270,8 @@
       - test: '[[ $(find . -name "*.doc" | wc -l) == 0 ]]'
         msg: Test failed, expecting 0 files with a .doc extension.
   - slug: remove_files_without_extension
+    version: 1
+    author: bryfry
     disp_title: Remove files without extension.
     description: |
       There are files in this challenge with
@@ -253,6 +291,8 @@
 
 ########### START INTERMEDIATE
   - slug: replace_text_in_files
+    version: 1
+    author: cmdchallenge
     disp_title: Replace text in files
     example: sed -i 's/challenges are difficult//g' **/*.txt
     description: |
@@ -269,6 +309,8 @@
       - test: 'grep -q "challenges are difficult" README'
         msg: Test failed, files without .txt extension must remain unmodified
   - slug: sum_all_numbers
+    version: 1
+    author: cmdchallenge
     disp_title: Sum numbers in a file.
     example: paste -sd+ sum-me.txt  | bc
     description: |
@@ -278,6 +320,8 @@
       lines:
         - 42
   - slug: just_the_files
+    version: 1
+    author: cmdchallenge
     disp_title: Print only the filenames
     description: |
       Print all files in the current directory
@@ -296,6 +340,8 @@
         - README
         - totam
   - slug: remove_extensions_from_files
+    version: 1
+    author: cmdchallenge
     disp_title: Remove file extensions.
     description: |
       Remove the extension from all files in
@@ -305,6 +351,8 @@
       - test: '[[ $(find . -type f -name "*.*") == "" ]]'
         msg: Test failed, there are still files with extensions in the current directory.
   - slug: replace_spaces_in_filenames
+    version: 1
+    author: cmdchallenge
     disp_title: Replace spaces in file names.
     description: |
       The files in this challenge contain spaces.
@@ -325,6 +373,8 @@
         'Scott.Rice', 'Sheri.Bishop', 'Tamara.Anderson', 'Tammy.Galloway', 'Terri.Young', 'Thomas.Parks',
         'Thomas.Washington', 'Tiffany.Clark', 'Yvonne.Myers']
   - slug: files_starting_with_a_number
+    version: 1
+    author: cmdchallenge
     disp_title: Print files starting with a number.
     description: |
       There are a mix of files in this directory
@@ -341,6 +391,8 @@
               '639Charles Ferguson', '335John Joseph', '99blanditiis.avi', '477Thomas Pierce MD', '757Robert Marquez',
               '388Andrew Carter', '48Thomas Allen', '593Brett Martin']
   - slug: print_nth_line
+    version: 1
+    author: cmdchallenge
     disp_title: Print the nth line.
     description: |
       Print the 25th line of the file faces.txt
@@ -348,6 +400,8 @@
     expected_output:
       lines: ['¯\_(ツ)_/¯']
   - slug: remove_duplicate_lines
+    version: 1
+    author: cmdchallenge
     disp_time: Remove duplicate lines without sorting
     description: |
       Print the file faces.txt, but only print the first instance of each
@@ -359,6 +413,8 @@
               '(ಠ⌣ಠ', 'ಠಠ⌣ಠ)', '(ಠ‿ಠ)', '٩◔̯◔۶', 'ヽ༼ຈل͜ຈ༽ﾉ', '♥‿♥', '◔̯◔', '⊙﹏⊙',
               '(¬_¬)', '(；一_一)', '(͡° ͜ʖ ͡°)', '(° ͜ʖ °)', '¯\(°_o)/¯', '( ﾟヮﾟ)', '(︺︹︺)']
   - slug: corrupted_text
+    version: 1
+    author: cmdchallenge
     disp_title: Removing extra '!' characters from text
     example: perl -pne  's/!(?![ \n])//g;' war_and_peace.txt | perl -pne 's/(?<=[.])!//g' | perl -pne 's/!(?= [a-z])//g'
     description: |
@@ -389,6 +445,8 @@
         - has become more terrible than ever in the person of this
         - murderer and villain!
   - slug: print_common_lines
+    version: 1
+    author: amboar
     disp_title: Print common lines
     order: false
     example: "comm -12 <(cut -d' ' -f1 access.log.1 | sort) <(cut -d' ' -f1 access.log.2 | sort)"

@@ -17,6 +17,7 @@ This repo holds the challenges for [cmdchallenge.com](https://cmdchallenge.com)
     * Add directory and supporting files for the challenge in the `var/challenges` dir.
     * Add an example solution.
     * Add expected output or tests for the verification (see other challenges for examples examples).
+    * Add your github username or name to the author field.
 * Submit a pull request
 
 ## Installation
