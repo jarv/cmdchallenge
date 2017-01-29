@@ -85,8 +85,8 @@
         - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
   - slug: search_for_files_containing_string
     description: |
-      Print all files, one per line that contain
-      the string "500".
+      Print all files, one per line (not the path, just the file)
+      that contain the string "500".
     example: grep -l 500 *
     expected_output:
       order: false
