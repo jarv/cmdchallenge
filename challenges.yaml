@@ -266,7 +266,7 @@
     tests:
       - test: '[[ $(find . -type f | wc -l) == 2 ]]'
         msg: Test failed, expecting 2 files.
-      - test: '[[ $(find . -name "-*" | wc -l) -ne 0 ]]'
+      - test: '[[ $(find . -name "-*" | wc -l) == 0 ]]'
         msg: Test failed, files with dashes exist
   - slug: remove_files_with_extension
     version: 1
