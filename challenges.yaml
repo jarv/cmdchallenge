@@ -109,7 +109,8 @@
     version: 1
     author: cmdchallenge
     description: |
-      Print all files, one per line (not the path, just the file)
+      Print all files in the current directory,
+      one per line (not the path, just the filename)
       that contain the string "500".
     example: grep -l 500 *
     expected_output:
