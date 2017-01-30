@@ -100,7 +100,10 @@
   - slug: find_tabs_in_a_file
     version: 1
     author: cmdchallenge
-    description: How many lines contain a tab in the file README
+    description: |
+      How many lines contain tab characters in
+      the file named "file-with-tabs.txt" in the
+      current directory.
     example: grep -P '\t' file-with-tabs.txt | wc -l
     expected_output:
       lines:
