@@ -20,7 +20,6 @@ def main(challenge_name):
         cmd = challenge['example']
         print(d, end="")
         print("\t`{}`".format(cmd), end="")
-
         output, return_code, test_errors = output_from_cmd(cmd, challenge)
         if return_code != 0 or test_errors is not None:
             print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
