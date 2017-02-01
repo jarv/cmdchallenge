@@ -370,8 +370,8 @@
     author: cmdchallenge
     disp_title: Remove file extensions.
     description: |
-      Remove the extension from all files in
-      the current directory recursively.
+      Rename all files removing the extension from
+      them in the current directory recursively.
     example: for f in $(find . -type f -name "*.*"); do mv "$f" "${f%.*}"; done
     tests:
       - test: '[[ $(find . -type f -name "*.*") == "" ]]'
