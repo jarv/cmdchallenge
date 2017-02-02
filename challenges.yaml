@@ -59,7 +59,6 @@
       lines:
         - './'
         - '../'
-        - '.hidden-dir/'
         - '.hidden-file'
         - 'README'
         - 'normal-file.dat'
