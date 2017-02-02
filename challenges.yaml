@@ -48,7 +48,7 @@
         - 'README'
   - slug: list_files_adv
     version: 1
-    author: certau
+    author: gitunique
     description: |
       List all of the files in the current
       directory including classification, one file per line.
@@ -67,7 +67,7 @@
         - 'symlink-file.dat'
   - slug: nested_dirs
     version: 1
-    author: certau
+    author: gitunique
     description: |
       Find the file in the nested directories and display its contents.
     example: cat ./.../\ \ /.\ .the\ flag.txt
