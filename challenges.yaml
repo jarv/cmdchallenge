@@ -46,6 +46,34 @@
     expected_output:
       lines:
         - 'README'
+  - slug: list_files_adv
+    version: 1
+    author: certau
+    description: |
+      List all of the files in the current
+      directory including classification, one file per line.
+      Hint: directories are suffixed with '/', executables with '*'.
+      You will need to restrict the number of columns too.
+    example: ls -laF -C1
+    expected_output:
+      lines:
+        - './'
+        - '../'
+        - '.hidden-dir/'
+        - '.hidden-file'
+        - 'README'
+        - 'normal-file.dat'
+        - 'runthis.sh*'
+        - 'symlink-file.dat'
+  - slug: nested_dirs
+    version: 1
+    author: certau
+    description: |
+      Find the file in the nested directories and display its contents.
+    example: cat ./.../\ \ /.\ .the\ flag.txt
+    expected_output:
+      lines:
+        - 'you got it!'
   - slug: print_file_contents
     version: 2
     author: cmdchallenge
