@@ -340,7 +340,7 @@
     disp_title: Sum numbers in a file.
     example: paste -sd+ sum-me.txt  | bc
     description: |
-      The file sum-me.txt have a list of numbers,
+      The file sum-me.txt has a list of numbers,
       one per line. Print the sum of these numbers.
     expected_output:
       lines:
