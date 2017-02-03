@@ -376,6 +376,8 @@
     tests:
       - test: '[[ $(find . -type f -name "*.*") == "" ]]'
         msg: Test failed, there are still files with extensions in the current directory.
+      - test: '[[ $(find . -type f | wc -l) == 9 ]]'
+        msg: Test failed, expecting 9 files.
   - slug: replace_spaces_in_filenames
     version: 2
     author: cmdchallenge
