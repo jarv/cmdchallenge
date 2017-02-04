@@ -40,7 +40,7 @@
     version: 2
     author: cmdchallenge
     description: |
-      List all of the files in the current
+      List names of all the files in the current
       directory, one file per line.
     example: ls
     expected_output:
