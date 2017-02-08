@@ -50,8 +50,9 @@
     version: 1
     author: gitunique
     description: |
-      List all of the files in the current
-      directory including classification, one file per line.
+      List all of the files in the current directory, display a slash (`/') immediately after
+      each pathname that is a directory, an asterisk (`*') after each that is executable, 
+      an at sign (`@') after each symbolic link. Output one file per line.
       Hint: directories are suffixed with '/', executables with '*'.
       You will need to restrict the number of columns too.
     example: ls -laF -C1
