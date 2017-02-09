@@ -53,11 +53,13 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
     b64cmd = b64encode(cmd)
     challenge_dir = path.join(WORKING_DIR, challenge['slug'])
     return_token = uuid.uuid4()
-    docker_cmd = "cd {challenge_dir} && echo {b64cmd} | base64 -d > /tmp/script.sh && timeout {timeout} bash -O globstar /tmp/script.sh; echo {return_token}$?".format(
+    script_name = uuid.uuid4()
+    docker_cmd = "cd {challenge_dir} && echo {b64cmd} | base64 -d > /tmp/.{script_name} && timeout {timeout} bash -O globstar /tmp/.{script_name}; echo {return_token}$?".format(
         challenge_dir=challenge_dir,
         b64cmd=b64cmd,
         timeout=CMD_TIMEOUT,
-        return_token=return_token)
+        return_token=return_token,
+        script_name=script_name)
 
     if 'tests' in challenge:
         token = uuid.uuid4()
@@ -83,9 +85,11 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
             return_code_match = re.search(r'{}(\d+)'.format(return_token), output)
             if return_code_match is None:
                 raise ValidationError("Unable to determine return code from command")
-            else:
-                return_code = int(return_code_match.group(1))
+            return_code = int(return_code_match.group(1))
             output = re.sub(r'{}\d+'.format(return_token), '', output).rstrip()
+            output = re.sub(r'/tmp/.{}: line \d+: (.*)'.format(script_name), r'\1', output)
+            if return_code == 124:
+                output += "\n** Command timed out after {} seconds **".format(CMD_TIMEOUT)
             if 'tests' in challenge:
                 test_errors_matches = re.findall(r'{}(.*)'.format(token), output)
                 if test_errors_matches:
@@ -95,11 +99,12 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
             LOG.exception("SSL validation error connecting to {}".format(docker_base_url))
             raise ValidationError("SSL Error")
         except ContainerError as e:
-            return_code = e.exit_status
-            if return_code == 124:
-                output += "\n** Command timed out after {} seconds **".format(CMD_TIMEOUT)
+            LOG.exception("Container error")
+            raise ValidationError("There was a problem executing the command, return code: {}".format(e.exit_status))
         except NotFound as e:
-            output = e.explanation
+            LOG.exception("NotFound error")
+            raise ValidationError(e.explanation)
         except TimeoutError as e:
-            output = "Command timed out"
+            LOG.exception("Timeout error")
+            raise ValidationError("Command timed out")
     return output.rstrip(), return_code, test_errors

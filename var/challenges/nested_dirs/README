@@ -1,5 +1,7 @@
 # Nested Dirs
 # ***********
 
-# Find the file in the nested directories and display its contents.
+# There is a file:
+# ./.../  /. /the flag.txt
+# Show its contents on the screen.
 # 
