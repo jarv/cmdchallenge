@@ -1,0 +1,8 @@
+# List Files Adv
+# **************
+
+# List all of the files in the current
+# directory including classification, one file per line.
+# Hint: directories are suffixed with '/', executables with '*'.
+# You will need to restrict the number of columns too.
+# 
