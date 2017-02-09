@@ -46,6 +46,37 @@
     expected_output:
       lines:
         - 'README'
+  - slug: list_files_adv
+    version: 1
+    author: gitunique
+    description: |
+      List all of the files in the current directory, display a slash (`/') immediately after
+      each pathname that is a directory, an asterisk (`*') after each that is executable, 
+      an at sign (`@') after each symbolic link. Output one file per line.
+      Hint: directories are suffixed with '/', executables with '*'.
+      You will need to restrict the number of columns too.
+    example: ls -laF -C1
+    expected_output:
+      lines:
+        - './'
+        - '../'
+        - '.hidden-dir/'
+        - '.hidden-file'
+        - 'README'
+        - 'normal-file.dat'
+        - 'runthis.sh*'
+        - 'symlink-file.dat'
+  - slug: nested_dirs
+    version: 1
+    author: gitunique
+    description: |
+      There is a file:
+      ./.../  /. /the flag.txt
+      Show its contents on the screen.
+    example: cat ./.../\ \ /.\ .the\ flag.txt
+    expected_output:
+      lines:
+        - 'you got it!'
   - slug: print_file_contents
     version: 2
     author: cmdchallenge
