@@ -1,7 +1,7 @@
 test: docker
 	./bin/test_challenges
 docker: gen_readme
-	tar -hczf var.tar.gz var/
+	tar -czf var.tar.gz var/
 	docker build -t cmdline .
 	rm -f var.tar.gz
 	docker save cmdline > img.tar

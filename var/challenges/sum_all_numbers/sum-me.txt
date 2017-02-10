@@ -1,1 +1,1 @@
-../../../common_files/sum-me.txt
+../../common/sum-me.txt
