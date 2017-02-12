@@ -518,15 +518,18 @@
         - 17.137.186.194
         - 2.71.250.27
         - 28.151.137.59
-  - slug: check_if_same_files
+  - slug: print_files_if_different
     version: 1
     author: cmdchallenge
-    disp_title: Check if given files are the same.
-    example: "if [[ `diff test1.bin test2.bin` ]]; then echo 'Files are different';else echo 'Files are the same'; fi"
+    disp_title: Print all .bin files if they are differnt from base.bin.
+    example: "for i in $(ls *.bin); do if [[ `cmp base.bin $i` ]]; then echo $i; fi; done"
     description: |
-      test1.bin and test2.bin are two given files. Print "Files are the same" if both the files are the same and "Files are different" otherwise
+      Print all the files with the extension .bin if they are differnt from base.bin
     expected_output:
       order: false
       lines:
-        - Files are different
+        - test2.bin
+        - test4.bin
+        - test5.bin
+        - test7.bin
 ########### END INTERMEDIATE
