@@ -518,4 +518,18 @@
         - 17.137.186.194
         - 2.71.250.27
         - 28.151.137.59
+  - slug: print_files_if_different
+    version: 1
+    author: cmdchallenge
+    disp_title: Print all .bin files if they are differnt from base.bin.
+    example: "for i in $(ls *.bin); do if [[ `cmp base.bin $i` ]]; then echo $i; fi; done"
+    description: |
+      Print all the files with the extension .bin if they are differnt from base.bin
+    expected_output:
+      order: false
+      lines:
+        - test2.bin
+        - test4.bin
+        - test5.bin
+        - test7.bin
 ########### END INTERMEDIATE
