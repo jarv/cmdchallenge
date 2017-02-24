@@ -458,6 +458,42 @@
     example: sed -n '25p' faces.txt
     expected_output:
       lines: ['¯\_(ツ)_/¯']
+  - slug: reverse_readme
+    version: 1
+    author: cmdchallenge
+    disp_title: Reverse the README
+    description: |
+      Print the lines of the README file in this directory in reverse
+      ~~~~~~~~~~~~~~~~~~~~~
+      In the future
+      Environmental destruction will be the norm
+      No longer can it be said that
+      My peers and I care about this earth
+      It will be evident that
+      My generation is apathetic and lethargic
+      It is foolish to presume that
+      There is hope
+      ~~~~~~~~~~~~~~~~~~~~~
+      -Jonathan Reed "The Lost Generation"
+    example: tac README
+    expected_output:
+      lines:
+        - '# '
+        - '# -Jonathan Reed "The Lost Generation"'
+        - '# ~~~~~~~~~~~~~~~~~~~~~'
+        - '# There is hope'
+        - '# It is foolish to presume that'
+        - '# My generation is apathetic and lethargic'
+        - '# It will be evident that'
+        - '# My peers and I care about this earth'
+        - '# No longer can it be said that'
+        - '# Environmental destruction will be the norm'
+        - '# In the future'
+        - '# ~~~~~~~~~~~~~~~~~~~~~'
+        - '# Print the lines of the README file in this directory in reverse'
+        - ''
+        - '# **************'
+        - '# Reverse the README'
   - slug: remove_duplicate_lines
     version: 3
     author: cmdchallenge
