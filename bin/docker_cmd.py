@@ -23,7 +23,7 @@ class ValidationError(Exception):
     pass
 
 
-class TimeoutError(Exception):
+class CommandTimeoutError(Exception):
     pass
 
 
@@ -33,7 +33,7 @@ class timeout:
         self.error_message = error_message
 
     def handle_timeout(self, signum, frame):
-        raise TimeoutError(self.error_message)
+        raise CommandTimeoutError(self.error_message)
 
     def __enter__(self):
         signal.signal(signal.SIGALRM, self.handle_timeout)
@@ -104,7 +104,7 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
         except NotFound as e:
             LOG.exception("NotFound error")
             raise ValidationError(e.explanation)
-        except TimeoutError as e:
-            LOG.exception("Timeout error")
+        except CommandTimeoutError as e:
+            LOG.exception("CommandTimeout error")
             raise ValidationError("Command timed out")
     return output.rstrip(), return_code, test_errors
