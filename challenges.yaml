@@ -459,11 +459,13 @@
     expected_output:
       lines: ['¯\_(ツ)_/¯']
   - slug: reverse_readme
-    version: 1
+    version: 2
     author: cmdchallenge
     disp_title: Reverse the README
     description: |
-      Print the lines of the README file in this directory in reverse
+      Print the lines of the README file in this directory in
+      reverse line order so that the last line is printed first
+      and the first line is printed last.
       ~~~~~~~~~~~~~~~~~~~~~
       In the future
       Environmental destruction will be the norm
