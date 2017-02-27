@@ -491,10 +491,11 @@
     disp_title: Print line before match
     example: "awk '/404/{print a}{a=$0}' **/access.log*"
     description: |
-      Print the line immediately before the matching line (without
-      the filename or the file path) in all files under the current
-      directory that start with "access.log" that contain the
-      string "404" recursively.
+      Print all matching lines (without the filename
+      or the file path) in all files under the current
+      directory that start with "access.log", where
+      the next line contains the string "404". Note that
+      you will need to search recursively.
     expected_output:
       order: false
       lines:
