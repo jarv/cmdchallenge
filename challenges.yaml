@@ -558,6 +558,24 @@
         - 17.137.186.194
         - 2.71.250.27
         - 28.151.137.59
+  - slug: print_line_before
+    version: 2
+    author: mmr
+    disp_title: Print line before match
+    example: "awk '/404/{print a}{a=$0}' **/access.log*"
+    description: |
+      Print all matching lines (without the filename
+      or the file path) in all files under the current
+      directory that start with "access.log", where
+      the next line contains the string "404". Note that
+      you will need to search recursively.
+    expected_output:
+      order: false
+      lines:
+        - 251.111.109.143 - - [09/Jan/2017:22:49:02 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 2477
+        - 17.137.186.194 - - [09/Jan/2017:22:43:17 +0100] "GET /pages/create HTTP/1.0" 200 1116
+        - 89.148.148.238 - - [09/Jan/2017:22:33:09 +0100] "GET /posts/1/display HTTP/1.0" 502 2477
+        - 138.212.253.84 - - [09/Jan/2017:22:53:54 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
   - slug: print_files_if_different
     version: 1
     author: cmdchallenge
