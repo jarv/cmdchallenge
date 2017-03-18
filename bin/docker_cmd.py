@@ -19,7 +19,7 @@ DOCKER_OPTS = dict(mem_limit='4MB', working_dir=WORKING_DIR,
                    remove=True, stderr=True, stdout=True)
 
 
-class ValidationError(Exception):
+class DockerValidationError(Exception):
     pass
 
 
@@ -84,7 +84,7 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
             output = client.containers.run('cmdline', docker_cmd, **DOCKER_OPTS)
             return_code_match = re.search(r'{}(\d+)'.format(return_token), output)
             if return_code_match is None:
-                raise ValidationError("Unable to determine return code from command")
+                raise DockerValidationError("Unable to determine return code from command")
             return_code = int(return_code_match.group(1))
             output = re.sub(r'{}\d+'.format(return_token), '', output).rstrip()
             output = re.sub(r'/tmp/.{}: line \d+: (.*)'.format(script_name), r'\1', output)
@@ -97,14 +97,14 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
                     output = re.sub(r'{}.*'.format(token), '', output, re.M).rstrip()
         except SSLError as e:
             LOG.exception("SSL validation error connecting to {}".format(docker_base_url))
-            raise ValidationError("SSL Error")
+            raise DockerValidationError("SSL Error")
         except ContainerError as e:
             LOG.exception("Container error")
-            raise ValidationError("There was a problem executing the command, return code: {}".format(e.exit_status))
+            raise DockerValidationError("There was a problem executing the command, return code: {}".format(e.exit_status))
         except NotFound as e:
             LOG.exception("NotFound error")
-            raise ValidationError(e.explanation)
+            raise DockerValidationError(e.explanation)
         except CommandTimeoutError as e:
             LOG.exception("CommandTimeout error")
-            raise ValidationError("Command timed out")
+            raise DockerValidationError("Command timed out")
     return output.rstrip(), return_code, test_errors

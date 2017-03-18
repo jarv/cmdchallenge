@@ -11,8 +11,6 @@
 #   version: if the challenge is modified this number should be bumped
 #            refresh the cache.
 #   author: Add a field for contributions.
-########## START BEGINNER
-
   - slug: hello_world
     version: 3
     author: cmdchallenge
@@ -46,37 +44,6 @@
     expected_output:
       lines:
         - 'README'
-  - slug: list_files_adv
-    version: 2
-    author: gitunique
-    description: |
-      List all of the files in the current directory, display a slash (`/') immediately after
-      each pathname that is a directory, an asterisk (`*') after each that is executable,
-      an at sign (`@') after each symbolic link. Output one file per line.
-      Hint: directories are suffixed with '/', executables with '*'.
-      You will need to restrict the number of columns too.
-    example: ls -laF -C1
-    expected_output:
-      lines:
-        - './'
-        - '../'
-        - '.hidden-dir/'
-        - '.hidden-file'
-        - 'README'
-        - 'normal-file.dat'
-        - 'runthis.sh*'
-        - 'symlink-file.dat@'
-  - slug: nested_dirs
-    version: 1
-    author: gitunique
-    description: |
-      There is a file:
-      ./.../  /. .the flag.txt
-      Show its contents on the screen.
-    example: cat ./.../\ \ /.\ .the\ flag.txt
-    expected_output:
-      lines:
-        - 'you got it!'
   - slug: print_file_contents
     version: 3
     author: cmdchallenge
@@ -128,17 +95,6 @@
         - 199.37.62.156 - - [09/Jan/2017:22:42:18 +0100] "GET /posts/1/display HTTP/1.0" 200 2477
         - 251.111.109.143 - - [09/Jan/2017:22:49:02 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 2477
         - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
-  - slug: find_tabs_in_a_file
-    version: 3
-    author: cmdchallenge
-    description: |
-      How many lines contain tab characters in
-      the file named "file-with-tabs.txt" in the
-      current directory.
-    example: grep -P '\t' file-with-tabs.txt | wc -l
-    expected_output:
-      lines:
-        - 3
   - slug: search_for_files_containing_string
     version: 3
     author: cmdchallenge
@@ -297,20 +253,6 @@
     expected_output:
       lines:
         - 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100
-  - slug: remove_files_with_a_dash
-    version: 3
-    author: cmdchallenge
-    disp_title: Remove files that start with a dash
-    description: |
-      There are some files in this directory that
-      start with a dash in the filename.
-      Remove those files.
-    example: rm ./-*
-    tests:
-      - test: '[[ $(find . -type f | wc -l) == 2 ]]'
-        msg: Test failed, expecting 2 files.
-      - test: '[[ $(find . -name "-*" | wc -l) == 0 ]]'
-        msg: Test failed, files with dashes exist
   - slug: remove_files_with_extension
     version: 3
     author: cmdchallenge
@@ -326,27 +268,6 @@
         msg: Test failed, expecting 5 files.
       - test: '[[ $(find . -name "*.doc" | wc -l) == 0 ]]'
         msg: Test failed, expecting 0 files with a .doc extension.
-  - slug: remove_files_without_extension
-    version: 3
-    author: bryfry
-    disp_title: Remove files without extension.
-    description: |
-      There are files in this challenge with
-      different file extensions.
-      Remove all files without the .txt and .exe extensions
-      recursively in the current working directory.
-    example: find . -type f -regextype posix-extended ! -regex ".*(\.txt|\.exe)$" -exec rm {} +
-    tests:
-      - test: '[[ $(find . -type f | wc -l) == 4 ]]'
-        msg: Test failed, expecting 4 files.
-      - test: '[[ $(find . -name "*.txt" | wc -l) == 3 ]]'
-        msg: Test failed, expecting 3 files with a .txt extension.
-      - test: '[[ $(find . -name "*.exe" | wc -l) == 1 ]]'
-        msg: Test failed, expecting 1 files with a .exe extension.
-
-########## END BEGINNER
-
-########### START INTERMEDIATE
   - slug: replace_text_in_files
     version: 3
     author: cmdchallenge
@@ -543,6 +464,9 @@
         - his vocation and crush the hydra of revolution, which
         - has become more terrible than ever in the person of this
         - murderer and villain!
+##########
+# Start User Contributed Challenges
+# ########
   - slug: print_common_lines
     version: 3
     author: amboar
@@ -578,7 +502,7 @@
         - 138.212.253.84 - - [09/Jan/2017:22:53:54 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
   - slug: print_files_if_different
     version: 1
-    author: cmdchallenge
+    author: anonymous
     disp_title: Print files that are different
     example: "for i in $(ls *.bin); do if [[ `cmp base.bin $i` ]]; then echo $i; fi; done"
     description: |
@@ -591,4 +515,76 @@
         - test4.bin
         - test5.bin
         - test7.bin
-########### END INTERMEDIATE
+  - slug: list_files_adv
+    version: 2
+    author: gitunique
+    description: |
+      List all of the files in the current directory, display a slash (`/') immediately after
+      each pathname that is a directory, an asterisk (`*') after each that is executable,
+      an at sign (`@') after each symbolic link. Output one file per line.
+      Hint: directories are suffixed with '/', executables with '*'.
+      You will need to restrict the number of columns too.
+    example: ls -laF -C1
+    expected_output:
+      lines:
+        - './'
+        - '../'
+        - '.hidden-dir/'
+        - '.hidden-file'
+        - 'README'
+        - 'normal-file.dat'
+        - 'runthis.sh*'
+        - 'symlink-file.dat@'
+  - slug: nested_dirs
+    version: 1
+    author: gitunique
+    description: |
+      There is a file:
+      ./.../  /. .the flag.txt
+      Show its contents on the screen.
+    example: cat ./.../\ \ /.\ .the\ flag.txt
+    expected_output:
+      lines:
+        - 'you got it!'
+  - slug: find_tabs_in_a_file
+    version: 3
+    author: anonymous
+    description: |
+      How many lines contain tab characters in
+      the file named "file-with-tabs.txt" in the
+      current directory.
+    example: grep -P '\t' file-with-tabs.txt | wc -l
+    expected_output:
+      lines:
+        - 3
+  - slug: remove_files_without_extension
+    version: 3
+    author: bryfry
+    disp_title: Remove files without extension.
+    description: |
+      There are files in this challenge with
+      different file extensions.
+      Remove all files without the .txt and .exe extensions
+      recursively in the current working directory.
+    example: find . -type f -regextype posix-extended ! -regex ".*(\.txt|\.exe)$" -exec rm {} +
+    tests:
+      - test: '[[ $(find . -type f | wc -l) == 4 ]]'
+        msg: Test failed, expecting 4 files.
+      - test: '[[ $(find . -name "*.txt" | wc -l) == 3 ]]'
+        msg: Test failed, expecting 3 files with a .txt extension.
+      - test: '[[ $(find . -name "*.exe" | wc -l) == 1 ]]'
+        msg: Test failed, expecting 1 files with a .exe extension.
+  - slug: remove_files_with_a_dash
+    version: 3
+    author: anonymous
+    disp_title: Remove files that start with a dash
+    description: |
+      There are some files in this directory that
+      start with a dash in the filename.
+      Remove those files.
+    example: rm ./-*
+    tests:
+      - test: '[[ $(find . -type f | wc -l) == 2 ]]'
+        msg: Test failed, expecting 2 files.
+      - test: '[[ $(find . -name "-*" | wc -l) == 0 ]]'
+        msg: Test failed, files with dashes exist
