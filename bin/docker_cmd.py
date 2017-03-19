@@ -2,10 +2,12 @@
 
 import docker
 from docker.errors import ContainerError, NotFound
+from docker.utils import kwargs_from_env
 from base64 import b64encode
 import signal
 import re
 from os import path
+from os import environ
 import uuid
 from ssl import SSLError
 import logging
@@ -49,7 +51,11 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
     else:
         tls_config = None
 
-    client = docker.DockerClient(version=docker_version, base_url=docker_base_url, tls=tls_config)
+    if environ.get('DOCKER_MACHINE_NAME') is None:
+        client = docker.DockerClient(version=docker_version, base_url=docker_base_url, tls=tls_config)
+    else:
+        client = docker.DockerClient(**kwargs_from_env(assert_hostname=False))
+
     b64cmd = b64encode(cmd)
     challenge_dir = path.join(WORKING_DIR, challenge['slug'])
     return_token = uuid.uuid4()
