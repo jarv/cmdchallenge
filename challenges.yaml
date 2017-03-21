@@ -591,11 +591,10 @@
   - slug: print_sorted_by_key
     version: 3
     author: verovan
-    disp_title: Print the original file sorted by key PID
+    disp_title: Print the content sorted by PID
     description: |
-      There are two files: ps-ef1 and ps-ef2.
-      Create a new file called ps-ef with the content of ps-ef1 and
-      ps-ef2 sorted by PID and delete repeated lines.
+      There are two files: ps-ef1 and ps-ef2. Show content 
+      of both files sorted by PID and delete repeated lines.
     example: cat ps-ef1 > aux; sed '1 d' ps-ef2 >> aux; cat aux | sort -nk2,2 | uniq 
     expected_output:
       lines:
