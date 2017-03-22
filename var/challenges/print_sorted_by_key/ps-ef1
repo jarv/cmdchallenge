@@ -1,0 +1,12 @@
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 mar04 ?        00:00:13 /sbin/init
+user         5     2  0 mar04 ?        00:00:00 [kworker/0:0H]
+user         7     2  0 mar04 ?        00:07:06 [rcu_sched]
+root         9     2  0 mar04 ?        00:00:00 [migration/0]
+root        10     2  0 mar04 ?        00:00:04 [watchdog/0]
+user        11     2  0 mar04 ?        00:00:04 [watchdog/1]
+root        13     2  0 mar04 ?        00:00:59 [ksoftirqd/1]
+user        15     2  0 mar04 ?        00:00:00 [kworker/1:0H]
+root        17     2  0 mar04 ?        00:00:00 [migration/2]
+root        18     2  0 mar04 ?        00:00:59 [ksoftirqd/2]
+root        20     2  0 mar04 ?        00:00:00 [kworker/2:0H]
