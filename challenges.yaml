@@ -593,8 +593,9 @@
     author: verovan
     disp_title: Print the content sorted by PID
     description: |
-      There are two files: ps-ef1 and ps-ef2. Show content 
-      of both files sorted by PID and delete repeated lines.
+      There are two files in this directory, ps-ef1 and ps-ef2. 
+      Print the contents of both files sorted by PID and 
+      delete repeated lines.
     example: cat ps-ef1 > aux; sed '1 d' ps-ef2 >> aux; cat aux | sort -nk2,2 | uniq 
     expected_output:
       lines:
