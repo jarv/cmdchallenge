@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import docker
-from docker.errors import ContainerError, NotFound
+from docker.errors import ContainerError, NotFound, APIError
 from docker.utils import kwargs_from_env
 from base64 import b64encode
 import signal
@@ -113,4 +113,7 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
         except CommandTimeoutError as e:
             LOG.exception("CommandTimeout error")
             raise DockerValidationError("Command timed out")
+        except APIError as e:
+            LOG.exception("Docker API error")
+            raise DockerValidationError("Docker API error")
     return output.rstrip(), return_code, test_errors
