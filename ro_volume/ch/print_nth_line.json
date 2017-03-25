@@ -1,0 +1,1 @@
+{"version": 4, "example": "sed -n '25p' faces.txt", "description": "Print the 25th line of the file faces.txt\n", "author": "cmdchallenge", "expected_output": {"lines": ["\u00af\\_(\u30c4)_/\u00af"]}, "disp_title": "Print the nth line.", "slug": "print_nth_line"}

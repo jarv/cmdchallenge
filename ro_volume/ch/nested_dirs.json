@@ -1,0 +1,1 @@
+{"version": 4, "description": "There is a file:\n./.../  /. .the flag.txt\nShow its contents on the screen.\n", "author": "gitunique", "expected_output": {"lines": ["you got it!"]}, "slug": "nested_dirs", "example": "cat ./.../\\ \\ /.\\ .the\\ flag.txt"}
