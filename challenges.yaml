@@ -10,6 +10,7 @@
 #   tests: tests to run after the command completes
 #   version: if the challenge is modified this number should be bumped
 #            refresh the cache.
+#   strict: empty lines must NOT be ignored (defaults to false)
 #   author: Add a field for contributions.
   - slug: hello_world
     version: 3
@@ -419,6 +420,7 @@
         - ''
         - '# **************'
         - '# Reverse the README'
+      strict: true
   - slug: remove_duplicate_lines
     version: 3
     author: cmdchallenge

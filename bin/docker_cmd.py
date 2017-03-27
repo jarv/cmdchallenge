@@ -45,6 +45,13 @@ class timeout:
         signal.alarm(0)
 
 
+def strip_output(output, challenge, script_name, return_token):
+    strict = 'expected_output' in challenge and 'strict' in challenge['expected_output']
+    if not strict: output = re.sub(r'\n{2,}', '\n', output).rstrip()
+    output = re.sub(r'{}\d+'.format(return_token), '', output).rstrip()
+    output = re.sub(r'/tmp/.{}: line \d+: (.*)'.format(script_name), r'\1', output)
+    return output
+
 def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, tls_settings=None):
     if tls_settings:
         tls_config = docker.tls.TLSConfig(**tls_settings)
@@ -92,8 +99,7 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
             if return_code_match is None:
                 raise DockerValidationError("Unable to determine return code from command")
             return_code = int(return_code_match.group(1))
-            output = re.sub(r'{}\d+'.format(return_token), '', output).rstrip()
-            output = re.sub(r'/tmp/.{}: line \d+: (.*)'.format(script_name), r'\1', output)
+            output = strip_output(output, challenge, script_name, return_token)
             if return_code == 124:
                 output += "\n** Command timed out after {} seconds **".format(CMD_TIMEOUT)
             if 'tests' in challenge:
