@@ -1,0 +1,78 @@
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:8080            0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:1234          0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:1723            0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:1244          0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:9090            0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:45922           0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:1254          0.0.0.0:*               LISTEN
+tcp        0      0 192.168.80.28:22        79.19.119.32:51199      ESTABLISHED
+tcp        0     64 192.168.80.28:22        178.17.10.8:4379        ESTABLISHED
+tcp        0      0 192.168.80.28:22        151.74.45.83:34647      ESTABLISHED
+tcp        0      0 192.168.80.28:22        95.141.40.109:53042     ESTABLISHED
+tcp        0      0 192.168.80.28:22        79.53.118.68:43380      ESTABLISHED
+tcp6       0      0 :::111                  :::*                    LISTEN
+tcp6       0      0 ::1:1234                :::*                    LISTEN
+tcp6       0      0 :::22                   :::*                    LISTEN
+tcp6       0      0 ::1:1244                :::*                    LISTEN
+tcp6       0      0 :::41920                :::*                    LISTEN
+tcp6       0      0 ::1:1254                :::*                    LISTEN
+udp        0      0 0.0.0.0:46808           0.0.0.0:*
+udp        0      0 0.0.0.0:909             0.0.0.0:*
+udp        0      0 127.0.0.1:1012          0.0.0.0:*
+udp        0      0 0.0.0.0:68              0.0.0.0:*
+udp        0      0 0.0.0.0:13399           0.0.0.0:*
+udp        0      0 0.0.0.0:111             0.0.0.0:*
+udp6       0      0 :::47857                :::*
+udp6       0      0 :::59194                :::*
+udp6       0      0 :::909                  :::*
+udp6       0      0 :::111                  :::*
+Active UNIX domain sockets (servers and established)
+Proto RefCnt Flags       Type       State         I-Node   Path
+unix  11     [ ]         DGRAM                    9763     /dev/log
+unix  2      [ ACC ]     STREAM     LISTENING     9276     /var/run/dbus/system_bus_socket
+unix  2      [ ACC ]     STREAM     LISTENING     8923     @/com/ubuntu/upstart
+unix  2      [ ACC ]     STREAM     LISTENING     10601    /var/run/fail2ban/fail2ban.sock
+unix  2      [ ACC ]     SEQPACKET  LISTENING     436      /run/udev/control
+unix  2      [ ACC ]     STREAM     LISTENING     761      /run/rpcbind.sock
+unix  3      [ ]         STREAM     CONNECTED     9892     @/com/ubuntu/upstart
+unix  3      [ ]         STREAM     CONNECTED     9093
+unix  2      [ ]         DGRAM                    112440
+unix  2      [ ]         DGRAM                    120065
+unix  3      [ ]         STREAM     CONNECTED     626      /var/run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     120109   /var/run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     602
+unix  3      [ ]         STREAM     CONNECTED     604      /var/run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     120103
+unix  2      [ ]         DGRAM                    11675
+unix  3      [ ]         STREAM     CONNECTED     10909
+unix  3      [ ]         STREAM     CONNECTED     9627     @/com/ubuntu/upstart
+unix  3      [ ]         DGRAM                    475
+unix  3      [ ]         STREAM     CONNECTED     9629
+unix  3      [ ]         STREAM     CONNECTED     112449
+unix  3      [ ]         STREAM     CONNECTED     10971
+unix  3      [ ]         STREAM     CONNECTED     120108
+unix  3      [ ]         STREAM     CONNECTED     9546
+unix  3      [ ]         STREAM     CONNECTED     10908
+unix  2      [ ]         DGRAM                    10961
+unix  3      [ ]         STREAM     CONNECTED     112448
+unix  3      [ ]         STREAM     CONNECTED     10851
+unix  3      [ ]         DGRAM                    476
+unix  2      [ ]         DGRAM                    12196
+unix  3      [ ]         STREAM     CONNECTED     9867
+unix  2      [ ]         DGRAM                    9771
+unix  3      [ ]         STREAM     CONNECTED     595
+unix  2      [ ]         DGRAM                    10511
+unix  2      [ ]         DGRAM                    12099
+unix  3      [ ]         STREAM     CONNECTED     601
+unix  3      [ ]         STREAM     CONNECTED     10852
+unix  3      [ ]         STREAM     CONNECTED     10972
+unix  3      [ ]         STREAM     CONNECTED     9707
+unix  3      [ ]         STREAM     CONNECTED     9630
+unix  2      [ ]         DGRAM                    9957
+unix  3      [ ]         STREAM     CONNECTED     420      @/com/ubuntu/upstart
+unix  3      [ ]         STREAM     CONNECTED     120104

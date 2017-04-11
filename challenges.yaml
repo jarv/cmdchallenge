@@ -11,6 +11,8 @@
 #   version: if the challenge is modified this number should be bumped
 #            refresh the cache.
 #   author: Add a field for contributions.
+
+
   - slug: hello_world
     version: 3
     author: cmdchallenge
@@ -619,3 +621,24 @@
         - 'user        21     2  0 mar04 ?        00:00:04 [watchdog/3]'
         - 'root        22     2  0 mar04 ?        00:00:00 [migration/3]'
         - 'root        23     2  0 mar04 ?        00:01:29 [ksoftirqd/3]'
+
+  - slug: IPv4_listening_ports
+    version: 1
+    author: TaTo69
+    description: |
+      In the current directory there is a file called netstat.out
+      print all the IPv4 listening ports sorted from the higher to lower.
+
+    example: egrep  "tcp\ .*:**LISTEN" netstat.out | awk '{print $4}' | sed -e 's/.*\://g' | sort -nr
+    expected_output:
+      lines:
+        - '45922'
+        - '9090'
+        - '8080'
+        - '1723'
+        - '1254'
+        - '1244'
+        - '1234'
+        - '111'
+        - '80'
+        - '22'
