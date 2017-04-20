@@ -5,18 +5,22 @@ from docker.errors import ContainerError, NotFound, APIError
 from docker.utils import kwargs_from_env
 from base64 import b64encode
 import signal
-import re
 from os import path
 from os import environ
-import uuid
+import json
 from ssl import SSLError
 import logging
 
 LOG = logging.getLogger()
 DOCKER_TIMEOUT = 8
-CMD_TIMEOUT = 4
-WORKING_DIR = '/var/challenges'
-DOCKER_OPTS = dict(mem_limit='4MB', working_dir=WORKING_DIR,
+BASE_WORKING_DIR = '/var/challenges'
+SCRIPT_DIR = path.abspath(path.dirname(__file__))
+if path.isdir('/var/ro_volume'):
+    volume_dir = '/var/ro_volume'
+else:
+    volume_dir = path.join(SCRIPT_DIR, '..', 'ro_volume')
+DOCKER_OPTS = dict(mem_limit='4MB',
+                   volumes={volume_dir: {'bind': '/ro_volume', 'mode': 'ro'}},
                    network_mode=None, network_disabled=True,
                    remove=True, stderr=True, stdout=True)
 
@@ -57,50 +61,14 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
         client = docker.DockerClient(**kwargs_from_env(assert_hostname=False))
 
     b64cmd = b64encode(cmd)
-    challenge_dir = path.join(WORKING_DIR, challenge['slug'])
-    return_token = uuid.uuid4()
-    script_name = uuid.uuid4()
-    docker_cmd = "cd {challenge_dir} && echo {b64cmd} | base64 -d > /tmp/.{script_name} && timeout {timeout} bash -O globstar /tmp/.{script_name}; echo {return_token}$?".format(
-        challenge_dir=challenge_dir,
-        b64cmd=b64cmd,
-        timeout=CMD_TIMEOUT,
-        return_token=return_token,
-        script_name=script_name)
-
-    if 'tests' in challenge:
-        token = uuid.uuid4()
-        test_cmd = ""
-        for t in challenge['tests']:
-            test_cmd += "if ! {test}; then echo {token}{msg};fi\n".format(
-                token=token,
-                test=t['test'],
-                msg=t['msg'])
-        b64testcmd = b64encode(test_cmd)
-        docker_cmd += " && cd {challenge_dir} && echo {b64testcmd} | base64 -d > /tmp/test.sh && timeout {timeout} bash -O globstar -e /tmp/test.sh".format(
-            challenge_dir=challenge_dir,
-            b64testcmd=b64testcmd,
-            timeout=CMD_TIMEOUT)
-
-    docker_cmd = "bash -c '{}'".format(docker_cmd)
-    return_code = -1
-    test_errors = None
+    challenge_dir = path.join(BASE_WORKING_DIR, challenge['slug'])
+    docker_cmd = "/ro_volume/runcmd -slug {slug} {b64cmd}".format(
+        slug=challenge['slug'],
+        b64cmd=b64cmd)
     with timeout(seconds=DOCKER_TIMEOUT):
         try:
             LOG.debug("Running `{}` in container".format(docker_cmd))
-            output = client.containers.run('cmdline', docker_cmd, **DOCKER_OPTS)
-            return_code_match = re.search(r'{}(\d+)'.format(return_token), output)
-            if return_code_match is None:
-                raise DockerValidationError("Unable to determine return code from command")
-            return_code = int(return_code_match.group(1))
-            output = re.sub(r'{}\d+'.format(return_token), '', output).rstrip()
-            output = re.sub(r'/tmp/.{}: line \d+: (.*)'.format(script_name), r'\1', output)
-            if return_code == 124:
-                output += "\n** Command timed out after {} seconds **".format(CMD_TIMEOUT)
-            if 'tests' in challenge:
-                test_errors_matches = re.findall(r'{}(.*)'.format(token), output)
-                if test_errors_matches:
-                    test_errors = test_errors_matches
-                    output = re.sub(r'{}.*'.format(token), '', output, re.M).rstrip()
+            output = client.containers.run('cmdline', docker_cmd, working_dir=challenge_dir, **DOCKER_OPTS)
         except SSLError as e:
             LOG.exception("SSL validation error connecting to {}".format(docker_base_url))
             raise DockerValidationError("SSL Error")
@@ -116,4 +84,12 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
         except APIError as e:
             LOG.exception("Docker API error")
             raise DockerValidationError("Docker API error")
-    return output.rstrip(), return_code, test_errors
+        try:
+            output_json = json.loads(output)
+        except ValueError as e:
+            LOG.exception("JSON decode error")
+            raise DockerValidationError("Command failure")
+    if 'Error' in output_json:
+        LOG.error("Command execution error: {}".format(output_json['Error']))
+        raise DockerValidationError("Command execution error")
+    return output_json

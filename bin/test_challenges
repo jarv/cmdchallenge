@@ -4,8 +4,8 @@ from __future__ import print_function
 import yaml
 import os
 import sys
-from challenge import verify_output
-from docker_cmd import output_from_cmd
+from challenge import verify_result
+from docker_cmd import output_from_cmd, DockerValidationError
 
 
 def main(challenge_name):
@@ -20,24 +20,28 @@ def main(challenge_name):
         cmd = challenge['example']
         print(d, end="")
         print("\t`{}`".format(cmd), end="")
-        output, return_code, test_errors = output_from_cmd(cmd, challenge)
-        if return_code != 0 or test_errors is not None:
+        try:
+            result = output_from_cmd(cmd, challenge)
+        except DockerValidationError as e:
+            ret = 1
             print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
-            print(u"\t\x1b[0;35;40m{}\x1b[0m".format(output.decode('utf-8')))
-            if test_errors:
-                ret = 1
-                print(u"\t\x1b[0;35;40m{}\x1b[0m".format("\n".join(test_errors)))
+            print(u"\t\x1b[0;35;40mError: {}\x1b[0m".format(e.message))
+            continue
+        # All examples should return an exit code of zero
+        exit_ok = result['CmdExitCode'] == 0
+        correct = verify_result(result)
+        if not (exit_ok and correct):
+            ret = 1
+            print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
+            print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['CmdOut'].decode('utf-8').rstrip()))
+            if 'TestsOut' in result:
+                print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['TestsOut'].decode('utf-8').rstrip()))
             continue
         print(u"\t\x1b[1;32;40m\u2713\x1b[0m", end="")
         print("\t", end="")
-        correct = verify_output(challenge, output, testing=True)
-        if not correct:
-            ret = 1
-            print("")
-            print(output)
         print("")
-
     return ret
+
 
 if __name__ == '__main__':
     challenge = None

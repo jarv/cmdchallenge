@@ -1,0 +1,1 @@
+{"version": 4, "description": "Print \"hello world\".\nHint: There are many ways to print text on\nthe command line, one way is with the 'echo'\ncommand.\n\nTry it below and good luck!\n", "author": "cmdchallenge", "expected_output": {"lines": ["hello world"]}, "slug": "hello_world", "example": "echo 'hello world'"}

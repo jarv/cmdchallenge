@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if ! [[ $(find . -type f | wc -l) == 5 ]]; then
+    echo "Test failed, expected 5 files."
+    fail=1
+fi
+
+if ! [[ $(find . -name "*.doc" | wc -l) == 0 ]]; then
+    echo "Test failed, expectint 0 files with a .doc extension."
+    fail=1
+fi
+
+[[ -n "$fail" ]] && exit 1
+exit 0
