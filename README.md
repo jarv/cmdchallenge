@@ -16,7 +16,8 @@ This repo holds the challenges for [cmdchallenge.com](https://cmdchallenge.com)
     * Type a description.
     * Add directory and supporting files for the challenge in the `var/challenges` dir.
     * Add an example solution.
-    * Add expected output or tests for the verification (see other challenges for examples).
+    * Add expected output if the command has output that should be verfieid.
+    * Add a test script to `ro_volume/cmdtests/` if tests are needed after the command is run (see other challenge examples).
     * Add your github username or name to the author field.
 * Run `make test` to make sure your new challenge works with the example.
 * Submit a pull request.

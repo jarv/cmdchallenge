@@ -1,6 +1,6 @@
 .PHONY: all test docker gen_readme update runcmd
 
-test: docker
+test: update-ro-volume docker
 	./bin/test_challenges
 docker: gen_readme
 	tar -czf var.tar.gz var/
@@ -12,6 +12,8 @@ gen_readme:
 	./bin/gen_readme
 update:
 	./bin/update
+update-ro-volume:
+	./bin/update-ro-volume
 runcmd:
 	go build -o ./ro_volume/runcmd-darwin ./runcmd/runcmd.go ./runcmd/challenges.go
 	GOOS=linux GOARCH=amd64 go build -o ./ro_volume/runcmd ./runcmd/runcmd.go ./runcmd/challenges.go
