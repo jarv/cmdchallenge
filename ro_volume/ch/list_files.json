@@ -1,1 +1,0 @@
-{"version": 4, "description": "List names of all the files in the current\ndirectory, one file per line.\n", "author": "cmdchallenge", "expected_output": {"lines": ["README"]}, "slug": "list_files", "example": "ls"}

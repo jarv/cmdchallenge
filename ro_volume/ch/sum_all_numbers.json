@@ -1,1 +1,0 @@
-{"version": 4, "example": "paste -sd+ sum-me.txt  | bc", "description": "The file sum-me.txt has a list of numbers,\none per line. Print the sum of these numbers.\n", "author": "cmdchallenge", "expected_output": {"lines": ["42"]}, "disp_title": "Sum numbers in a file.", "slug": "sum_all_numbers"}
