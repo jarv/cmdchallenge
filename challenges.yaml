@@ -8,7 +8,6 @@
 #   order: whether or not order matters (optional, default is true)
 #   re_sub: regex substitution on the output lines (optional)
 #   regex: lines are regular expressions (optional)
-#   tests: tests to run after the command completes
 #   version: if the challenge is modified this number should be bumped
 #            refresh the cache.
 #   author: Add a field for contributions.
@@ -184,9 +183,6 @@
       Delete all of the files in this challenge
       directory including all subdirectories and
       their contents.
-    tests:
-      - test: '[[ $(find .) == "." ]]'
-        msg: Test failed, files or directories remain.
     example: find . -delete
   - slug: count_files
     version: 4
@@ -266,11 +262,6 @@
       Remove all files with the .doc extension
       recursively in the current working directory.
     example: rm **/*.doc
-    tests:
-      - test: '[[ $(find . -type f | wc -l) == 5 ]]'
-        msg: Test failed, expecting 5 files.
-      - test: '[[ $(find . -name "*.doc" | wc -l) == 0 ]]'
-        msg: Test failed, expecting 0 files with a .doc extension.
   - slug: replace_text_in_files
     version: 4
     author: cmdchallenge
@@ -282,13 +273,6 @@
       Delete this phrase recursively from all text files.
       Note that some files are in subdirectories so you will
       need to search for them.
-    tests:
-      - test: '[[ $(find . -name "*.txt" | wc -l) == 3 ]]'
-        msg: Test failed, expecting 3 text files
-      - test: '[[ $(find . -name "*.txt" -print0 | xargs -0 -n1 grep "challenges are difficult") == "" ]]'
-        msg: Test failed, found the string "challenges are difficult"
-      - test: 'grep -q "challenges are difficult" README'
-        msg: Test failed, files without .txt extension must remain unmodified
   - slug: sum_all_numbers
     version: 4
     author: cmdchallenge
@@ -328,11 +312,6 @@
       Rename all files removing the extension from
       them in the current directory recursively.
     example: for f in $(find . -type f -name "*.*"); do mv "$f" "${f%.*}"; done
-    tests:
-      - test: '[[ $(find . -type f -name "*.*") == "" ]]'
-        msg: Test failed, there are still files with extensions in the current directory.
-      - test: '[[ $(find . -type f | wc -l) == 9 ]]'
-        msg: Test failed, expecting 9 files.
   - slug: replace_spaces_in_filenames
     version: 4
     author: cmdchallenge
@@ -570,13 +549,6 @@
       Remove all files without the .txt and .exe extensions
       recursively in the current working directory.
     example: find . -type f -regextype posix-extended ! -regex ".*(\.txt|\.exe)$" -exec rm {} +
-    tests:
-      - test: '[[ $(find . -type f | wc -l) == 4 ]]'
-        msg: Test failed, expecting 4 files.
-      - test: '[[ $(find . -name "*.txt" | wc -l) == 3 ]]'
-        msg: Test failed, expecting 3 files with a .txt extension.
-      - test: '[[ $(find . -name "*.exe" | wc -l) == 1 ]]'
-        msg: Test failed, expecting 1 files with a .exe extension.
   - slug: remove_files_with_a_dash
     version: 4
     author: anonymous
@@ -586,11 +558,6 @@
       start with a dash in the filename.
       Remove those files.
     example: rm ./-*
-    tests:
-      - test: '[[ $(find . -type f | wc -l) == 2 ]]'
-        msg: Test failed, expecting 2 files.
-      - test: '[[ $(find . -name "-*" | wc -l) == 0 ]]'
-        msg: Test failed, files with dashes exist
   - slug: print_sorted_by_key
     version: 4
     author: verovan
