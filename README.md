@@ -14,9 +14,9 @@ This repo holds the challenges for [cmdchallenge.com](https://cmdchallenge.com)
 * Add a new entry to [challenges.yml](https://github.com/jarv/cmdchallenge/blob/master/challenges.yaml).
     * Pick a unique slug name.
     * Type a description.
-    * Add directory and supporting files for the challenge in the `var/challenges` dir.
+    * Add directory and supporting files for the challenge in the `var/challenges` dir. A README will automatically be created in the challenge directory based on the description in challenges.yaml.
     * Add an example solution.
-    * Add expected output if the command has output that should be verfieid.
+    * Add expected output if the command has output that should be verified.
     * Add a test script to `ro_volume/cmdtests/` if tests are needed after the command is run (see other challenge examples).
     * Add your github username or name to the author field.
 * Run `make test` to make sure your new challenge works with the example.
