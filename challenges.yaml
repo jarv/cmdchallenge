@@ -37,12 +37,13 @@
       lines:
         - '/var/challenges/current_working_directory'
   - slug: list_files
-    version: 4
+    version: 5
     author: cmdchallenge
     description: |
       List names of all the files in the current
       directory, one file per line.
     example: ls
+    example_fail: echo README
     expected_output:
       lines:
         - 'README'
@@ -185,13 +186,14 @@
       their contents.
     example: find . -delete
   - slug: count_files
-    version: 4
+    version: 5
     author: cmdchallenge
     description: |
       Count the number of files in the current
       working directory. Print the number of
       files as a single integer.
     example: ls | wc -l
+    example_fail: echo 2
     expected_output:
       re_sub: ['^\s+', '']
       lines:
@@ -217,7 +219,7 @@
         - 69.16.40.148 - - [09/Jan/2017:22:34:33 +0100] "GET /pages/create HTTP/1.0" 500 3471
         - 75.113.188.234 - - [09/Jan/2017:22:30:43 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 1116
   - slug: count_string_in_line
-    version: 4
+    version: 5
     author: cmdchallenge
     disp_title: Count Matching Lines.
     description: |
@@ -225,6 +227,7 @@
       in access.log that contain the string
       "GET".
     example: grep -c "GET" access.log
+    example_fail: echo 8
     expected_output:
       re_sub: ['^\s+', '']
       lines:
@@ -274,10 +277,11 @@
       Note that some files are in subdirectories so you will
       need to search for them.
   - slug: sum_all_numbers
-    version: 4
+    version: 5
     author: cmdchallenge
     disp_title: Sum numbers in a file.
-    example: paste -sd+ sum-me.txt  | bc
+    example: paste -sd+ sum-me.txt | bc
+    example_fail: echo 42
     description: |
       The file sum-me.txt has a list of numbers,
       one per line. Print the sum of these numbers.
@@ -518,24 +522,26 @@
         - 'runthis.sh*'
         - 'symlink-file.dat@'
   - slug: nested_dirs
-    version: 4
+    version: 5
     author: gitunique
     description: |
       There is a file:
       ./.../  /. .the flag.txt
       Show its contents on the screen.
     example: cat ./.../\ \ /.\ .the\ flag.txt
+    example_fail: echo you got it!
     expected_output:
       lines:
         - 'you got it!'
   - slug: find_tabs_in_a_file
-    version: 4
+    version: 5
     author: anonymous
     description: |
       How many lines contain tab characters in
       the file named "file-with-tabs.txt" in the
       current directory.
     example: grep -P '\t' file-with-tabs.txt | wc -l
+    example_fail: echo 3
     expected_output:
       lines:
         - "3"

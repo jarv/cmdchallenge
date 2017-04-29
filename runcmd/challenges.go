@@ -25,9 +25,6 @@ type expectedOutput struct {
 
 type challenge struct {
 	Slug           string         `json:"slug"`
-	Version        int            `json:"version"`
-	Author         string         `json:"author"`
-	Example        string         `json:"example"`
 	ExpectedOutput expectedOutput `json:"expected_output"`
 }
 

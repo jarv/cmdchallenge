@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"syscall"
 )
 
@@ -58,13 +59,16 @@ func main() {
 	check(err)
 
 	type CmdResult struct {
-		CmdOut      string
-		CmdExitCode int
-		OutputPass  *bool  `json:",omitempty"`
-		TestsPass   *bool  `json:",omitempty"`
-		TestsOut    string `json:",omitempty"`
-		RandPass    *bool  `json:",omitempty"`
-		RandOut     string `json:",omitempty"`
+		CmdOut                  string
+		CmdExitCode             int
+		OutputPass              *bool  `json:",omitempty"`
+		TestsPass               *bool  `json:",omitempty"`
+		TestsOut                string `json:",omitempty"`
+		AfterRandOutputPass     *bool  `json:",omitempty"`
+		AfterRandExpectedOutput string `json:",omitempty"`
+		AfterRandOutput         string `json:",omitempty"`
+		AfterRandTestsPass      *bool  `json:",omitempty"`
+		AfterRandTestsOut       string `json:",omitempty"`
 	}
 
 	flag.Usage = func() {
@@ -117,7 +121,37 @@ func main() {
 		result.TestsOut = testOut
 	}
 
-	b, err := json.MarshalIndent(result, "", "  ")
+	randFile := progDir + "/randomizers/" + ch.Slug
+	if _, err := os.Stat(randFile); err == nil {
+		randOut, randExitCode := runCombinedOutput(randFile)
+		result.AfterRandExpectedOutput = randOut
+		if randExitCode == 0 {
+			// Randomizer has run, check output against the new
+			// expected output
+			newCh := challenge{}
+			lineSlice := strings.Split(randOut, "\n")
+			lineSlice = lineSlice[:len(lineSlice)-1]
+			newCh.ExpectedOutput.Lines = lineSlice
+			newCh.ExpectedOutput.Order = ch.ExpectedOutput.Order
+			newCh.ExpectedOutput.ReSub = ch.ExpectedOutput.ReSub
+			// TODO exit code?
+			randCmdOut, _ := runCombinedOutput(command)
+			result.AfterRandOutput = randCmdOut
+			result.AfterRandOutputPass = newBool(newCh.MatchesOutput(randCmdOut))
+			if _, err := os.Stat(testFile); err == nil {
+				randTestOut, randTestExitCode := runCombinedOutput(testFile)
+				if randTestExitCode == 0 {
+					result.AfterRandTestsPass = newBool(true)
+				} else {
+					result.AfterRandTestsPass = newBool(false)
+				}
+				result.AfterRandTestsOut = randTestOut
+			}
+		} else {
+			errorExit("Unable to run random check.")
+		}
+	}
+	b, err := json.Marshal(result)
 	check(err)
 	os.Stdout.Write(b)
 }

@@ -5,6 +5,10 @@ import os
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 y = yaml.load(open('challenges.yaml').read())
+
+with open(os.path.join(dir_path, '../ro_volume/ch/all-challenges.json'), 'w') as f:
+    f.write(json.dumps([c['slug'] for c in y]))
+
 for s in y:
     with open(os.path.join(dir_path, '../ro_volume/ch/{}.json'.format(s['slug'])), 'w') as f:
         f.write(json.dumps(s))

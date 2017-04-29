@@ -1,0 +1,5 @@
+#!/bin/bash
+NEW_README=$(( $RANDOM % 1000 ))
+mv README $NEW_README
+ls
+exit 0

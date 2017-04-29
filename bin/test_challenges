@@ -4,7 +4,7 @@ from __future__ import print_function
 import yaml
 import os
 import sys
-from challenge import verify_result
+from challenge import verify_result, value_tests_rand_result, value_output_rand_result
 from docker_cmd import output_from_cmd, DockerValidationError
 
 
@@ -18,18 +18,19 @@ def main(challenge_name):
             continue
         d = challenge['slug']
         cmd = challenge['example']
+        cmd_fail = challenge.get('example_fail', None)
         print(d, end="")
         print("\t`{}`".format(cmd), end="")
         try:
             result = output_from_cmd(cmd, challenge)
+            exit_ok = result['CmdExitCode'] == 0
+            correct = verify_result(result)
         except DockerValidationError as e:
             ret = 1
             print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
             print(u"\t\x1b[0;35;40mError: {}\x1b[0m".format(e.message))
             continue
         # All examples should return an exit code of zero
-        exit_ok = result['CmdExitCode'] == 0
-        correct = verify_result(result)
         if not (exit_ok and correct):
             ret = 1
             print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
@@ -37,6 +38,22 @@ def main(challenge_name):
             if 'TestsOut' in result:
                 print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['TestsOut'].decode('utf-8').rstrip()))
             continue
+        
+        if cmd_fail:
+            try: 
+                # Test should fail
+                result_fail = output_from_cmd(cmd_fail, challenge)
+                correct_fail = verify_result(result_fail)
+            except DockerValidationError as e:
+                ret = 1
+                print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
+                print(u"\t\x1b[0;35;40mError: {}\x1b[0m".format(e.message))
+                continue
+            if correct_fail:
+                ret = 1
+                print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
+                print(u"\t\x1b[0;35;40m{}\x1b[0m".format("Got a correct answer for an expected failure '{}'".format(cmd_fail)))
+                continue
         print(u"\t\x1b[1;32;40m\u2713\x1b[0m", end="")
         print("\t", end="")
         print("")

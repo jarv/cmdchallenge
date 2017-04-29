@@ -1,0 +1,7 @@
+#!/bin/bash
+RAND_NUM=$(( $RANDOM % 20 ))
+for i in $(seq 0 $RAND_NUM); do
+    echo -e ' \t ' >> file-with-tabs.txt
+done
+grep -P '\t' file-with-tabs.txt | wc -l
+exit 0
