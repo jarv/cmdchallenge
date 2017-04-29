@@ -2,7 +2,7 @@
 
 test: docker
 	./bin/test_challenges
-docker: update-ro-volume gen_readme runcmd
+docker: update-ro-volume gen_readme
 	tar -czf var.tar.gz var/
 	docker build -t cmdline .
 	rm -f var.tar.gz
