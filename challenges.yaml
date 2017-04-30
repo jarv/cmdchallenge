@@ -186,14 +186,14 @@
       their contents.
     example: find . -delete
   - slug: count_files
-    version: 5
+    version: 6
     author: cmdchallenge
     description: |
       Count the number of files in the current
       working directory. Print the number of
       files as a single integer.
     example: find -L . -type f | wc -l
-    example_fail: ls | wc -l
+    example_fail: echo 3
     expected_output:
       re_sub: ['^\s+', '']
       lines:

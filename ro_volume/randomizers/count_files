@@ -2,5 +2,5 @@
 for i in $(seq 0 $(( $RANDOM % 20 ))); do
     touch $i
 done
-ls | wc -l
+find -L . -type f | wc -l
 exit 0
