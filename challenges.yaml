@@ -192,12 +192,12 @@
       Count the number of files in the current
       working directory. Print the number of
       files as a single integer.
-    example: ls | wc -l
-    example_fail: echo 2
+    example: find -L . -type f | wc -l
+    example_fail: ls | wc -l
     expected_output:
       re_sub: ['^\s+', '']
       lines:
-        - '2'
+        - '3'
   - slug: simple_sort
     version: 4
     author: cmdchallenge
