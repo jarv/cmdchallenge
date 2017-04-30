@@ -24,6 +24,8 @@ This repo holds the challenges for [cmdchallenge.com](https://cmdchallenge.com)
 
 ## Installation
 * Install docker on your machine
+* `virtualenv -p $(which python2.7) venv2.7`
+* `source venv2.7/bin/activate`
 * `pip install -r requirements.txt`
 
 ## Testing

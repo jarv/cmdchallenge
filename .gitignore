@@ -2,3 +2,4 @@ var.tar.gz
 img.tar
 var/challenges/*/README
 *.pyc
+venv2.7/
