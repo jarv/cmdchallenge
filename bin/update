@@ -9,3 +9,12 @@ y = yaml.load(open('challenges.yaml').read())
 
 with open(os.path.join(dir_path, '../../onthecmdline/static/challenges/challenges.json'), 'w') as f:
     f.write(json.dumps(y))
+
+for s in y:
+    with open(os.path.join(dir_path, '../../onthecmdline/lambda/runcmd-get/_src/ch/{}.json'.format(s['slug'])), 'w') as f:
+        f.write(json.dumps(s))
+
+with open(os.path.join(dir_path, '../../onthecmdline/lambda/runcmd-get/_src/ch/all-challenges.json'), 'w') as f:
+    f.write(json.dumps([c['slug'] for c in y]))
+
+
