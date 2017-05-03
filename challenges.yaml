@@ -178,7 +178,7 @@
         - 9.230.96.54
         - 157.143.233.21
   - slug: delete_files
-    version: 4
+    version: 5
     author: cmdchallenge
     description: |
       Delete all of the files in this challenge
