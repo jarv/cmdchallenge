@@ -3,6 +3,7 @@
 import docker
 from docker.errors import ContainerError, NotFound, APIError
 from docker.utils import kwargs_from_env
+from requests import ConnectionError
 from base64 import b64encode
 import signal
 from os import path
@@ -84,6 +85,9 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
         except APIError as e:
             LOG.exception("Docker API error")
             raise DockerValidationError("Docker API error")
+        except ConnectionError as e:
+            LOG.exception("Docker ConnectionError")
+            raise DockerValidationError("Docker connection error")
         try:
             output_json = json.loads(output)
         except ValueError as e:
