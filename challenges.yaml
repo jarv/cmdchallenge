@@ -621,7 +621,7 @@
     disp_title: Decoding a rot13 encoded file.
     example: cat les_miserables.txt| tr '[A-Za-z]' '[N-ZA-Mn-za-m]'
     description: |
-       The following excerpt from Victor Hugo's "Les misérables", is saved to
+       The following excerpt from Victor Hugo's "Les miserables", is saved to
        the file 'les_miserables.txt':
 
        The glance of women resembles certain combinations of wheels, which are
