@@ -1,0 +1,1 @@
+{"version": 4, "example": "rm ./-*", "description": "There are some files in this directory that\nstart with a dash in the filename.\nRemove those files.\n", "author": "anonymous", "disp_title": "Remove files that start with a dash", "slug": "remove_files_with_a_dash"}

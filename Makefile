@@ -4,14 +4,12 @@ test: docker
 	./bin/test_challenges
 docker: update-ro-volume gen_readme
 	tar -czf var.tar.gz var/
-	docker build -t cmdline .
+	docker build -t cmdchallenge/cmdchallenge .
 	rm -f var.tar.gz
-	docker save cmdline > img.tar
 
 gen_readme:
 	./bin/gen_readme
-update:
-	./bin/update
+
 update-ro-volume:
 	./bin/update-ro-volume
 runcmd:
