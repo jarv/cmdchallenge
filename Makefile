@@ -4,7 +4,7 @@ test: docker
 	./bin/test_challenges
 docker: update-ro-volume gen_readme
 	tar -czf var.tar.gz var/
-	docker build -t cmdchallenge .
+	docker build -t cmdchallenge/cmdchallenge .
 	rm -f var.tar.gz
 
 gen_readme:
