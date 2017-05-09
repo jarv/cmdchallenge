@@ -68,8 +68,8 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
         b64cmd=b64cmd)
     with timeout(seconds=DOCKER_TIMEOUT):
         try:
-            LOG.debug("Running `{}` in container".format(docker_cmd))
-            output = client.containers.run('cmdline', docker_cmd, working_dir=challenge_dir, **DOCKER_OPTS)
+            LOG.warn("Running `{}` in container".format(docker_cmd))
+            output = client.containers.run('cmdchallenge/cmdchallenge', docker_cmd, working_dir=challenge_dir, **DOCKER_OPTS)
         except SSLError as e:
             LOG.exception("SSL validation error connecting to {}".format(docker_base_url))
             raise DockerValidationError("SSL Error")

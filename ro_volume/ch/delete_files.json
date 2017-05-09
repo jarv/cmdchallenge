@@ -1,0 +1,1 @@
+{"author": "cmdchallenge", "slug": "delete_files", "version": 5, "description": "Delete all of the files in this challenge\ndirectory including all subdirectories and\ntheir contents.\n", "example": "find . -delete"}
