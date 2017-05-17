@@ -242,7 +242,6 @@
       Split the numbers on the ';' character,
       one number per line.
     example: tr ';' '\n' < split-me.txt
-    example_fail: for i in `seq 1 10`; do echo "$i"; done
     expected_output:
       lines: ["1","2","3","4","5","6","7","8","9","10"]
   - slug: print_number_sequence
