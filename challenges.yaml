@@ -614,3 +614,36 @@
         - '111'
         - '80'
         - '22'
+  - slug: rot13_decoding
+    version: 4
+    author: marrakchino
+    disp_title: Decoding a rot13 encoded file.
+    example: cat les_miserables.txt| tr '[A-Za-z]' '[N-ZA-Mn-za-m]'
+    description: |
+      The following excerpt from Victor Hugo's "Les miserables", is saved to
+      the file 'les_miserables.txt':
+
+      The glance of women resembles certain combinations of wheels, which are
+      tranquil in appearance yet formidable. You pass close to them every day,
+      peaceably and with impunity, and without a suspicion of anything.
+      A moment arrives when you forget that the thing is there.
+      You go and come, dream, speak, laugh. All at once you feel yourself
+      clutched; all is over. The wheels hold you fast, the glance has 
+      ensnared you. It has caught you, no matter where or how, by some portion
+      of your thought which was fluttering loose, by some distraction which
+      had attacked you. You are lost.
+
+      However, the file was encoded using rot13. Print the original content
+      of the excerpt.
+    expected_output:
+      lines:
+        - The glance of women resembles certain combinations of wheels, which are
+        - tranquil in appearance yet formidable. You pass close to them every day,
+        - peaceably and with impunity, and without a suspicion of anything.
+        - A moment arrives when you forget that the thing is there.
+        - You go and come, dream, speak, laugh. All at once you feel yourself
+        - clutched; all is over. The wheels hold you fast, the glance has 
+        - ensnared you. It has caught you, no matter where or how, by some portion
+        - of your thought which was fluttering loose, by some distraction which
+        - had attacked you. You are lost.
+        
