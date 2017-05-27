@@ -1,3 +1,3 @@
 FROM ubuntu:16.04
-RUN apt-get update && apt-get install -y jq bc rename
+RUN apt-get update && apt-get install -y jq bc rename bsdmainutils man
 ADD var.tar.gz /
