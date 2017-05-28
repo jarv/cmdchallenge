@@ -35,7 +35,7 @@ func errorExit(s string) {
 }
 
 func runCombinedOutput(command string) (cmdout string, exitCode int) {
-	cmd := exec.Command("bash", "-O", "globstar", "-c", command)
+	cmd := exec.Command("bash", "-O", "globstar", "-c", "export MANPAGER=cat;"+command)
 	outb, err := cmd.CombinedOutput()
 	cmdout = fmt.Sprintf("%s", outb)
 	if err != nil {
