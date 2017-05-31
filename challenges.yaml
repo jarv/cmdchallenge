@@ -418,6 +418,41 @@
       lines: ['(◕‿◕)', '(^̮^)', 'ʘ‿ʘ', 'ಠ_ಠ', 'ಠ⌣ಠ', 'ಠ‿ಠ', '(ʘ‿ʘ)', '(ಠ_ಠ)', '¯\_(ツ)_/¯',
               '(ಠ⌣ಠ', 'ಠಠ⌣ಠ)', '(ಠ‿ಠ)', '٩◔̯◔۶', 'ヽ༼ຈل͜ຈ༽ﾉ', '♥‿♥', '◔̯◔', '⊙﹏⊙',
               '(¬_¬)', '(；一_一)', '(͡° ͜ʖ ͡°)', '(° ͜ʖ °)', '¯\(°_o)/¯', '( ﾟヮﾟ)', '(︺︹︺)']
+  - slug: disp_table
+    version: 1
+    author: cmchallenge
+    disp_title: Displaying a table from a csv
+    description: |
+      The file "table.csv" contains the following comma-separated lines:
+      id,name,count
+      4,susan,11
+      33,alice,22
+      1772,joe,33
+
+      Print the rows as a table, like the following:
+      id    name   count
+      4     susan  11
+      33    alice  22
+      1772  joe    33
+    example: cat table.csv | column -t -s","
+    expected_output:
+      lines:
+        - id    name   count
+        - 4     susan  11
+        - 33    alice  22
+        - 1772  joe    33
+  - slug: find_primes
+    version: 1
+    author: cmdchallenge
+    example: 'for num in $(cat random-numbers.txt); do [[ $num == $(factor $num | cut -d" " -f2) ]] && echo $num; done | sort | uniq | wc -l'
+    disp_title: Finding prime numbers
+    description: |
+      The file random-numbers.txt contains a list
+      of 100 random integers. Print the number of
+      unique prime numbers contained in the file.
+    expected_output:
+      lines:
+        - "12"
   - slug: corrupted_text
     version: 4
     author: cmdchallenge
@@ -628,7 +663,7 @@
       peaceably and with impunity, and without a suspicion of anything.
       A moment arrives when you forget that the thing is there.
       You go and come, dream, speak, laugh. All at once you feel yourself
-      clutched; all is over. The wheels hold you fast, the glance has 
+      clutched; all is over. The wheels hold you fast, the glance has
       ensnared you. It has caught you, no matter where or how, by some portion
       of your thought which was fluttering loose, by some distraction which
       had attacked you. You are lost.
@@ -642,8 +677,8 @@
         - peaceably and with impunity, and without a suspicion of anything.
         - A moment arrives when you forget that the thing is there.
         - You go and come, dream, speak, laugh. All at once you feel yourself
-        - clutched; all is over. The wheels hold you fast, the glance has 
+        - clutched; all is over. The wheels hold you fast, the glance has
         - ensnared you. It has caught you, no matter where or how, by some portion
         - of your thought which was fluttering loose, by some distraction which
         - had attacked you. You are lost.
-        
+

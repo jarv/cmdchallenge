@@ -28,7 +28,7 @@ def main(challenge_name):
         except DockerValidationError as e:
             ret = 1
             print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
-            print(u"\t\x1b[0;35;40mError: {}\x1b[0m".format(e.message))
+            print(u"\t\x1b[0;35;40mDockerValidationError: {}\x1b[0m".format(e.message))
             continue
         # All examples should return an exit code of zero
         if not (exit_ok and correct):
@@ -38,9 +38,9 @@ def main(challenge_name):
             if 'TestsOut' in result:
                 print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['TestsOut'].decode('utf-8').rstrip()))
             continue
-        
+
         if cmd_fail:
-            try: 
+            try:
                 # Test should fail
                 result_fail = output_from_cmd(cmd_fail, challenge)
                 correct_fail = verify_result(result_fail)
