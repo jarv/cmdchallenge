@@ -149,7 +149,7 @@
     version: 4
     author: cmdchallenge
     description: |
-      Extract all IP addreses from files
+      Extract all IP addresses from files
       that start with "access.log" printing one
       IP address per line.
     example: grep -Pho '^\d+\.\d+\.\d+\.\d+' **/access.log*
