@@ -420,7 +420,7 @@
               '(¬_¬)', '(；一_一)', '(͡° ͜ʖ ͡°)', '(° ͜ʖ °)', '¯\(°_o)/¯', '( ﾟヮﾟ)', '(︺︹︺)']
   - slug: disp_table
     version: 1
-    author: cmchallenge
+    author: cmdchallenge
     disp_title: Displaying a table from a csv
     description: |
       The file "table.csv" contains the following comma-separated lines:
