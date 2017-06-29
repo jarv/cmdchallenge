@@ -445,6 +445,7 @@
     version: 1
     author: cmdchallenge
     example: 'for num in $(cat random-numbers.txt); do [[ $num == $(factor $num | cut -d" " -f2) ]] && echo $num; done | sort | uniq | wc -l'
+    example_fail: echo 12
     disp_title: Finding prime numbers
     description: |
       The file random-numbers.txt contains a list

@@ -1,0 +1,9 @@
+#!/bin/bash
+primes=(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)
+num=$(( $RANDOM % 20 ))
+for i in $(seq 0 $num); do
+    echo ${primes[0]} >> random-numbers.txt
+    primes=("${primes[@]:1}")
+done
+echo $(($num + 12 + 1))
+exit 0
