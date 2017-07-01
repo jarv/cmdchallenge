@@ -27,16 +27,16 @@ def main(challenge_name):
             correct = verify_result(result)
         except DockerValidationError as e:
             ret = 1
-            print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
-            print(u"\t\x1b[0;35;40mDockerValidationError: {}\x1b[0m".format(e.message))
+            print(u"\t\x1b[1;31;40m\u2718\x1b[0m".encode("utf-8"), end="")
+            print(u"\t\x1b[0;35;40mDockerValidationError: {}\x1b[0m".format(e.message).encode("utf-8"))
             continue
         # All examples should return an exit code of zero
         if not (exit_ok and correct):
             ret = 1
-            print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
-            print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['CmdOut'].decode('utf-8').rstrip()))
+            print(u"\t\x1b[1;31;40m\u2718\x1b[0m".encode("utf-8"), end="")
+            print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['CmdOut'].encode('utf-8').rstrip()))
             if 'TestsOut' in result:
-                print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['TestsOut'].decode('utf-8').rstrip()))
+                print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['TestsOut'].encode('utf-8').rstrip()))
             continue
 
         if cmd_fail:
@@ -46,15 +46,15 @@ def main(challenge_name):
                 correct_fail = verify_result(result_fail)
             except DockerValidationError as e:
                 ret = 1
-                print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
-                print(u"\t\x1b[0;35;40mError: {}\x1b[0m".format(e.message))
+                print(u"\t\x1b[1;31;40m\u2718\x1b[0m".encode('utf-8'), end="")
+                print(u"\t\x1b[0;35;40mError: {}\x1b[0m".format(e.message).encode('utf-8'))
                 continue
             if correct_fail:
                 ret = 1
                 print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
-                print(u"\t\x1b[0;35;40m{}\x1b[0m".format("Got a correct answer for an expected failure '{}'".format(cmd_fail)))
+                print(u"\t\x1b[0;35;40m{}\x1b[0m".format("Got a correct answer for an expected failure '{}'".format(cmd_fail)).encode('utf-8'))
                 continue
-        print(u"\t\x1b[1;32;40m\u2713\x1b[0m", end="")
+        print(u"\t\x1b[1;32;40m\u2713\x1b[0m".encode('utf-8'), end="")
         print("\t", end="")
         print("")
     return ret
