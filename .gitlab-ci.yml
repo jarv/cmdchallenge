@@ -1,0 +1,29 @@
+stages:
+  #  - test
+  - build
+
+before_script:
+  - docker info
+  - apt-get update
+  - apt-get install -y make python-pip language-pack-en
+  - which python || true
+  - which pip || true
+  - pip --version
+  - python --version
+  - pip install -r requirements.txt
+
+build:
+  image: gitlab/dind
+  stage: build
+  script:
+    - export LANG="en_US.UTF-8"
+    - make test
+      # - tar -czf var.tar.gz var/
+      # - docker build -t cmdchallenge/cmdchallenge .
+      # - rm -f var.tar.gz
+
+#test:
+#  image: python:2.7
+#  stage: test
+#  script:
+#    - make test
