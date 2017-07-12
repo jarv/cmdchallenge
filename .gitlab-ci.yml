@@ -1,5 +1,6 @@
 stages:
   - build
+  - test
 
 before_script:
   - docker info
@@ -7,8 +8,14 @@ before_script:
   - apt-get install -y make python-pip
   - pip install -r requirements.txt
 
-build:
+build_docker_image:
   image: gitlab/dind
   stage: build
   script:
-    - make
+    - make docker
+
+test_challenges:
+  image: gitlab/dind
+  stage: test
+  script:
+    - make test
