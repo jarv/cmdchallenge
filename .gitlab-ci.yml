@@ -4,18 +4,30 @@ stages:
 
 before_script:
   - docker info
-  - apt-get update
-  - apt-get install -y make python-pip
   - pip install -r requirements.txt
+  - export PATH=$PATH:/usr/local/go/bin
 
-build_docker_image:
-  image: gitlab/dind
+build_runcmd:
+  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
   stage: build
   script:
-    - make docker
+    - make build-runcmd
 
-test_challenges:
-  image: gitlab/dind
+build_docker_image:
+  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
+  stage: build
+  script:
+    - make build-docker
+
+test_runcmd:
+  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
   stage: test
   script:
-    - make test
+    - make test-runcmd
+
+test_challenges:
+  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
+  stage: test
+  script:
+    - make build-docker
+    - make test-challenges
