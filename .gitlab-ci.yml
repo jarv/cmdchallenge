@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - deploy
 
 before_script:
   - docker info
@@ -31,3 +32,13 @@ test_challenges:
   script:
     - make build-docker
     - make test-challenges
+
+deploy_staging:
+  stage: deploy
+  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
+  script:
+    - echo "deploy to staging"
+  environment:
+    name: staging
+  only:
+    - master
