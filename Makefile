@@ -1,4 +1,5 @@
-.PHONY: all test docker gen-readme update runcmd runcmd-darwin update-ro-volume test-runcmd test-challenges
+.PHONY: all test docker gen-readme update runcmd runcmd-darwin update-ro-volume test-runcmd test-challenges tar-var
+REF=$(shell git rev-parse --short HEAD)
 
 all: build-docker test
 
@@ -9,10 +10,18 @@ test-runcmd:
 
 test-challenges:
 	./bin/test_challenges
-
-build-docker: update-ro-volume gen-readme
+tar-var:
 	tar -czf var.tar.gz var/
-	docker build -t cmdchallenge/cmdchallenge .
+
+build-docker: update-ro-volume gen-readme tar-var
+	docker build -t registry.gitlab.com/jarv/cmdchallenge .
+
+build-docker-staging: update-ro-volume gen-readme tar-var
+	docker build -t registry.gitlab.com/jarv/cmdchallenge:staging-$(REF) .
+
+build-docker-prod: update-ro-volume gen-readme tar-var
+	docker build -t registry.gitlab.com/jarv/cmdchallenge:prod-$(REF) .
+
 clean:
 	rm -f var.tar.gz
 
@@ -21,7 +30,9 @@ gen-readme:
 
 update-ro-volume:
 	./bin/update-ro-volume
+
 build-runcmd:
 	GOOS=linux GOARCH=amd64 go build -o ./ro_volume/runcmd ./runcmd/runcmd.go ./runcmd/challenges.go
+
 build-runcmd-darwin:
 	go build -o ./ro_volume/runcmd-darwin ./runcmd/runcmd.go ./runcmd/challenges.go
