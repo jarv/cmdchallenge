@@ -37,7 +37,9 @@ deploy_staging:
   stage: deploy
   image: registry.gitlab.com/jarv/cmdchallenge-ci-image
   script:
-    - echo "deploy to staging"
+    - make build-docker-staging
+    - docker login -u jarv -p $REGISTRY_ACCESS_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/jarv/cmdchallenge
   environment:
     name: staging
   only:
