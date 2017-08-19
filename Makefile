@@ -1,4 +1,3 @@
-
 REF=$(shell git rev-parse --short HEAD)
 
 all: build-docker test
