@@ -69,7 +69,7 @@ def output_from_cmd(cmd, challenge, docker_version=None, docker_base_url=None, t
     with timeout(seconds=DOCKER_TIMEOUT):
         try:
             LOG.warn("Running `{}` in container".format(docker_cmd))
-            output = client.containers.run('cmdchallenge/cmdchallenge', docker_cmd, working_dir=challenge_dir, **DOCKER_OPTS)
+            output = client.containers.run('registry.gitlab.com/jarv/cmdchallenge', docker_cmd, working_dir=challenge_dir, **DOCKER_OPTS)
         except SSLError as e:
             LOG.exception("SSL validation error connecting to {}".format(docker_base_url))
             raise DockerValidationError("SSL Error")

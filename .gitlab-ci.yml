@@ -20,6 +20,9 @@ build_docker_image:
   script:
     - make build-docker
 
+######################
+# TEST
+######################
 test_runcmd:
   image: registry.gitlab.com/jarv/cmdchallenge-ci-image
   stage: test
@@ -33,11 +36,16 @@ test_challenges:
     - make build-docker
     - make test-challenges
 
+######################
+# DEPLOY
+######################
 deploy_staging:
   stage: deploy
   image: registry.gitlab.com/jarv/cmdchallenge-ci-image
   script:
-    - echo "deploy to staging"
+    - make build-docker-staging
+    - docker login -u jarv -p $REGISTRY_ACCESS_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/jarv/cmdchallenge
   environment:
     name: staging
   only:
