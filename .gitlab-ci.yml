@@ -9,13 +9,13 @@ before_script:
   - export PATH=$PATH:/usr/local/go/bin
 
 build_runcmd:
-  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
+  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
   stage: build
   script:
     - make build-runcmd
 
 build_docker_image:
-  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
+  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
   stage: build
   script:
     - make build-docker
@@ -24,13 +24,13 @@ build_docker_image:
 # TEST
 ######################
 test_runcmd:
-  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
+  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
   stage: test
   script:
     - make test-runcmd
 
 test_challenges:
-  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
+  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
   stage: test
   script:
     - make build-docker
@@ -39,9 +39,22 @@ test_challenges:
 ######################
 # DEPLOY
 ######################
+
+deploy_prod:
+  stage: deploy
+  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
+  script:
+    - make build-docker-prod
+    - docker login -u jarv -p $REGISTRY_ACCESS_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/jarv/cmdchallenge/prod
+  environment:
+    name: prod
+  only:
+    - release
+
 deploy_staging:
   stage: deploy
-  image: registry.gitlab.com/jarv/cmdchallenge-ci-image
+  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
   script:
     - make build-docker-staging
     - docker login -u jarv -p $REGISTRY_ACCESS_TOKEN registry.gitlab.com

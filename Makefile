@@ -17,11 +17,13 @@ build-docker: update-ro-volume gen-readme tar-var
 	docker build -t registry.gitlab.com/jarv/cmdchallenge .
 
 build-docker-staging: update-ro-volume gen-readme tar-var
-	docker build -t registry.gitlab.com/jarv/cmdchallenge:staging-$(REF) .
+	docker build -t registry.gitlab.com/jarv/cmdchallenge/staging .
 
 build-docker-prod: update-ro-volume gen-readme tar-var
-	docker build -t registry.gitlab.com/jarv/cmdchallenge:prod-$(REF) .
+	docker build -t registry.gitlab.com/jarv/cmdchallenge/prod .
 
+build-docker-ci:
+	docker build -t registry.gitlab.com/jarv/cmdchallenge/ci-image -f Dockerfile-ci .
 clean:
 	rm -f var.tar.gz
 
