@@ -45,7 +45,7 @@ deploy_staging:
   script:
     - make build-docker-staging
     - docker login -u jarv -p $REGISTRY_ACCESS_TOKEN registry.gitlab.com
-    - docker push registry.gitlab.com/jarv/cmdchallenge
+    - docker push registry.gitlab.com/jarv/cmdchallenge/staging
   environment:
     name: staging
   only:
