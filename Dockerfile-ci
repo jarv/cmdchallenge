@@ -1,0 +1,6 @@
+FROM gitlab/dind
+RUN apt-get update && \
+    apt-get install -y make python-pip language-pack-en && \
+    wget https://storage.googleapis.com/golang/go1.8.3.linux-amd64.tar.gz --no-check-certificate && \
+    tar -C /usr/local -xzf go1.8.3.linux-amd64.tar.gz && \
+    pip install docker==2.0.2 PyYAML==3.12
