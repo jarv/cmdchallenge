@@ -338,6 +338,23 @@
         'Olivia.Irwin', 'Parker.Gilbert', 'README', 'Robert.Gregory', 'Robert.Hill', 'Sarah.Hill',
         'Scott.Rice', 'Sheri.Bishop', 'Tamara.Anderson', 'Tammy.Galloway', 'Terri.Young', 'Thomas.Parks',
         'Thomas.Washington', 'Tiffany.Clark', 'Yvonne.Myers']
+  - slug: dirs_containing_files_with_extension
+    version: 1
+    author: cmdchallenge
+    description: |
+      In this challenge there are some directories containing files
+      with different extensionas. Print all directories,
+      one per line without duplicates that contain
+      one or more files with a ".tf" extension.
+    example: find . -name "*.tf" -type f -exec dirname {} \; | sort | uniq
+    expected_output:
+      order: false
+      re_sub: ['^\./', '']
+      lines:
+        - 'terraform'
+        - 'terraform/modules/load_balancer'
+        - 'terraform/modules/virtual_machine'
+        - 'terraform/modules/vpn'
   - slug: files_starting_with_a_number
     version: 4
     author: cmdchallenge
