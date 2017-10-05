@@ -40,28 +40,12 @@ test_challenges:
 # DEPLOY
 ######################
 
-deploy_prod:
+deploy:
   stage: deploy
   image: registry.gitlab.com/jarv/cmdchallenge/ci-image
   script:
     - make build-docker-prod
     - docker login -u jarv -p $REGISTRY_ACCESS_TOKEN registry.gitlab.com
     - docker push registry.gitlab.com/jarv/cmdchallenge
-    - docker push registry.gitlab.com/jarv/cmdchallenge/prod
-  environment:
-    name: prod
-  only:
-    - release
-
-deploy_staging:
-  stage: deploy
-  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
-  script:
-    - make build-docker-staging
-    - docker login -u jarv -p $REGISTRY_ACCESS_TOKEN registry.gitlab.com
-    - docker push registry.gitlab.com/jarv/cmdchallenge
-    - docker push registry.gitlab.com/jarv/cmdchallenge/staging
-  environment:
-    name: staging
   only:
     - master
