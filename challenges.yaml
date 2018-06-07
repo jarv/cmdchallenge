@@ -343,7 +343,7 @@
     author: cmdchallenge
     description: |
       In this challenge there are some directories containing files
-      with different extensionas. Print all directories,
+      with different extensions. Print all directories,
       one per line without duplicates that contain
       one or more files with a ".tf" extension.
     example: find . -name "*.tf" -type f -exec dirname {} \; | sort | uniq
