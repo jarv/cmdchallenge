@@ -20,10 +20,10 @@ if path.isdir('/var/ro_volume'):
     volume_dir = '/var/ro_volume'
 else:
     volume_dir = path.join(SCRIPT_DIR, '..', 'ro_volume')
-DOCKER_OPTS = dict(mem_limit='4MB',
+DOCKER_OPTS = dict(mem_limit='10MB',
                    volumes={volume_dir: {'bind': '/ro_volume', 'mode': 'ro'}},
                    network_mode=None, network_disabled=True,
-                   remove=True, stderr=True, stdout=True)
+                   remove=True, stderr=True)
 
 
 class DockerValidationError(Exception):
