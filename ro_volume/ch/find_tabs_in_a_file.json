@@ -1,1 +1,0 @@
-{"version": 5, "description": "How many lines contain tab characters in\nthe file named \"file-with-tabs.txt\" in the\ncurrent directory.\n", "author": "anonymous", "example_fail": "echo 3", "expected_output": {"lines": ["3"]}, "slug": "find_tabs_in_a_file", "example": "grep -P '\\t' file-with-tabs.txt | wc -l"}

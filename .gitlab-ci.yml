@@ -1,51 +1,122 @@
+---
+
+image: "${CI_REGISTRY_IMAGE}/ci-image"
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID               # Execute jobs in merge request context
+    - if: $CI_COMMIT_BRANCH == 'master'      # Execute jobs when a new commit is pushed to master branch
+
 stages:
-  - build
+  - ci image
   - test
-  - deploy
+  - build
+  - release
+#  - deploy
 
-before_script:
-  - docker info
-  - pip install -r requirements.txt
-  - export PATH=$PATH:/usr/local/go/bin
+#### IMAGE
 
-build_runcmd:
-  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
-  stage: build
+.image-update:
+  stage: ci image
+  image: docker:19.03.8
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://docker:2375
+  services:
+    - docker:19.03.5-dind
   script:
-    - make build-runcmd
+    - 'echo Running: docker login --password-stdin -u $CI_REGISTRY_USER $CI_REGISTRY'
+    - 'echo ${CI_JOB_TOKEN} | docker login --password-stdin -u $CI_REGISTRY_USER $CI_REGISTRY'
+    - export ci_image="${CI_REGISTRY_IMAGE}/ci-image"
+    - export ci_image_tag=${CI_COMMIT_TAG:-$CI_COMMIT_SHORT_SHA}
+    - echo "Using tag $CI_COMMIT_TAG for image"
+    - docker build --cache-from ${ci_image}:latest
+      --tag ${ci_image}:$ci_image_tag
+      --tag ${ci_image}:latest
+      -f Dockerfile-ci .
+    - docker push $ci_image:latest
+    - docker push $ci_image:$ci_image_tag
 
-build_docker_image:
-  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
-  stage: build
+image-update:
+  extends: .image-update
+  allow_failure: true
+  rules:
+    - changes: ["Dockerfile-ci"]
+      when: manual
+
+#### TEST
+
+test_gitlab_dnd:
+  variables:
+    DOCKER_DRIVER: overlay2
+  services:
+    - docker:19.03.5-dind
+  stage: test
   script:
-    - make build-docker
+    - make test-gitlab-dnd
+  rules:
+    - if: $CI_COMMIT_BRANCH != 'master'
 
-######################
-# TEST
-######################
+python-black:
+  stage: test
+  script:
+    - apk add file
+    - 'find bin cmdchallenge -print -exec file {} \; | grep "Python" | cut -d: -f1 | xargs black --check'
+  rules:
+    - if: $CI_COMMIT_BRANCH != 'master'
+
+lint:
+  stage: test
+  script:
+    - yamllint --strict *.yaml
+    - flake8
+  rules:
+    - if: $CI_COMMIT_BRANCH != 'master'
+
 test_runcmd:
-  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
   stage: test
   script:
     - make test-runcmd
+  rules:
+    - if: $CI_COMMIT_BRANCH != 'master'
 
-test_challenges:
-  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
-  stage: test
+#### BUILD
+
+build_runcmd:
+  variables:
+    DOCKER_DRIVER: overlay2
+  services:
+    - docker:19.03.5-dind
+  stage: build
   script:
     - make build-docker
+    - docker run $CI_REGISTRY_IMAGE echo hello world
     - make test-challenges
+
+######################
+# Publish
+######################
+
+publish:
+  image: node:10
+  stage: release
+  before_script:
+    - npm install -g semantic-release @semantic-release/gitlab
+  script:
+    - semantic-release
+  rules:
+    - if: $CI_COMMIT_TAG
 
 ######################
 # DEPLOY
 ######################
 
-deploy:
-  stage: deploy
-  image: registry.gitlab.com/jarv/cmdchallenge/ci-image
-  script:
-    - make build-docker-prod
-    - docker login -u jarv -p $REGISTRY_ACCESS_TOKEN registry.gitlab.com
-    - docker push registry.gitlab.com/jarv/cmdchallenge
-  only:
-    - master
+# deploy:
+#   stage: deploy
+#   image: registry.gitlab.com/jarv/cmdchallenge/ci-image
+#   script:
+#     - make build-docker-prod
+#     - echo $CI_JOB_TOKEN | docker login --password-stdin -u $CI_REGISTRY_USER $CI_REGISTRY
+#     - docker push $CI_REGISTRY_IMAGE/jarv/cmdchallenge
+#   only:
+#     - master

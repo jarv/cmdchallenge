@@ -1,8 +1,46 @@
-FROM gitlab/dind
-RUN apt-get update && \
-    apt-get install -y make python-pip language-pack-en unzip && \
-    wget https://storage.googleapis.com/golang/go1.8.3.linux-amd64.tar.gz --no-check-certificate && \
-    tar -C /usr/local -xzf go1.8.3.linux-amd64.tar.gz && \
-    pip install docker==2.0.2 PyYAML==3.12 && \
-    curl -o /tmp/tf.zip https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip && \
-    cd /usr/local/bin && unzip /tmp/tf.zip
+FROM docker:19.03.8
+COPY Pipfile /Pipfile
+COPY Pipfile.lock /Pipfile.lock
+
+## Versions ##
+ARG TERRAFORM_VERSION=0.12.24
+ARG GO_VERSION=1.14.2
+ARG PYTHON_VERSION='3.7.0'
+ARG PYENV_HOME=/root/.pyenv
+ENV PATH $PYENV_HOME/shims:$PYENV_HOME/bin:$PATH
+
+RUN apk add --no-cache --update \
+    git \
+    bash \
+    libffi-dev \
+    openssl-dev \
+    bzip2-dev \
+    zlib-dev \
+    readline-dev \
+    sqlite-dev \
+    build-base \
+    linux-headers \
+    curl \
+    openssh-client \
+    libc6-compat \
+    make \
+    alpine-sdk \
+    && git clone --depth 1 https://github.com/pyenv/pyenv.git $PYENV_HOME \
+    && rm -rfv $PYENV_HOME/.git \
+    && pyenv install $PYTHON_VERSION \
+    && pyenv global $PYTHON_VERSION \
+    && pip install --upgrade pip && pyenv rehash \
+    && pip install --no-cache-dir pipenv \
+    && pipenv lock -r > requirements.txt \
+    && pipenv lock -r -d > dev-requirements.txt \
+    && pip install -r requirements.txt \
+    && pip install -r dev-requirements.txt \
+    && curl -o /tmp/go.tar.gz https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf /tmp/go.tar.gz \
+    && ln -s /usr/local/go/bin/go /usr/local/bin/go \
+    && ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt \
+    && curl -o /tmp/tf.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+    && cd /usr/local/bin && unzip /tmp/tf.zip \
+    && rm -f /tmp/go.tar.gz /tmp/tf.zip \
+    && apk del alpine-sdk linux-headers sqlite-dev readline-dev zlib-dev bzip2-dev openssl-dev libffi-dev \
+    && pip uninstall -y pipenv 
