@@ -1,15 +1,21 @@
 #!/usr/bin/env python
 import yaml
 import json
-import os
+from os.path import dirname, join, realpath
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-y = yaml.load(open(os.path.join(dir_path, '../challenges.yaml')).read())
+dir_path = dirname(realpath(__file__))
+dir_cmdchallenge = join(dir_path, "../cmdchallenge")
 
-for s in y:
-    with open(os.path.join(dir_path, '../ro_volume/ch/{}.json'.format(s['slug'])), 'w') as f:
-        f.write(json.dumps(s))
-with open(os.path.join(dir_path, '../ro_volume/ch/all-challenges.json'), 'w') as f:
-    f.write(json.dumps([c['slug'] for c in y]))
-with open(os.path.join(dir_path, '../ro_volume/ch/challenges.json'), 'w') as f:
-    f.write(json.dumps(y))
+challenges = yaml.safe_load(open(join(dir_path, "../challenges.yaml")).read())
+
+for challenge in challenges:
+    with open(
+        join(dir_cmdchallenge, f'ro_volume/ch/{challenge["slug"]}.json'), "w"
+    ) as f:
+        f.write(json.dumps(challenge))
+
+with open(join(dir_cmdchallenge, "ro_volume/ch/all-challenges.json"), "w") as f:
+    f.write(json.dumps([challenge["slug"] for challenge in challenges]))
+
+with open(join(dir_cmdchallenge, "ro_volume/ch/challenges.json"), "w") as f:
+    f.write(json.dumps(challenges))

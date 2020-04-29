@@ -1,0 +1,1 @@
+{"slug": "remove_files_with_extension", "version": 4, "author": "cmdchallenge", "disp_title": "Remove files with extension.", "description": "There are files in this challenge with\ndifferent file extensions.\nRemove all files with the .doc extension\nrecursively in the current working directory.\n", "example": "rm **/*.doc"}

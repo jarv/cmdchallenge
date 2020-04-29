@@ -1,1 +1,0 @@
-{"version": 4, "example": "for f in $(find . -type f -name \"*.*\"); do mv \"$f\" \"${f%.*}\"; done", "description": "Rename all files removing the extension from\nthem in the current directory recursively.\n", "author": "cmdchallenge", "disp_title": "Remove file extensions.", "slug": "remove_extensions_from_files"}

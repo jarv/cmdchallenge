@@ -1,0 +1,1 @@
+{"slug": "count_files", "version": 6, "author": "cmdchallenge", "description": "Count the number of files in the current\nworking directory. Print the number of\nfiles as a single integer.\n", "example": "find -L . -type f | wc -l", "example_fail": "echo 3", "expected_output": {"re_sub": ["^\\s+", ""], "lines": ["3"]}}

@@ -1,0 +1,1 @@
+{"slug": "search_for_files_containing_string", "version": 4, "author": "cmdchallenge", "description": "Print all files in the current directory,\none per line (not the path, just the filename)\nthat contain the string \"500\".\n", "example": "grep -l 500 *", "expected_output": {"order": false, "lines": ["README", "access.log", "access.log.1"]}}

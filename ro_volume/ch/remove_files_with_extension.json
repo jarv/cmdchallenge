@@ -1,1 +1,0 @@
-{"version": 4, "example": "rm **/*.doc", "description": "There are files in this challenge with\ndifferent file extensions.\nRemove all files with the .doc extension\nrecursively in the current working directory.\n", "author": "cmdchallenge", "disp_title": "Remove files with extension.", "slug": "remove_files_with_extension"}

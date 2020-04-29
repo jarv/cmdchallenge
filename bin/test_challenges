@@ -1,67 +1,86 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
 import yaml
-import os
 import sys
-from challenge import verify_result, value_tests_rand_result, value_output_rand_result
+from challenge import verify_result
 from docker_cmd import output_from_cmd, DockerValidationError
+from os.path import dirname, realpath, join
+from colorama import Fore, Back, Style, init
+import logging
 
 
 def main(challenge_name):
-    ret = 0
-    script_dir = os.path.abspath(os.path.dirname(__file__))
-    y = yaml.load(open(os.path.join(script_dir, "..", "challenges.yaml")).read())
+    init()
+    LOG = logging.getLogger()
+    LOG.setLevel(logging.WARN)
+    PASS = "\u2713"
+    FAIL = "\u2718"
 
-    for challenge in y:
-        if challenge_name and challenge['slug'] != challenge_name:
+    ret = 0
+    dir_path = dirname(realpath(__file__))
+
+    challenges = yaml.safe_load(open(join(dir_path, "..", "challenges.yaml")).read())
+
+    for challenge in challenges:
+        if challenge_name and challenge["slug"] != challenge_name:
             continue
-        d = challenge['slug']
-        cmd = challenge['example']
-        cmd_fail = challenge.get('example_fail', None)
-        print(d, end="")
-        print("\t`{}`".format(cmd), end="")
+        d = challenge["slug"]
+        example_cmd = challenge["example"]
+        print(f"{Fore.LIGHTBLUE_EX}{d}", end="")
+        print(f"\t{Fore.LIGHTBLACK_EX}`{example_cmd}`{Style.RESET_ALL}", end="")
         try:
-            result = output_from_cmd(cmd, challenge)
-            exit_ok = result['CmdExitCode'] == 0
+            result = output_from_cmd(example_cmd, challenge)
+            exit_ok = result["CmdExitCode"] == 0
             correct = verify_result(result)
         except DockerValidationError as e:
             ret = 1
-            print(u"\t\x1b[1;31;40m\u2718\x1b[0m".encode("utf-8"), end="")
-            print(u"\t\x1b[0;35;40mDockerValidationError: {}\x1b[0m".format(e.message).encode("utf-8"))
+            print(f"\t{Fore.LIGHTRED_EX}{FAIL}{Style.RESET_ALL}", end="")
+            print(
+                f"\t{Fore.LIGHTMAGENTA_EX}DockerValidationError: {e}{Style.RESET_ALL}"
+            )
             continue
         # All examples should return an exit code of zero
         if not (exit_ok and correct):
             ret = 1
-            print(u"\t\x1b[1;31;40m\u2718\x1b[0m".encode("utf-8"), end="")
-            print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['CmdOut'].encode('utf-8').rstrip()))
-            if 'TestsOut' in result:
-                print(u"\t\x1b[0;35;40m{}\x1b[0m".format(result['TestsOut'].encode('utf-8').rstrip()))
+            print(f"\t{Fore.LIGHTRED_EX}{FAIL}{Style.RESET_ALL}", end="")
+            print(
+                f"\t{Fore.LIGHTCYAN_EX}Got: {result['CmdOut'].rstrip()}{Fore.LIGHTBLACK_EX}{result}{Style.RESET_ALL}"
+            )
+            if "TestsOut" in result:
+                print(
+                    f"\t{Fore.LIGHTMAGENTA_EX}{result['TestsOut']}{Style.RESET_ALL}".rstrip()
+                )
             continue
 
-        if cmd_fail:
+        example_cmd_fail = challenge.get("example_fail", None)
+        if example_cmd_fail:
             try:
                 # Test should fail
-                result_fail = output_from_cmd(cmd_fail, challenge)
+                result_fail = output_from_cmd(example_cmd_fail, challenge)
                 correct_fail = verify_result(result_fail)
             except DockerValidationError as e:
                 ret = 1
-                print(u"\t\x1b[1;31;40m\u2718\x1b[0m".encode('utf-8'), end="")
-                print(u"\t\x1b[0;35;40mError: {}\x1b[0m".format(e.message).encode('utf-8'))
+                print(f"\t{Fore.LIGHTRED_EX}{FAIL}{Style.RESET_ALL}", end="")
+                print(f"\t{Fore.LIGHTRED_EX}Error: {e}{Style.RESET_ALL}")
                 continue
             if correct_fail:
                 ret = 1
-                print(u"\t\x1b[1;31;40m\u2718\x1b[0m", end="")
-                print(u"\t\x1b[0;35;40m{}\x1b[0m".format("Got a correct answer for an expected failure '{}'".format(cmd_fail)).encode('utf-8'))
+                print(f"\t{Fore.LIGHTRED_EX}{FAIL}{Style.RESET_ALL}", end="")
+                print(
+                    f"\t{Fore.LIGHTCYAN_EX}Got a correct answer for an expected failure '{example_cmd_fail}'\t{Fore.LIGHTBLACK_EX}{result_fail}{Style.RESET_ALL}"
+                )
                 continue
-        print(u"\t\x1b[1;32;40m\u2713\x1b[0m".encode('utf-8'), end="")
+        print(f"\t{Fore.LIGHTGREEN_EX}{PASS}{Style.RESET_ALL}", end="")
         print("\t", end="")
         print("")
     return ret
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     challenge = None
     if len(sys.argv) == 2:
         challenge = sys.argv[1]
-    sys.exit(main(challenge))
+    try:
+        sys.exit(main(challenge))
+    except KeyboardInterrupt:
+        sys.exit(1)

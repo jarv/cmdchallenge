@@ -1,1 +1,0 @@
-{"description": "Print the number of lines\nin access.log that contain the string\n\"GET\".\n", "author": "cmdchallenge", "expected_output": {"lines": ["8"], "re_sub": ["^\\s+", ""]}, "disp_title": "Count Matching Lines.", "example": "grep -c \"GET\" access.log", "version": 5, "example_fail": "echo 8", "slug": "count_string_in_line"}
