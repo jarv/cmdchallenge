@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+dir=$(dirname "$0")
+private_dir="${dir}/../private"
+cmdchallenge_dir="${dir}/../cmdchallenge"
+runcmd_src_dir="${dir}/../lambda_src/runcmd"
+runcmd_cron_src_dir="${dir}/../lambda_src/runcmd_cron"
+
+mkdir -p "$runcmd_src_dir/ch" "$runcmd_cron_src_dir/ch" "$runcmd_src_dir/keys"
+
+# challenge json files
+cp "$cmdchallenge_dir"/ro_volume/ch/* "$runcmd_src_dir/ch/"
+cp "$cmdchallenge_dir"/ro_volume/ch/* "$runcmd_cron_src_dir/ch/"
+
+# keys
+cp "${CA_PEM_FNAME:-$private_dir/ca/ca.pem}" "$runcmd_src_dir/keys/ca.pem"
+cp "$private_dir/client/cert.pem" "$runcmd_src_dir/keys/cert.pem"
+cp "$private_dir/client/key.pem" "$runcmd_src_dir/keys/key.pem"

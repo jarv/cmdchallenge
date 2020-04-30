@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-import yaml
+import runcmd_path_append  # noqa: F401
 import sys
+import yaml
 from challenge import verify_result
 from docker_cmd import output_from_cmd, DockerValidationError
+from colorama import Fore, Style, init
 from os.path import dirname, realpath, join
-from colorama import Fore, Back, Style, init
 import logging
 
 

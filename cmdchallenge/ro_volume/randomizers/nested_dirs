@@ -1,5 +1,5 @@
 #!/bin/bash
-RAND_NUM=$(seq 0 $(( $RANDOM % 20 )))
-echo $RAND_NUM > ./.../\ \ /.\ .the\ flag.txt
+RAND_NUM=$(seq 0 $(( RANDOM % 20 )))
+echo "$RAND_NUM" > ./.../\ \ /.\ .the\ flag.txt
 cat ./.../\ \ /.\ .the\ flag.txt
 exit 0

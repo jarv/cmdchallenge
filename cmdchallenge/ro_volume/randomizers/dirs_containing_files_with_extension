@@ -1,8 +1,8 @@
 #!/bin/bash
-for i in $(seq 0 $(( $RANDOM % 2 ))); do
-    mkdir -p some/random/dir/${i}
-    touch some/random/dir/${i}/main.tf
+for i in $(seq 0 $(( RANDOM % 2 ))); do
+    mkdir -p "some/random/dir/$i"
+    touch "some/random/dir/$i/main.tf"
 done
 # Remove the ./ as it is stripped for the check
-find . -name "*.tf" -type f -exec dirname {} \; | sort | uniq | sed "s|^\./||"
+find . -name "*.tf" -type f -exec dirname {} \; | sort | uniq | sed "s|^\\./||"
 exit 0    

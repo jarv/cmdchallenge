@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euf -o pipefail
+
+if [[ -z $1 ]]; then
+    echo "Usage: $0 <host>"
+    exit 1
+fi
+HOST=$1
+dir=$(dirname "$0")
+key_dir="${dir}/../private/server/$1"
+if [[ -d "$key_dir" ]]; then
+    echo "$key_dir already exists, not doing anything"
+    exit 0
+fi
+mkdir -p "${key_dir}"
+cd "${key_dir}"
+
+echo Create the server key and CSR
+openssl genrsa -out server-key.pem 4096
+openssl req -subj "/CN=$HOST" -sha256 -new -key server-key.pem -out server.csr
+
+echo Sign the server cert
+echo "subjectAltName = DNS:$HOST,IP:127.0.0.1" > extfile.cnf
+openssl x509 -req -days 365 -sha256 -in server.csr -CA "${CA_PEM_FNAME:-../../ca/ca.pem}" -CAkey "${CA_KEY_FNAME:-../../ca/ca-key.pem}" \
+  -CAcreateserial -out server-cert.pem -extfile extfile.cnf
+
+chmod -v 0600 server-key.pem
+chmod -v 0644 server-cert.pem
+rm -v server.csr

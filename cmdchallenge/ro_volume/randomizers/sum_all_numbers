@@ -1,4 +1,4 @@
 #!/bin/bash
-echo $(( $RANDOM % 1000 )) >> sum-me.txt
+echo $(( RANDOM % 1000 )) >> sum-me.txt
 paste -sd+ sum-me.txt | bc
 exit 0

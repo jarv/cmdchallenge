@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+cd terraform || exit
+
+terraform taint module.gce.google_compute_instance.default[0]
+terraform apply -auto-approve
