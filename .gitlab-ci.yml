@@ -1,6 +1,6 @@
 ---
 
-image: "${CI_REGISTRY_IMAGE}/ci-image:latest"
+image: "${CI_REGISTRY_IMAGE}/ci:latest"
 
 workflow:
   rules:
