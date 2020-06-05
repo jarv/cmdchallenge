@@ -485,7 +485,7 @@ jQuery(function($) {
         callback('(' + retCode + ')> ');
       },
       completion: function(string, callback) {
-        completions = Array.prototype.concat(
+        const completions = Array.prototype.concat(
             TAB_COMPLETION, currentChallenge.completions || []);
         return completions;
       },
@@ -504,7 +504,6 @@ jQuery(function($) {
       currentChallenge = getNextChallenge(
           completedChallenges[completedChallenges.length - 1]);
     }
-    console.log(currentChallenge);
     updateChallenges(function() {
       checkForWin();
       routie('/' + currentChallenge.slug);

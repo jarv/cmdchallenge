@@ -23,6 +23,7 @@
     Print "hello world".
     Hint: There are many ways to print text on the command line, one way is with the 'echo' command.
     Try it below and good luck!
+  completions: ["place your advertisement here!"]
   example: echo 'hello world'
   expected_output:
     lines:
@@ -59,8 +60,8 @@
   author: cmdchallenge
   description: |
     There is a file named `access.log` in the current directory. Print the contents.
-  example: cat access.log
   completions: ["access.log"]
+  example: cat access.log
   expected_output:
     lines:
       - 163.56.115.58 - - [09/Jan/2017:22:29:57 +0100] "GET /posts/2/display HTTP/1.0" 200 3240
