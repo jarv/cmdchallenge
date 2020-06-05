@@ -7,10 +7,22 @@ workflow:
     - if: $CI_MERGE_REQUEST_ID               # Execute jobs in merge request context
     - if: $CI_COMMIT_BRANCH == 'master'      # Execute jobs when a new commit is pushed to master branch
 
+.terraform:
+  script:
+    - export TF_VAR_GCP_CRED_JSON_FNAME="$GCP_CRED_JSON_FNAME"
+    - export TF_VAR_CA_PEM_FNAME="$CA_PEM_FNAME"
+    - ./bin/create-ssh-keys
+    - ./bin/create-client-keys
+    - pushd terraform
+    - terraform init
+    - terraform workspace list
+    - terraform workspace select $TF_WORKSPACE
+    - popd
+    - ./bin/tf-refresh
+
 stages:
   - image
   - test
-  - release
   - deploy
 
 #### IMAGE
@@ -93,40 +105,42 @@ test:image:
     - make
 
 ######################
-# Publish
-######################
-
-publish:
-  image: node:10
-  stage: release
-  before_script:
-    - npm install -g semantic-release @semantic-release/gitlab
-  script:
-    - semantic-release
-  rules:
-    - if: $CI_COMMIT_TAG
-
-######################
 # DEPLOY
 ######################
 
-deploy:tf:
-  stage: test
+deploy:testing:tf:
+  stage: deploy
   script:
     - export TF_VAR_GCP_CRED_JSON_FNAME="$GCP_CRED_JSON_FNAME"
     - export TF_VAR_CA_PEM_FNAME="$CA_PEM_FNAME"
     - ./bin/create-ssh-keys
     - ./bin/create-client-keys
     - pushd terraform
-    - /usr/local/bin/terraform init
-    - /usr/local/bin/terraform workspace list
-    - /usr/local/bin/terraform workspace select testing
+    - terraform init
+    - terraform workspace list
+    - terraform workspace select testing
     - popd
     - ./bin/tf-refresh
-  when: manual
 
-deploy:static:
-  stage: test
+deploy:testing:static:
+  stage: deploy
   script:
     - make publish_testing
-  when: manual
+
+# deploy:prod:tf:
+#   stage: deploy
+#   extends:
+#     - .terraform
+#   variables:
+#     TF_WORKSPACE: testing
+#   when: manual
+
+# deploy:prod:static:
+#   stage: deploy
+#   extends:
+#     - .terraform
+#   variables:
+#     TF_WORKSPACE: prod
+#   script:
+#     - make publish_prod
+#   when: manual
