@@ -40,12 +40,13 @@ def handler(event, context):
     if environ.get('LOCAL'):
         b = boto3.session.Session(profile_name='cmdchallenge', region_name='us-east-1')
         s3 = b.client('s3')
+        table = b.resource('dynamodb').Table(COMMANDS_TABLE_NAME)
         slugs = challenges
     else:
         s3 = boto3.client('s3')
+        table = boto3.resource('dynamodb').Table(COMMANDS_TABLE_NAME)
         slugs = slug_slice(challenges)
 
-    table = b.resource('dynamodb').Table(COMMANDS_TABLE_NAME)
 
     for slug_name in slugs:
         resp = table.query(
