@@ -1,0 +1,10 @@
+[Unit]
+Description=Docker Secured Socket for the API
+
+[Socket]
+ListenStream=2376
+BindIPv6Only=both
+Service=docker.service
+
+[Install]
+WantedBy=sockets.target

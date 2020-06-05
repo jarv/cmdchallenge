@@ -1,1 +1,1 @@
-{"slug": "list_files", "version": 5, "author": "cmdchallenge", "description": "List names of all the files in the current\ndirectory, one file per line.\n", "example": "ls", "example_fail": "echo README", "expected_output": {"lines": ["README"]}}
+{"slug": "list_files", "openemoji": "1F41B", "disp_title": "list files", "version": 6, "author": "cmdchallenge", "description": "List names of all the files in the current directory, one file per line.\n", "example": "ls", "expected_output": {"lines": ["01-take.txt", "02-the.txt", "03-command.txt", "04-challenge.txt"]}}

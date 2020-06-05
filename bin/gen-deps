@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+cat node_modules/routie/dist/routie.min.js node_modules/jquery/dist/jquery.min.js node_modules/jquery.terminal/js/jquery.mousewheel-min.js node_modules/jquery.terminal/js/jquery.terminal.min.js | uglifyjs  -o static/js/deps.min.js
+
+cp node_modules/jquery.terminal/css/jquery.terminal.min.css* static/css/.

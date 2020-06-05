@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euf -o pipefail
+
+dir=$(dirname "$0")
+key_dir="${dir}/../private/ssh"
+if [[ -d "$key_dir" ]]; then
+    echo "$key_dir already exists, not doing anything"
+    exit 0
+fi
+mkdir -p "${key_dir}"
+cd "${key_dir}"
+
+echo Creating keypair for ssh
+ssh-keygen -f cmd_rsa -t rsa -N ''

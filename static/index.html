@@ -1,0 +1,98 @@
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <title>Commandline Challenge</title>
+    <link rel="stylesheet" href="css/jquery.terminal.min.css" />
+    <link rel="stylesheet" href="css/cmdchallenge.css"/>
+    <meta name="description" content="One-line shell challenges, to help improve your skill on the commandline."/>
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/styles/railscasts.min.css" />
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/highlight.min.js"></script>
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/languages/bash.min.js"></script>
+
+  </head>
+  <body>
+      <!--[if lt IE 8]>
+          <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+      <![endif]-->
+      <noscript>
+          It looks like you don't have javascript enabled which is required for cmdchallenge.
+          If it helps to convince you to enable it there is no third-party js on this site
+          and no trackers except for google analytics that can be blocked with a browser addon. Thanks!
+      </noscript>
+
+      <div class="navbar">
+        <div id="header">
+          <div class="image">
+            <img src="img/cmdchallenge.png" alt="" />
+          </div>
+          <div class="title">
+            <div>Command Challenge</div>
+            <div class="won"><img src="img/emojis/1F389.png" alt="won!"/>Congrats, you completed the challenge!<img src="img/emojis/1F389.png" alt="won!"/></div>
+          </div>
+        </div>
+        <div id="links">
+          <ul>
+            <li class="link"><a href="https://gitlab.com/jarv/cmdchallenge"><img src="img/gitlab.png" alt="gitlab" width="50" /></a></li>
+            <li class="link"><a href="mailto:info@cmdchallenge.com"><img src="img/email.png" alt="email" width="50" /></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="wrapper">
+        <div id="badges"></div>
+        <div class="row">
+          <div class="col">
+            <div class="tabs">
+              <div class="tab">
+                <input type="checkbox" id="chck1">
+                <label class="tab-label" for="chck1">View Solutions</label>
+                <div class="tab-content">
+                  <div class="challenge-wrapper">
+                    <div class="challenge-box">
+                      <ul class="challenges" id="challenges"></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="challenge-desc">
+          <div class="img-container"></div>
+          <div class="desc-container"></div>
+        </div>
+        <div id="term-spinner" style="display: none;"><img src="img/spinner.gif" alt="" /></div>
+        <div id="term-challenge"></div>
+        <div id="info-wrapper">
+          <div id="info-box">
+            <div class="img"></div>
+            <div class="text"></div>
+            <div class="gradient"></div>
+          </div>
+          <div id="completions"></div>
+        </div>
+        <pre id="challenge-output"></pre>
+        <pre><code id="solutions" class="language-bash bash hljs"></code></pre>
+      </div>
+
+      <script src="js/vendor/keyboard-polyfill-0.1.42.js"></script>
+      <script src="js/vendor/modernizr-3.8.0.min.js"></script>
+      <script src="js/vendor/commonmark.min.js"></script>
+      <script src="js/deps.min.js"></script>
+      <script src="js/cmdchallenge.js"></script>
+      <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-90967136-1', 'auto');
+        ga('send', 'pageview');
+      </script>
+  </body>
+</html>

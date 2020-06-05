@@ -1,1 +1,1 @@
-{"slug": "print_nth_line", "version": 4, "author": "cmdchallenge", "disp_title": "Print the nth line.", "description": "Print the 25th line of the file faces.txt\n", "example": "sed -n '25p' faces.txt", "expected_output": {"lines": ["\u00af\\_(\u30c4)_/\u00af"]}}
+{"slug": "print_nth_line", "openemoji": "1F437", "disp_title": "nth line", "version": 5, "author": "cmdchallenge", "description": "Print the 25th line of the file faces.txt\n", "example": "sed -n '25p' faces.txt", "expected_output": {"lines": ["\u00af\\_(\u30c4)_/\u00af"]}}

@@ -1,6 +1,6 @@
 #!/bin/bash
-for i in $(seq 0 $(( $RANDOM % 20 ))); do
-    touch $i
+for i in $(seq 0 $(( RANDOM % 20 ))); do
+  touch "$i"
 done
 find -L . -type f | wc -l
 exit 0

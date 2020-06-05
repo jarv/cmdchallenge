@@ -1,61 +1,60 @@
 ---
 
-image: "${CI_REGISTRY_IMAGE}/ci-image"
+image: "${CI_REGISTRY_IMAGE}/ci:latest"
 
 workflow:
   rules:
     - if: $CI_MERGE_REQUEST_ID               # Execute jobs in merge request context
     - if: $CI_COMMIT_BRANCH == 'master'      # Execute jobs when a new commit is pushed to master branch
 
+.terraform:
+  script:
+    - export TF_VAR_GCP_CRED_JSON_FNAME="$GCP_CRED_JSON_FNAME"
+    - export TF_VAR_CA_PEM_FNAME="$CA_PEM_FNAME"
+    - ./bin/create-ssh-keys
+    - ./bin/create-client-keys
+    - pushd terraform
+    - terraform init
+    - terraform workspace list
+    - terraform workspace select $TF_WORKSPACE
+    - popd
+    - ./bin/tf-refresh
+
 stages:
-  - ci image
+  - image
   - test
-  - build
-  - release
-#  - deploy
+  - deploy
 
 #### IMAGE
 
-.image-update:
-  stage: ci image
-  image: docker:19.03.8
+.image:
+  stage: image
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_HOST: tcp://docker:2375
   services:
     - docker:19.03.5-dind
-  script:
+  before_script:
     - 'echo Running: docker login --password-stdin -u $CI_REGISTRY_USER $CI_REGISTRY'
     - 'echo ${CI_JOB_TOKEN} | docker login --password-stdin -u $CI_REGISTRY_USER $CI_REGISTRY'
-    - export ci_image="${CI_REGISTRY_IMAGE}/ci-image"
-    - export ci_image_tag=${CI_COMMIT_TAG:-$CI_COMMIT_SHORT_SHA}
-    - echo "Using tag $CI_COMMIT_TAG for image"
-    - docker build --cache-from ${ci_image}:latest
-      --tag ${ci_image}:$ci_image_tag
-      --tag ${ci_image}:latest
-      -f Dockerfile-ci .
-    - docker push $ci_image:latest
-    - docker push $ci_image:$ci_image_tag
 
-image-update:
-  extends: .image-update
+image:ci:manual:
+  image: docker:19.03.8
+  extends: .image
   allow_failure: true
-  rules:
-    - changes: ["Dockerfile-ci"]
-      when: manual
+  when: manual
+  script:
+    - 'apk add make git'
+    - make push-image-ci
+
+image:cmd:manual:
+  extends: .image
+  allow_failure: true
+  when: manual
+  script:
+    - make push-image-cmd
 
 #### TEST
-
-test_gitlab_dnd:
-  variables:
-    DOCKER_DRIVER: overlay2
-  services:
-    - docker:19.03.5-dind
-  stage: test
-  script:
-    - make test-gitlab-dnd
-  rules:
-    - if: $CI_COMMIT_BRANCH != 'master'
 
 python-black:
   stage: test
@@ -69,54 +68,79 @@ lint:
   stage: test
   script:
     - yamllint --strict *.yaml
-    - flake8
+    # - flake8
   rules:
     - if: $CI_COMMIT_BRANCH != 'master'
 
-test_runcmd:
+shellcheck:
+  image:
+    name: nlknguyen/alpine-shellcheck
+    entrypoint: ["/bin/sh", "-c"]
+  stage: test
+  script:
+    - find cmdchallenge/ro_volume/cmdtests/ cmdchallenge/ro_volume/randomizers/ -type f | xargs -r shellcheck -e SC1090,SC1091
+
+shfmt:
+  image:
+    name: nlknguyen/alpine-shellcheck
+    entrypoint: ["/bin/sh", "-c"]
+  stage: test
+  script:
+    - find cmdchallenge/ro_volume/cmdtests/ cmdchallenge/ro_volume/randomizers/ -type f | xargs -r shellcheck -e SC1090,SC1091
+
+test:unit:
   stage: test
   script:
     - make test-runcmd
   rules:
     - if: $CI_COMMIT_BRANCH != 'master'
 
-#### BUILD
-
-build_runcmd:
+test:image:
+  stage: test
   variables:
     DOCKER_DRIVER: overlay2
   services:
     - docker:19.03.5-dind
-  stage: build
   script:
-    - make build-docker
-    - docker run $CI_REGISTRY_IMAGE echo hello world
-    - make test-challenges
-
-######################
-# Publish
-######################
-
-publish:
-  image: node:10
-  stage: release
-  before_script:
-    - npm install -g semantic-release @semantic-release/gitlab
-  script:
-    - semantic-release
-  rules:
-    - if: $CI_COMMIT_TAG
+    - make
 
 ######################
 # DEPLOY
 ######################
 
-# deploy:
+deploy:testing:tf:
+  stage: deploy
+  script:
+    - export TF_VAR_GCP_CRED_JSON_FNAME="$GCP_CRED_JSON_FNAME"
+    - export TF_VAR_CA_PEM_FNAME="$CA_PEM_FNAME"
+    - ./bin/create-ssh-keys
+    - ./bin/create-client-keys
+    - pushd terraform
+    - terraform init
+    - terraform workspace list
+    - terraform workspace select testing
+    - popd
+    - ./bin/tf-refresh
+
+deploy:testing:static:
+  stage: deploy
+  script:
+    - make publish_testing
+
+# deploy:prod:tf:
 #   stage: deploy
-#   image: registry.gitlab.com/jarv/cmdchallenge/ci-image
+#   extends:
+#     - .terraform
+#   variables:
+#     TF_WORKSPACE: testing
+#   when: manual
+
+# deploy:prod:static:
+#   stage: deploy
+#   extends:
+#     - .terraform
+#   variables:
+#     TF_WORKSPACE: prod
 #   script:
-#     - make build-docker-prod
-#     - echo $CI_JOB_TOKEN | docker login --password-stdin -u $CI_REGISTRY_USER $CI_REGISTRY
-#     - docker push $CI_REGISTRY_IMAGE/jarv/cmdchallenge
-#   only:
-#     - master
+#     - make publish_prod
+#   when: manual

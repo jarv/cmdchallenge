@@ -1,0 +1,20 @@
+[Unit]
+Description=Turn on swap
+
+[Service]
+Type=oneshot
+Environment="SWAP_PATH=/var/vm" "SWAP_FILE=swapfile1"
+ExecStartPre=-/usr/bin/rm -rf ${SWAP_PATH}
+ExecStartPre=/usr/bin/mkdir -p ${SWAP_PATH}
+ExecStartPre=/usr/bin/touch ${SWAP_PATH}/${SWAP_FILE}
+ExecStartPre=/bin/bash -c "fallocate -l 1024m ${SWAP_PATH}/${SWAP_FILE}"
+ExecStartPre=/usr/bin/chmod 600 ${SWAP_PATH}/${SWAP_FILE}
+ExecStartPre=/usr/sbin/mkswap ${SWAP_PATH}/${SWAP_FILE}
+ExecStartPre=/usr/sbin/sysctl vm.swappiness=10
+ExecStart=/sbin/swapon ${SWAP_PATH}/${SWAP_FILE}
+ExecStop=/sbin/swapoff ${SWAP_PATH}/${SWAP_FILE}
+ExecStopPost=-/usr/bin/rm -rf ${SWAP_PATH}
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

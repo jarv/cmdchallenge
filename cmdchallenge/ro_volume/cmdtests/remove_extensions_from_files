@@ -1,13 +1,13 @@
 #!/bin/bash
 
 if ! [[ $(find . -type f -name "*.*") == "" ]]; then
-    echo "Test failed, there are still files with extensions in the current directory."
-    fail=1
+	echo "Test failed, there are still files with extensions in the current directory."
+	fail=1
 fi
 
-if ! [[ $(find . -type f | wc -l) == 9 ]]; then
-    echo "Test failed, expecting 9 files."
-    fail=1
+if ! [[ $(find . -type f | wc -l) == 8 ]]; then
+	echo "Test failed, expecting 8 files."
+	fail=1
 fi
 
 [[ -n "$fail" ]] && exit 1

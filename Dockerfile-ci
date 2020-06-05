@@ -13,6 +13,8 @@ RUN apk add --no-cache --update \
     git \
     bash \
     libffi-dev \
+    openssl \
+    gettext \
     openssl-dev \
     bzip2-dev \
     zlib-dev \
@@ -25,12 +27,14 @@ RUN apk add --no-cache --update \
     libc6-compat \
     make \
     alpine-sdk \
+    npm \
+    && npm install -g uglify-es \
     && git clone --depth 1 https://github.com/pyenv/pyenv.git $PYENV_HOME \
     && rm -rfv $PYENV_HOME/.git \
     && pyenv install $PYTHON_VERSION \
     && pyenv global $PYTHON_VERSION \
     && pip install --upgrade pip && pyenv rehash \
-    && pip install --no-cache-dir pipenv \
+    && pip install --no-cache-dir 'pipenv==2018.11.26' \
     && pipenv lock -r > requirements.txt \
     && pipenv lock -r -d > dev-requirements.txt \
     && pip install -r requirements.txt \
@@ -41,6 +45,4 @@ RUN apk add --no-cache --update \
     && ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt \
     && curl -o /tmp/tf.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
     && cd /usr/local/bin && unzip /tmp/tf.zip \
-    && rm -f /tmp/go.tar.gz /tmp/tf.zip \
-    && apk del alpine-sdk linux-headers sqlite-dev readline-dev zlib-dev bzip2-dev openssl-dev libffi-dev \
-    && pip uninstall -y pipenv 
+    && rm -f /tmp/go.tar.gz /tmp/tf.zip
