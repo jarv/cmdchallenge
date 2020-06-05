@@ -110,7 +110,7 @@ publish:
 # DEPLOY
 ######################
 
-deploy:
+deploy:tf:
   stage: test
   script:
     - export TF_VAR_GCP_CRED_JSON_FNAME="$GCP_CRED_JSON_FNAME"
@@ -123,4 +123,10 @@ deploy:
     - /usr/local/bin/terraform workspace select testing
     - popd
     - ./bin/tf-refresh
+  when: manual
+
+deploy:static:
+  stage: test
+  script:
+    - make publish_testing
   when: manual

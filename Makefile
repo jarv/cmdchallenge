@@ -32,6 +32,12 @@ wsass:
 
 publish_testing: gen-deps
 	CMD_URL="$(API_TESTING)" envsubst < static/js/cmdchallenge.js.envsubst > static/js/cmdchallenge.js
+	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --delete
+	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
+	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING_API) --paths '/*'
+
+publish_testing_profile: gen-deps
+	CMD_URL="$(API_TESTING)" envsubst < static/js/cmdchallenge.js.envsubst > static/js/cmdchallenge.js
 	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --delete
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING_API) --paths '/*'
