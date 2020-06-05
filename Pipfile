@@ -15,6 +15,7 @@ requests = "*"
 pyyaml = "*"
 colorama = "*"
 awslogs = "*"
+awscli = "*"
 
 [requires]
 python_version = "3.7"
