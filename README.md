@@ -1,6 +1,6 @@
 # CMD Challenge
 
-This repository contains the code for the site cmdchallenge.com
+This repository contains the code for the site [cmdchallenge.com](https://cmdchallenge.com)
 
 ## Contribute
 
