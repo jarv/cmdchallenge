@@ -30,14 +30,14 @@ wsass:
 
 publish_testing: gen-deps
 	cp static/robots.txt.disable static/robots.txt
-	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --delete
+	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read --exclude "s/solutions/*" --delete
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING_API) --paths '/*'
 	rm -f static/robots.txt
 
 publish_testing_profile: gen-deps
 	cp static/robots.txt.disable static/robots.txt
-	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --delete
+	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --exclude "s/solutions/*"  --delete
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING_API) --paths '/*'
 	rm -f static/robots.txt
