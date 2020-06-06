@@ -357,6 +357,7 @@
   description: |
     In this challenge there are some directories containing files with different extensions.
     Print all directories, one per line without duplicates that contain one or more files with a ".tf" extension.
+  completions: ['terraform', 'main.tf', 'modules', 'load_balancer', 'main.tf', 'virtual_machine', 'outputs.tf', 'main.tf', 'vpn', 'main.tf', 'files', 'bootstrap.sh', 'templates', 'config.template', 'bin', 'dostuff.sh']
   example: find . -name "*.tf" -type f -exec dirname {} \; | sort | uniq
   expected_output:
     order: false
@@ -374,6 +375,7 @@
   description: |
     There are a mix of files in this directory that start with letters and numbers.
     Print the filenames (just the filenames) of all files that start with a number recursively in the current directory.
+  completions: ['757Robert Marquez', 'Mr. James Lopez', '974Michael Bowman', '477Thomas Pierce MD', '04Carrie Alexander', '42Robert Hill', '737Jeffrey Davis', '778Holly Archer', '402Nancy Henson', '436Teresa Owens', '48Thomas Allen', '001dir', 'exercitationem.mp3', '3maxime.mp3', 'Jorge Ross', '540Katherine Jones', '682Terri Jones', '639Charles Ferguson', '25Brandon Mcdonald', '132Rebecca Rubio', '78Michelle Spencer', 'Matthew Romero', '670James Jacobs', 'dir', 'provident.avi', '99blanditiis.avi', 'sit.avi', 'nisi.avi', 'totam.avi', '293Linda Bennett', '335John Joseph', '593Brett Martin', '388Andrew Carter', 'tmp', '511Tammy Welch', 'Sheri Bishop']
   example: find . -type f -name '[[:digit:]]*' -printf '%f\n'
   expected_output:
     order: false

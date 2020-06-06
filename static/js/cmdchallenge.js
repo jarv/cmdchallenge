@@ -5,7 +5,7 @@
 const GLOBAL_VERSION = 2; // for cache busting
 const CMD_URL = window.location.hostname == 'localhost' ? 'https://testing.cmdchallenge.com/r' : '/r';
 const TAB_COMPLETION = ['find', 'echo', 'awk', 'sed', 'perl', 'wc', 'grep',
-  'cat', 'sort', 'cut', 'ls'];
+  'cat', 'sort', 'cut', 'ls', 'tac'];
 
 const STORAGE_CORRECT = 'correct_answers';
 const INFO_STATUS = {

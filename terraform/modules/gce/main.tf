@@ -3,6 +3,7 @@ variable "num_instances" {}
 variable "is_prod" {}
 variable "name" {}
 variable "CA_PEM_FNAME" {}
+variable "machine_type" {}
 
 resource "google_compute_firewall" "default" {
   count = var.num_instances
@@ -31,7 +32,7 @@ resource "google_compute_instance" "default" {
     count.index + 1
   )
 
-  machine_type = "f1-micro"
+  machine_type = var.machine_type
 
   metadata_startup_script = file("${path.module}/bootstrap-cloud.bash")
 

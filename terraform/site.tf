@@ -149,6 +149,7 @@ module "gce" {
   source        = "./modules/gce"
   timestamp     = local.timestamp_sanitized
   name          = local.name
+  machine_type  = local.is_prod == "yes" ? "n1-standard-1" : "f1-micro"
   is_prod       = local.is_prod
   CA_PEM_FNAME  = var.CA_PEM_FNAME
 }
