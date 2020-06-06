@@ -1,14 +1,7 @@
-variable "region" {
-}
-
-variable "account_id" {
-}
-
-variable "lambda_arn" {
-}
-
-variable "is_prod" {
-}
+variable "region" {}
+variable "account_id" {}
+variable "lambda_arn" {}
+variable "is_prod" {}
 variable "name" {}
 
 resource "aws_api_gateway_rest_api" "default" {
@@ -43,7 +36,7 @@ resource "aws_lambda_permission" "default" {
 resource "aws_api_gateway_deployment" "default" {
   depends_on  = [aws_api_gateway_integration.default]
   rest_api_id = aws_api_gateway_rest_api.default.id
-  stage_name  = "prod"
+  stage_name  = "r"
 
   provisioner "local-exec" {
     command = "echo ${aws_api_gateway_deployment.default.invoke_url} > ${path.root}/${terraform.workspace}-runcmd-api-gateway-endpoint"

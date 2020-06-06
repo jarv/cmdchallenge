@@ -3,7 +3,7 @@
 'use strict';
 
 const GLOBAL_VERSION = 2; // for cache busting
-const CMD_URL = '$CMD_URL';
+const CMD_URL = window.location.hostname == 'localhost' ? 'https://testing.cmdchallenge.com/r' : '/r';
 const TAB_COMPLETION = ['find', 'echo', 'awk', 'sed', 'perl', 'wc', 'grep',
   'cat', 'sort', 'cut', 'ls'];
 
@@ -91,14 +91,12 @@ jQuery(function($) {
   };
 
   const checkForWin = function() {
-    const completed = getArrayFromStorage(STORAGE_CORRECT);
-    const won = challenges.filter(function(c) {
-      return completed.indexOf(c.slug) !== -1;
-    }).length === challenges.length;
-    if (won) {
+    if (uncompletedChallenges().length === 0) {
       $('.title .won').show();
+      return true;
     } else {
       $('.title .won').hide();
+      return false;
     }
   };
 
@@ -117,7 +115,8 @@ jQuery(function($) {
     return '[[' + effect + ';' + color + ';black]' + msg + ']';
   };
 
-  const underlineCurrent = function(slug) {
+  const underlineCurrent = function() {
+    const slug = currentChallenge.slug;
     challenges.forEach(function(challenge) {
       if (slug == challenge.slug) {
         $('#' + challenge.slug).removeClass(
@@ -138,26 +137,48 @@ jQuery(function($) {
   };
 
   const activeChallenges = function() {
-    let nextChallenge;
-    // completed challenges + 1
-    const completedChallenges = getArrayFromStorage(STORAGE_CORRECT);
-    if (completedChallenges.length > 0 &&
-        completedChallenges.length < challenges.length) {
-      nextChallenge = getNextChallenge(
-          completedChallenges[completedChallenges.length - 1],
-          challenges
-      );
-      return completedChallenges.concat(nextChallenge.slug);
+    // completed challenges + the first uncompleted challenge
+    return completedChallenges().concat(uncompletedChallenges()[0] || []);
+  };
+
+  const updateRoutes = function(callback) {
+    const routes = {};
+    challenges.forEach(function(c) {
+      const slug = c.slug;
+      routes['/s/' + slug] = function() {
+        currentChallenge = c;
+        clearChallengeOutput();
+        updateChallengeDesc();
+        updateChallenges();
+        displaySolution();
+      };
+      routes['/' + slug] = function() {
+        currentChallenge = c;
+        clearSolutions();
+        updateChallengeDesc();
+        updateChallenges();
+        checkForWin();
+      };
+    });
+    routes[''] = function() {
+      currentChallenge = uncompletedChallenges()[0] || challenges[0];
+      clearSolutions();
+      updateChallengeDesc();
+      updateChallenges();
+      checkForWin();
+    };
+    routie(routes);
+    if (typeof callback === 'function') {
+      callback();
     }
-    return [challenges[0].slug];
   };
 
   const updateChallenges = function(callback) {
-    const routes = {};
-    const completedChallenges = getArrayFromStorage(STORAGE_CORRECT);
-
+    // update the badges
     $('div#badges').html('');
-    activeChallenges().forEach(function(slug) {
+    activeChallenges().forEach(function(c) {
+      const slug = c.slug;
+      const dispTitle = c.disp_title;
       $('div#badges').append(
           '<div tabindex=\'-1\' class=\'img-container ' +
             slug + '\'><a id=\'badge_' +
@@ -165,7 +186,7 @@ jQuery(function($) {
             slug + '\'><img class=\'badge\' src=\'img/' +
             slug + '.png\' alt=\'' +
             slug + '\'/><span class=\'tooltip\'>' +
-            challenges.find( (o) => o.slug === slug).disp_title +
+            dispTitle +
             '</span></a></li>');
       $('a#badge_' + slug).on('click', function(e) {
         e.preventDefault();
@@ -174,48 +195,40 @@ jQuery(function($) {
         term.focus();
         routie('/' + slug);
       });
-      routes['/' + slug] = function() {
-        currentChallenge = challenges.find( (o) => o.slug === slug);
-        underlineCurrent(slug);
-        clearSolutionOutput();
-        updateChallengeDesc();
-      };
     });
+
+    // update the solutions
+
     $('ul#challenges').html('');
-    challenges.forEach(function(challenge) {
-      const slug = challenge.slug;
-      if (completedChallenges.indexOf(slug) !== -1) {
+    const completedSlugs = completedChallenges().map( (c) => c.slug);
+    challenges.forEach(function(c) {
+      const slug = c.slug;
+      if (completedSlugs.indexOf(slug) !== -1) {
         $('ul#challenges').append(
             '<li tabindex=\'-1\'><img src=\'img/' + slug +
             '.png\' /><a class=\'enable\' id=\'' + slug +
             '\' href=\'#/' + slug + '\' title=\'' +
-            slug + '\'>' + challenge.disp_title + '</a></li>');
+            slug + '\'>' + c.disp_title + '</a></li>');
         $('a#' + slug).on('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
           routie('/s/' + slug);
           term.focus();
         });
-
-        routes['/s/' + slug] = function() {
-          currentChallenge = challenge;
-          clearChallengeOutput();
-          underlineCurrent(slug);
-          updateChallengeDesc();
-          displaySolution();
-        };
       } else {
         // Blur and lock
         $('ul#challenges').append(
             '<li tabindex=\'-1\'><img src=\'img/lock.png\' />' +
             '<a class=\'disable\' id=\'' + slug +
-            '\' href=\'#/' + currentChallenge.slug +
+            '\' href=\'#' +
             '\' title=\'' +
-            slug + '\'>' + challenge.disp_title + '</a></li>');
+            slug + '\'>' + c.disp_title + '</a></li>');
       }
     });
 
-    routie(routes);
+    // highlight active challenge
+    underlineCurrent();
+
     if (typeof callback === 'function') {
       callback();
     }
@@ -273,8 +286,13 @@ jQuery(function($) {
     $('#challenge-output').text('').hide();
   };
 
-  const clearSolutionOutput = function() {
-    $('#solutions').html('').hide();
+  const clearSolutions = function() {
+    $('#solutions').html('');
+    $('#solutions-wrapper').hide();
+  };
+
+  const showSolutions = function() {
+    $('#solutions-wrapper').show();
   };
 
   const updateInfoText = function(msg, infoStatus) {
@@ -337,15 +355,14 @@ jQuery(function($) {
     $('#challenge-output').show();
   };
 
-  const getNextChallenge = function(slug) {
-    const challengeIndex = challenges.map((o) => o.slug).indexOf(slug);
-    const nextIndex = challengeIndex + 1;
+  const uncompletedChallenges = function() {
+    const completed = getArrayFromStorage(STORAGE_CORRECT);
+    return challenges.filter((o) => !completed.includes(o.slug));
+  };
 
-    if (nextIndex in challenges) {
-      return challenges[nextIndex];
-    } else {
-      return challenges[0];
-    }
+  const completedChallenges = function() {
+    const completed = getArrayFromStorage(STORAGE_CORRECT);
+    return challenges.filter((o) => completed.includes(o.slug));
   };
 
   const displaySolution = function() {
@@ -354,12 +371,15 @@ jQuery(function($) {
       dataType: 'json',
       url: '/s/solutions/' + currentChallenge.slug + '.json',
       success: function(resp) {
-        $('#solutions').html('').hide();
-        resp['cmds'].forEach(function(cmd) {
+        clearSolutions();
+        resp.cmds.forEach(function(cmd) {
           $('#solutions').append(escapeHtml(cmd) + '\n');
         });
         hljs.highlightBlock(document.getElementById('solutions'));
-        $('#solutions').show();
+        $('#solutions-wrapper .last-updated').html(
+            'Solutions updated ' + dateDelta(resp.ts) + ' ago'
+        );
+        showSolutions();
       },
       error: function() {
         retCode = '☠️';
@@ -377,6 +397,28 @@ jQuery(function($) {
         .replace(/'/g, '&#039;')
         .replace(/\n/g, '\n  ');
   };
+
+  const dateDelta = function(lastUpdated) {
+    const curTime = (new Date()).getTime() / 1000;
+    const delta = Math.round(curTime - lastUpdated);
+    const minutesDelta = Math.floor(delta / 60);
+    const secondsDelta = delta % 60;
+    let timeDisp = '';
+    if (minutesDelta) {
+      if (minutesDelta === 1) {
+        timeDisp += minutesDelta + ' minute ';
+      } else {
+        timeDisp += minutesDelta + ' minutes ';
+      }
+    }
+    if (secondsDelta === 1) {
+      timeDisp += ' and ' + secondsDelta + ' second';
+    } else {
+      timeDisp += ' and ' + secondsDelta + ' seconds';
+    }
+    return timeDisp;
+  };
+
 
   // main
 
@@ -428,18 +470,24 @@ jQuery(function($) {
           } else {
             updateChallengeOutput(resp.output);
             if (resp.correct) {
-              updateInfoText(
-                  'Correct! You have a new challenge!', INFO_STATUS.correct
-              );
               addItemToStorage(
                   resp.challenge_slug,
                   STORAGE_CORRECT,
                   function() {
                     updateChallenges();
-                    currentChallenge = getNextChallenge(
-                        resp.challenge_slug
-                    );
-                    checkForWin();
+                    currentChallenge = uncompletedChallenges()[0] ||
+                      challenges[0];
+                    if (checkForWin()) {
+                      updateInfoText(
+                          'Correct! You you completed all of the challenges, ' +
+                          'but feel free to keep on going!', INFO_STATUS.correct
+                      );
+                    } else {
+                      updateInfoText(
+                          'Correct! You have a new challenge!',
+                          INFO_STATUS.correct
+                      );
+                    }
                     routie('/' + currentChallenge.slug);
                   }
               );
@@ -497,16 +545,6 @@ jQuery(function($) {
       onClear: termClear,
     });
     term = $.terminal.active();
-    const completedChallenges = getArrayFromStorage(STORAGE_CORRECT);
-    if (completedChallenges.length === 0) {
-      currentChallenge = challenges[0];
-    } else {
-      currentChallenge = getNextChallenge(
-          completedChallenges[completedChallenges.length - 1]);
-    }
-    updateChallenges(function() {
-      checkForWin();
-      routie('/' + currentChallenge.slug);
-    });
+    updateRoutes();
   });
 });

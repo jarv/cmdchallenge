@@ -97,11 +97,20 @@ div.navbar {
     display: table;
     text-align: left;
     font-size: 1.2em;
+    @media only screen and (max-width: $medium) {
+      font-size: .8em;
+    }
     .image {
       display: table-cell;
-      width: 80px;
+      width: 60px;
+      @media only screen and (max-width: $medium) {
+        width: 40px;
+      }
       img {
-        width: 80px;
+        width: 60px;
+        @media only screen and (max-width: $medium) {
+          width: 40px;
+        }
         border-radius: 10px;
         margin-right: .5em;
       }
@@ -116,23 +125,29 @@ div.navbar {
         }
         font-size: .8em;
         color: $cmdblue;
-        
       }
-    }
-    .won {
-      // display: none;
+      a {
+        text-decoration: none;
+        color: white;
+      }
     }
   }
   div#links {
-    width: 30%;
+    width: 20%;
     display: table-cell;
     text-align: right;
-    ul.link {
+    ul {
       margin: 0;
       padding: 0;
     }
     li.link {
       display: inline;
+    }
+    img {
+      width: 50px;
+      @media only screen and (max-width: $medium) {
+        width: 40px;
+      }
     }
   }
 }
@@ -351,7 +366,9 @@ div#badges {
       display: inline-block;
       height: auto;
       width: 40px;
-
+      @media only screen and (max-width: $medium) {
+        width: 30px;
+      }
       + .tooltip {
         visibility: hidden;
         font-size: 1em;
@@ -464,4 +481,11 @@ input:checked {
     max-height: 100vh;
     padding: 1em;
   }
+}
+
+// Solutions ----
+
+#solutions-wrapper .last-updated {
+  color: gray;
+  font-style: italic;
 }

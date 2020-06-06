@@ -9,9 +9,7 @@ AWS_PROFILE := cmdchallenge
 DISTID_TESTING := E19XPJRE5YLRKA
 DISTID_TESTING_API := E3T11IZ0ZVPJVT
 S3_BUCKET_TESTING := testing.cmdchallenge.com
-API_TESTING := https://api.testing.cmdchallenge.com
 S3_BUCKET := cmdchallenge.com
-API := https://api.cmdchallenge.com
 
 all: test-runcmd build-image-cmd test-challenges
 
@@ -32,16 +30,14 @@ wsass:
 
 publish_testing: gen-deps
 	cp static/robots.txt.disable static/robots.txt
-	CMD_URL="$(API_TESTING)" envsubst < static/js/cmdchallenge.js.envsubst > static/js/cmdchallenge.js
-	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --delete
+	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read --exclude "s/solutions/*" --delete
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING_API) --paths '/*'
 	rm -f static/robots.txt
 
 publish_testing_profile: gen-deps
 	cp static/robots.txt.disable static/robots.txt
-	CMD_URL="$(API_TESTING)" envsubst < static/js/cmdchallenge.js.envsubst > static/js/cmdchallenge.js
-	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --delete
+	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --exclude "s/solutions/*"  --delete
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING_API) --paths '/*'
 	rm -f static/robots.txt
