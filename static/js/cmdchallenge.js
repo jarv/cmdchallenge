@@ -5,7 +5,8 @@
 const GLOBAL_VERSION = 2; // for cache busting
 const CMD_URL = window.location.hostname == 'localhost' ? 'https://testing.cmdchallenge.com/r' : '/r';
 const TAB_COMPLETION = ['find', 'echo', 'awk', 'sed', 'perl', 'wc', 'grep',
-  'cat', 'sort', 'cut', 'ls', 'tac'];
+  'cat', 'sort', 'cut', 'ls', 'tac', 'jq', 'paste', 'tr', 'rm', 'tail', 'comm',
+  'egrep'];
 
 const STORAGE_CORRECT = 'correct_answers';
 const INFO_STATUS = {
@@ -540,7 +541,7 @@ jQuery(function($) {
       doubleTab: function(completingString, completions, echoFn) {
         $('#completions').html(
             completions.join('<span style=\'color: grey;\'> | </span>')
-        ).show().fadeOut(2500);
+        ).show().fadeOut(5000);
       },
       onClear: termClear,
     });
