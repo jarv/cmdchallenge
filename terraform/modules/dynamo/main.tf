@@ -2,7 +2,7 @@ variable "is_prod" {}
 variable "name" {}
 
 resource "aws_dynamodb_table" "runcmd_commands" {
-  name           = var.is_prod == "yes" ? "commands" : "${var.name}-commands"
+  name           = "${var.name}-commands"
   read_capacity  = 1
   write_capacity = 1
   hash_key       = "id"
@@ -32,13 +32,13 @@ resource "aws_dynamodb_table" "runcmd_commands" {
   }
 
   tags = {
-    Name        = var.is_prod == "yes" ? "commands" : "${var.name}-commands"
+    Name        = "${var.name}-commands"
     Environment = terraform.workspace
   }
 }
 
 resource "aws_dynamodb_table" "runcmd_submissions" {
-  name           = var.is_prod == "yes" ? "submissions" : "${var.name}-submissions"
+  name           = "${var.name}-submissions"
   read_capacity  = 1
   write_capacity = 1
   hash_key       = "source_ip"
@@ -55,7 +55,7 @@ resource "aws_dynamodb_table" "runcmd_submissions" {
   }
 
   tags = {
-    Name        = var.is_prod == "yes" ? "submissions" : "${var.name}-submissions"
+    Name        = "${var.name}-submissions"
     Environment = terraform.workspace
   }
 }

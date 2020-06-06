@@ -7,9 +7,10 @@ CI_COMMIT_TAG?=$(shell git rev-parse --short HEAD)
 STATIC_OUTPUTDIR=$(BASEDIR)/static
 AWS_PROFILE := cmdchallenge
 DISTID_TESTING := E19XPJRE5YLRKA
-DISTID_TESTING_API := E3T11IZ0ZVPJVT
 S3_BUCKET_TESTING := testing.cmdchallenge.com
-S3_BUCKET := cmdchallenge.com
+
+DISTID_PROD := E2UJHVXTJLOPCD
+S3_BUCKET_PROD:= cmdchallenge.com
 
 all: test-runcmd build-image-cmd test-challenges
 
@@ -39,6 +40,14 @@ publish_testing_profile: gen-deps
 	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --exclude "s/solutions/*"  --delete
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	rm -f static/robots.txt
+
+publish_prod: gen-deps
+	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read --exclude "s/solutions/*" --delete
+	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
+
+publish_prod_profile: gen-deps
+	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read  --exclude "s/solutions/*"  --delete
+	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
 
 gen-deps:
 	./bin/gen-deps
