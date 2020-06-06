@@ -4,6 +4,7 @@ import json
 import time
 import boto3
 import re
+import shlex
 from os import environ, path
 from cgi import escape
 from challenge import (
@@ -153,8 +154,9 @@ def handler(event, context):
     except DynamoValidationError as e:
         return default_resp(e, cmd=cmd, challenge_slug=challenge_slug)
     # Check to see if request is already in cache
+    cmd_shlex = ' '.join(shlex.split(cmd))
     hashed_submission = hashlib.sha256(
-        bytes(f"{cmd}{json.dumps(challenge)}", "utf-8")
+        bytes(f"{cmd_shlex}{json.dumps(challenge)}", "utf-8")
     ).hexdigest()
     LOG.debug(f"Checking to see if cmd {cmd} is in the cache")
     try:
