@@ -133,7 +133,7 @@ div.navbar {
     }
   }
   div#links {
-    width: 30%;
+    width: 20%;
     display: table-cell;
     text-align: right;
     ul {
@@ -146,7 +146,7 @@ div.navbar {
     img {
       width: 50px;
       @media only screen and (max-width: $medium) {
-        width: 40px;
+        width: 30px;
       }
     }
   }
