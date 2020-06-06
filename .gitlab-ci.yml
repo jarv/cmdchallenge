@@ -121,11 +121,13 @@ deploy:testing:tf:
     - terraform workspace select testing
     - popd
     - ./bin/tf-refresh
+  resource_group: testing:tf
 
 deploy:testing:static:
   stage: deploy
   script:
     - make publish_testing
+  resource_group: testing:static
 
 # deploy:prod:tf:
 #   stage: deploy
