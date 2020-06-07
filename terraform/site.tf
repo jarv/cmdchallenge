@@ -145,11 +145,12 @@ module "lambda-cron" {
 }
 
 module "gce" {
-  num_instances = 1
-  source        = "./modules/gce"
-  timestamp     = local.timestamp_sanitized
-  name          = local.name
-  machine_type  = local.is_prod == "yes" ? "n1-standard-1" : "f1-micro"
-  is_prod       = local.is_prod
-  CA_PEM_FNAME  = var.CA_PEM_FNAME
+  num_instances     = 1
+  source            = "./modules/gce"
+  name              = local.is_prod == "yes" ? local.name : format("%v-%v", local.name, local.timestamp_sanitized)
+  machine_type      = local.is_prod == "yes" ? "e2-small" : "f1-micro"
+  CA_PEM_FNAME      = var.CA_PEM_FNAME
+  use_static_ip     = local.is_prod == "yes" ? true : false
+  preemptible       = local.is_prod == "yes" ? false : true
+  automatic_restart = local.is_prod == "yes" ? true : false
 }

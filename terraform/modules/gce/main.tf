@@ -1,9 +1,23 @@
-variable "timestamp" {}
 variable "num_instances" {}
-variable "is_prod" {}
 variable "name" {}
 variable "CA_PEM_FNAME" {}
 variable "machine_type" {}
+variable "use_static_ip" {}
+variable "preemptible" {}
+variable "automatic_restart" {}
+
+resource "google_compute_address" "external" {
+  count = var.use_static_ip ? var.num_instances : 0
+  name = format(
+    "%v-%02d",
+    var.name,
+    count.index + 1
+  )
+}
+
+locals {
+  external_ips = concat(google_compute_address.external.*.address, [""])
+}
 
 resource "google_compute_firewall" "default" {
   count = var.num_instances
@@ -34,14 +48,13 @@ resource "google_compute_instance" "default" {
 
   machine_type = var.machine_type
 
-  metadata_startup_script = file("${path.module}/bootstrap-cloud.bash")
+  metadata_startup_script = file("${path.module}/bootstrap.bash")
 
   metadata = {
     ssh-keys = "jarv:${file("${path.root}/../private/ssh/cmd_rsa.pub")}"
     fqdn = format(
-      "%v-%v-%02d.gcp.cmdchallenge.com",
+      "%v-%02d.gcp.cmdchallenge.com",
       var.name,
-      var.timestamp,
       count.index + 1
     )
   }
@@ -55,15 +68,28 @@ resource "google_compute_instance" "default" {
 
   network_interface {
     network = "default"
+    # access_config {
+    #   // ephemeral
+    # }
+    dynamic "access_config" {
+      for_each = var.use_static_ip ? [] : [0]
+      content {
+        // ephemeral
+        // nat_ip = var.use_static_ip ? element(local.external_ips, count.index) : ""
+      }
+    }
 
-    access_config {
-      // Ephemeral IP
+    dynamic "access_config" {
+      for_each = var.use_static_ip ? [0] : []
+      content {
+        nat_ip = element(local.external_ips, count.index)
+      }
     }
   }
 
   scheduling {
-    preemptible       = var.is_prod == "yes" ? false : true
-    automatic_restart = var.is_prod == "yes" ? true : false
+    preemptible       = var.preemptible
+    automatic_restart = var.automatic_restart
   }
 
   boot_disk {
@@ -95,22 +121,22 @@ resource "google_compute_instance" "default" {
 
   provisioner "file" {
     source      = "${path.root}/../cmdchallenge/ro_volume"
-    destination = "/tmp/"
+    destination = "/var/tmp/"
   }
 
   provisioner "file" {
     source      = "${path.root}/../docker_cfg_files"
-    destination = "/tmp/"
+    destination = "/var/tmp/"
   }
 
   provisioner "file" {
     source      = "${path.root}/../private/server/${self.metadata.fqdn}"
-    destination = "/tmp/"
+    destination = "/var/tmp/"
   }
 
   provisioner "file" {
     source      = var.CA_PEM_FNAME
-    destination = "/tmp/ca.pem"
+    destination = "/var/tmp/ca.pem"
   }
 
   provisioner "remote-exec" {
