@@ -7,7 +7,7 @@ This repository contains the code for the site [cmdchallenge.com](https://cmdcha
 Have a suggestion for a challenge? Adding a new one is simple!
 
 Before you do please make sure the challenge you are proposing isn't already
-covered by an existing challenge and accepting it is not guaranteed!
+covered by an existing challenge. We can't accept all challenges so there is no guarantee.
 
 * Add a new entry to [challenges.yml](https://gitlab.com/jarv/cmdchallenge/blob/master/challenges.yaml).
   * Pick a unique slug name.
