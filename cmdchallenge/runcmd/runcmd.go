@@ -49,8 +49,8 @@ func runCombinedOutput(command string) (cmdout string, exitCode int) {
 	var args *[]string
 	var interpreter string
 
-	if fileExists("/ro_volume/bash") {
-		interpreter = "/ro_volume/bash"
+	if fileExists("/bin/bash") {
+		interpreter = "bash"
 		args = &bashArgs
 	} else {
 		interpreter = "sh"
