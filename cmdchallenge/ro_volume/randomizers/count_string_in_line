@@ -1,6 +1,0 @@
-#!/bin/bash
-for _ in $(seq 0 $(( RANDOM % 20 ))); do
-  echo GET >> access.log
-done
-grep -c "GET" access.log
-exit 0

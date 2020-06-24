@@ -60,7 +60,7 @@ python-black:
   stage: test
   script:
     - apk add file
-    - 'find bin cmdchallenge -print -exec file {} \; | grep "Python" | cut -d: -f1 | xargs black --check'
+    - 'find bin cmdchallenge -print -exec file {} \; | grep "Python" | grep -v ".nim" | cut -d: -f1 | xargs black --check'
   rules:
     - if: $CI_COMMIT_BRANCH != 'master'
 
@@ -69,29 +69,6 @@ lint:
   script:
     - yamllint --strict *.yaml
     # - flake8
-  rules:
-    - if: $CI_COMMIT_BRANCH != 'master'
-
-shellcheck:
-  image:
-    name: nlknguyen/alpine-shellcheck
-    entrypoint: ["/bin/sh", "-c"]
-  stage: test
-  script:
-    - find cmdchallenge/ro_volume/cmdtests/ cmdchallenge/ro_volume/randomizers/ -type f | xargs -r shellcheck -e SC1090,SC1091
-
-shfmt:
-  image:
-    name: nlknguyen/alpine-shellcheck
-    entrypoint: ["/bin/sh", "-c"]
-  stage: test
-  script:
-    - find cmdchallenge/ro_volume/cmdtests/ cmdchallenge/ro_volume/randomizers/ -type f | xargs -r shellcheck -e SC1090,SC1091
-
-test:unit:
-  stage: test
-  script:
-    - make test-runcmd
   rules:
     - if: $CI_COMMIT_BRANCH != 'master'
 

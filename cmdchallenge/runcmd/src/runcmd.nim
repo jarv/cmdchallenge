@@ -1,0 +1,135 @@
+import algorithm
+import argparse
+import base64
+import json
+import json
+import os
+import osproc
+import randomizers
+import cmdtests
+import re
+import sequtils
+import strformat
+import strutils
+
+proc errorExit(message: string): void =
+  var j = %*
+    {
+      "Error":  message
+    }
+  echo j
+  quit(0)
+
+proc runCombinedOutput(command: string): (string, int) =
+  let args = ["-O", "globstar", "-c", &"export MANPAGER=cat;{command}"]
+  let process = startProcess(command="bash", args=args, options={poStdErrToStdOut, poUsePath})
+  let ret = waitForExit(p=process)
+  let strm = outputStream(p=process)
+  var outp = strm.readAll
+  outp.stripLineEnd
+  close(p=process)
+  return (outp, ret)
+
+
+proc matchesOutput(cmdOut: string, jsonChallenge: JsonNode, expectedLines: seq[string] = @[]): bool =
+  if not jsonChallenge.hasKey("expected_output"):
+    return true
+
+  let expectedOutput = jsonChallenge["expected_output"]
+
+  if not expectedOutput.hasKey("lines"):
+    return true
+
+  var cmdLines = cmdOut.splitLines
+
+  # If expectedLines is not passed then default to the values
+  # provided by the challenge
+  var expectedLines = if expectedLines.len > 0:
+                        expectedLines
+                      else:
+                        expectedOutput["lines"].getElems.mapIt(it.getStr)
+
+  let orderMatters = expectedOutput{"order"}.getBool(true)
+
+  if cmdLines.len != expectedLines.len:
+    return false
+
+  if not orderMatters:
+    expectedLines.sort
+    cmdLines.sort
+
+  if expectedOutput.hasKey("re_sub"):
+    let reSub = expectedOutput["re_sub"].getElems
+    apply(cmdLines, proc (line: var string) =
+      line = line.replace(re(reSub[0].getStr), by=reSub[1].getStr))
+
+  return not expectedLines.anyIt(it notin cmdLines)
+
+## MAIN
+
+var command,challenge :string
+var jsonChallenge :JsonNode
+
+let p = newParser("runcmd"):
+  option("-s", "--slug", help="slug", default="hello_world")
+  arg("cmd", default="""echo -e "./access.log\naccess.log.2\naccess.log.1"""")
+
+var opts = p.parse
+
+# if the base64 decode fails assume the command was passed in
+# without encoding
+try:
+  command = decode(opts.cmd)
+except ValueError as e:
+  command = opts.cmd
+
+let progDir = getAppDir()
+let challengeFname = &"{progDir}/ch/{opts.slug}.json"
+
+try:
+  challenge = readFile(challengeFname)
+except IOError:
+  errorExit(&"Unable to find challenge '{challengeFname}'")
+
+try:
+  jsonChallenge = parseJson(challenge)
+except JsonParsingError:
+  errorExit(&"Unable to parse challenge '{opts.slug}.json'")
+
+try:
+  assert jsonChallenge{"slug"}.getStr == opts.slug
+except AssertionError:
+  errorExit(&"'{challengeFname}' has an incorrect slug")
+
+
+var
+  outputPass, testsPass, afterRandOutputPass, cmdTestPass: bool = true
+  cmdExitCode, afterRandExitCode: int = 0
+  cmdOut, testsOut, afterRandExpectedOutput, afterRandOutput, cmdTestOut: string
+  
+(cmdOut, cmdExitCode) = runCombinedOutput(command)
+outputPass = matchesOutput(cmdOut, jsonChallenge)
+
+(cmdTestOut, cmdTestPass) = runCmdTest(jsonChallenge)
+
+let expectedAfterRandomizer = runRandomizer(jsonChallenge)
+
+if expectedAfterRandomizer.len > 0:
+  (afterRandOutput, afterRandExitCode) = runCombinedOutput(command)
+  afterRandOutputPass = matchesOutput(afterRandOutput, jsonChallenge, expectedAfterRandomizer)
+
+var j = %*
+  {
+    "CmdOut":  cmdOut,
+    "CmdExitCode": cmdExitCode,
+    "OutputPass": outputPass,
+    "TestsPass": testsPass,
+    "TestsOut": testsOut,
+    "AfterRandOutputPass": afterRandOutputPass,
+    "AfterRandExpectedOutput": join(expectedAfterRandomizer, "\n"),
+    "AfterRandOutput": afterRandOutput,
+    "AfterRandTestsPass": cmdTestPass,
+    "AfterRandTestsOut": cmdTestOut,
+  }
+
+echo j

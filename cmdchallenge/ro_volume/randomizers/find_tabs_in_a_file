@@ -1,7 +1,0 @@
-#!/bin/bash
-RAND_NUM=$(( RANDOM % 20 ))
-for _ in $(seq 0 $RAND_NUM); do
-    echo -e ' \t ' >> file-with-tabs.txt
-done
-grep -cP '\t' file-with-tabs.txt
-exit 0

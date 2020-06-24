@@ -1,7 +1,0 @@
-#!/bin/bash
-# Just makes some random files
-touch $(( RANDOM % 1000 ))
-touch $(( RANDOM % 1000 ))
-touch $(( RANDOM % 1000 ))
-touch $(( RANDOM % 1000 ))
-exit 0
