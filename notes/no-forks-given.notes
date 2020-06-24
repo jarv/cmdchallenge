@@ -1,0 +1,17 @@
+* show the current working directory
+* list the files and directories in the current working directory
+* list the files and directories recursively on a single line
+* kill the process
+* list the environment of the process
+* display the umask of the process
+
+
+
+:, ., [, alias, bg, bind, break,
+       builtin, case, cd, command, compgen, complete, continue, declare,  dirs,  dis-
+       own, echo, enable, eval, exec, exit, export, fc, fg, getopts, hash, help, his-
+       tory, if, jobs, kill, let, local, logout,  popd,  printf,  pushd,  pwd,  read,
+       readonly, return, set, shift, shopt, source, suspend, test, times, trap, type,
+       typeset, ulimit, umask, unalias, unset, until, wait, while.
+
+
