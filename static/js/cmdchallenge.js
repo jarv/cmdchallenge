@@ -420,6 +420,62 @@ jQuery(function($) {
     return timeDisp;
   };
 
+  const processResp = function(resp) {
+    if (resp.return_code === 0) {
+      retCode = colorize(resp.return_code, 'green');
+    } else {
+      retCode = colorize(resp.return_code, 'red');
+    }
+
+    if (isNaN(resp.return_code)) {
+      updateInfoText(
+          'Unable to process command - got response: ' + resp.output,
+          INFO_STATUS.error
+      );
+    } else {
+      updateChallengeOutput(resp.output);
+      if (resp.correct) {
+        addItemToStorage(
+            resp.challenge_slug,
+            STORAGE_CORRECT,
+            function() {
+              updateChallenges();
+              currentChallenge = uncompletedChallenges()[0] ||
+                challenges[0];
+              if (checkForWin()) {
+                updateInfoText(
+                    'Correct! You you completed all of the challenges, ' +
+                    'but feel free to keep on going!', INFO_STATUS.correct
+                );
+              } else {
+                updateInfoText(
+                    'Correct! You have a new challenge!',
+                    INFO_STATUS.correct
+                );
+              }
+              routie('/' + currentChallenge.slug);
+            }
+        );
+      } else {
+        updateInfoText(
+            'Incorrect answer, try again',
+            INFO_STATUS.incorrect
+        );
+        if (resp.test_errors && resp.test_errors.length > 0) {
+          updateInfoText(
+              resp.test_errors[0] + ' - try again',
+              INFO_STATUS.incorrect
+          );
+        } else if (resp.rand_error) {
+          updateInfoText(
+              'Test against random data failed - try again',
+              INFO_STATUS.incorrect
+          );
+        }
+      }
+    }
+    term.resume();
+  };
 
   // main
 
@@ -455,63 +511,16 @@ jQuery(function($) {
         $('#info-box').hide();
         clearChallengeOutput();
         $('#chck1').prop('checked', false);
-        term.pause();
-        sendCommand(command, function(resp) {
-          if (resp.return_code === 0) {
-            retCode = colorize(resp.return_code, 'green');
-          } else {
-            retCode = colorize(resp.return_code, 'red');
-          }
-
-          if (isNaN(resp.return_code)) {
-            updateInfoText(
-                'Unable to process command - got response: ' + resp.output,
-                INFO_STATUS.error
-            );
-          } else {
-            updateChallengeOutput(resp.output);
-            if (resp.correct) {
-              addItemToStorage(
-                  resp.challenge_slug,
-                  STORAGE_CORRECT,
-                  function() {
-                    updateChallenges();
-                    currentChallenge = uncompletedChallenges()[0] ||
-                      challenges[0];
-                    if (checkForWin()) {
-                      updateInfoText(
-                          'Correct! You you completed all of the challenges, ' +
-                          'but feel free to keep on going!', INFO_STATUS.correct
-                      );
-                    } else {
-                      updateInfoText(
-                          'Correct! You have a new challenge!',
-                          INFO_STATUS.correct
-                      );
-                    }
-                    routie('/' + currentChallenge.slug);
-                  }
-              );
-            } else {
-              updateInfoText(
-                  'Incorrect answer, try again',
-                  INFO_STATUS.incorrect
-              );
-              if (resp.test_errors && resp.test_errors.length > 0) {
-                updateInfoText(
-                    resp.test_errors[0] + ' - try again',
-                    INFO_STATUS.incorrect
-                );
-              } else if (resp.rand_error) {
-                updateInfoText(
-                    'Test against random data failed - try again',
-                    INFO_STATUS.incorrect
-                );
-              }
-            }
-          }
-          term.resume();
-        });
+        if (/tail\s+-[Ff]/.test(command)) {
+          updateInfoText(
+              '<code>tail -f</code> will wait for additional data ' +
+                'to be appended to the file, try removing the -f option',
+              INFO_STATUS.incorrect
+          );
+        } else {
+          term.pause();
+          sendCommand(command, processResp);
+        }
       } else {
         term.clear();
       }
