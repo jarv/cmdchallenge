@@ -35,8 +35,29 @@ func errorExit(s string) {
 	os.Exit(0)
 }
 
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
 func runCombinedOutput(command string) (cmdout string, exitCode int) {
-	cmd := exec.Command("bash", "-O", "globstar", "-c", "export MANPAGER=cat;"+command)
+	bashArgs := []string{"-O", "globstar", "-c", "export MANPAGER=cat;" + command}
+	shArgs := []string{"-c", command}
+	var args *[]string
+	var interpreter string
+
+	if fileExists("/ro_volume/bash") {
+		interpreter = "/ro_volume/bash"
+		args = &bashArgs
+	} else {
+		interpreter = "sh"
+		args = &shArgs
+	}
+
+	cmd := exec.Command(interpreter, *args...)
 	outb, err := cmd.CombinedOutput()
 	cmdout = fmt.Sprintf("%s", outb)
 	if err != nil {
