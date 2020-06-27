@@ -26,7 +26,7 @@ data = []
 for slug_name in slugs:
     resp = table.query(
         IndexName="challenge_slug-correct_length-index",
-        KeyConditionExpression=Key("challenge_slug").eq(slug_name) & Key("correct_length").gt(20000000000),
+        KeyConditionExpression=Key("challenge_slug").eq(slug_name) & Key("correct_length").lt(20000000000),
         ScanIndexForward=True,
     )
     data.extend(resp["Items"])
@@ -34,7 +34,7 @@ for slug_name in slugs:
         resp = table.query(
             ExclusiveStartKey=resp["LastEvaluatedKey"],
             IndexName="challenge_slug-correct_length-index",
-            KeyConditionExpression=Key("challenge_slug").eq(slug_name) & Key("correct_length").gt(20000000000),
+            KeyConditionExpression=Key("challenge_slug").eq(slug_name) & Key("correct_length").lt(20000000000),
             ScanIndexForward=True,
         )
         data.extend(resp["Items"])
