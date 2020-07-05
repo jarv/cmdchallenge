@@ -4,10 +4,7 @@ COPY Pipfile.lock /Pipfile.lock
 
 ## Versions ##
 ARG TERRAFORM_VERSION=0.12.24
-ARG GO_VERSION=1.14.2
 ARG PYTHON_VERSION='3.7.0'
-ARG NIM_VERSION=1.2.4
-ARG NIMBLE_VERSION=0.11.4
 ARG PYENV_HOME=/root/.pyenv
 ENV PATH $PYENV_HOME/shims:$PYENV_HOME/bin:$PATH
 
@@ -41,37 +38,6 @@ RUN apk add --no-cache --update \
     && pipenv lock -r -d > dev-requirements.txt \
     && pip install -r requirements.txt \
     && pip install -r dev-requirements.txt \
-    && curl -o /tmp/go.tar.gz https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf /tmp/go.tar.gz \
-    && ln -s /usr/local/go/bin/go /usr/local/bin/go \
-    && ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt \
     && curl -o /tmp/tf.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
     && cd /usr/local/bin && unzip /tmp/tf.zip \
-    && rm -f /tmp/go.tar.gz /tmp/tf.zip \
-# Install NIM
-    && apk add --no-cache libcrypto1.1 libssl1.1 \
-    && apk add --no-cache --virtual=.build-dependencies wget ca-certificates git \
-    && mkdir -p "/opt" \
-    && cd "/opt" \
-    && wget "https://github.com/nim-lang/Nim/archive/v${NIM_VERSION}.tar.gz" -O - | tar xz \
-    && mv "./Nim-${NIM_VERSION}" "./Nim" \
-    && cd "./Nim" \
-    && wget "https://github.com/nim-lang/csources/archive/master.tar.gz" -O - | tar xz \
-    && mv "./csources-master" "./csources" \
-    && cd "./csources" \
-    && sh build.sh \
-    && cd .. \
-    && ./bin/nim c koch \
-    && ./koch boot -d:release \
-    && chmod +x "/opt/Nim/bin/nim" \
-    && ln -s "/opt/Nim/bin/nim" "/usr/local/bin/nim" \
-    && rm -r "./csources" "./tests" \
-    && cd "/opt" \
-    && wget "https://github.com/nim-lang/nimble/archive/v${NIMBLE_VERSION}.tar.gz" -O - | tar xz \
-    && cd "./nimble-${NIMBLE_VERSION}" \
-    && nim compile --run "src/nimble" build --accept \
-    && rm -rf /tmp/* \
-    && chmod +x nimble \
-    && mv nimble "/usr/local/bin/" \
-    && rm -rf "/opt/nimble-${NIMBLE_VERSION}" \
-    && apk del .build-dependencies
+    && rm -f /tmp/tf.zip

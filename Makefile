@@ -94,9 +94,3 @@ update-challenges:
 
 tar-var:
 	cd $(DIR_CMDCHALLENGE); tar -czf var.tar.gz var/
-
-shellcheck:
-	find cmdchallenge/ro_volume/cmdtests/ cmdchallenge/ro_volume/randomizers/ -type f | xargs -r shellcheck -e SC1090,SC1091
-
-shfmt:
-	find cmdchallenge/ro_volume/cmdtests/ cmdchallenge/ro_volume/randomizers/ -type f | xargs -r shellcheck -e SC1090,SC1091
