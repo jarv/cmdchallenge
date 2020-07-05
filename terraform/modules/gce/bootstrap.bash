@@ -13,8 +13,6 @@ if [[ -d "$COPY_DIR/docker_cfg_files" ]]; then
   sudo cp $COPY_DIR/*cmdchallenge.com/* /etc/docker/
   sudo cp $COPY_DIR/ca.pem /etc/docker/
   sudo cp -r $COPY_DIR/ro_volume /var/
-  sudo chmod a+x /var/ro_volume/cmdtests/*
-  sudo chmod a+x /var/ro_volume/randomizers/*
   sudo chmod a+x /var/ro_volume/runcmd*
   sudo chmod -v 0400 /etc/docker/server-key.pem
   sudo chmod -v 0444 /etc/docker/ca.pem /etc/docker/server-cert.pem

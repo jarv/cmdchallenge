@@ -15,7 +15,6 @@ covered by an existing challenge. We can't accept all challenges so there is no 
   * Add directory and supporting files for the challenge in the `var/challenges` dir. A README will automatically be created in the challenge directory based on the description in challenges.yaml.
   * Add an example solution.
   * Add expected output if the command has output that should be verified.
-  * Add a test script to `ro_volume/cmdtests/` if tests are needed after the command is run (see other challenge examples).
   * Add your gitlab username or name to the author field.
 * Run `make test` to make sure your new challenge works with the example.
 * Submit a merge request (like a pull request on github).
@@ -49,7 +48,6 @@ The following CI vars are necessary to run the full pipeline
 * `STATE_S3_BUCKET`: where to store terraform state
 * `STATE_S3_KEY`: key for storing state
 * `STATE_S3_REGION`: region for deployment
-
 
 ### Terraform vars from env
 

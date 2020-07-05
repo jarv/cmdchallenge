@@ -197,6 +197,7 @@
   description: |
     Delete all of the files in this challenge directory including all subdirectories and their contents.
   example: find . -delete
+  example_fail: echo
 - slug: count_files
   openemoji: 1FAB0
   disp_title: count files
@@ -278,14 +279,16 @@
     There are files in this challenge with different file extensions.
     Remove all files with the .doc extension recursively in the current working directory.
   example: rm **/*.doc
+  example_fail: echo
 - slug: replace_text_in_files
   openemoji: 1F98A
   disp_title: replace text in files
   version: 5
   author: cmdchallenge
   example: sed -i 's/challenges are difficult//g' **/*.txt
+  example_fail: echo
   description: |
-    This challenge has text files (with a .txt extension) that contain the phrase "challenges are difficult".  Delete this phrase recursively from all text files.
+    This challenge has text files (with a .txt extension) that contain the phrase "challenges are difficult".  Delete this phrase from all text files recursively.
 
     Note that some files are in subdirectories so you will need to search for them.
 - slug: sum_all_numbers
@@ -327,6 +330,7 @@
   description: |
     Rename all files removing the extension from them in the current directory recursively.
   example: for f in $(find . -type f -name "*.*"); do mv "$f" "${f%.*}"; done
+  example_fail: echo
 - slug: replace_spaces_in_filenames
   openemoji: 1F434
   disp_title: replace spaces
@@ -480,6 +484,7 @@
   author: cmdchallenge
   example: 'for num in $(cat random-numbers.txt); do [[ $num == $(factor $num | cut -d" " -f2) ]] && echo $num; done | sort | uniq | wc -l'
   example_fail: echo 12
+  completions: ["random-numbers.txt"]
   description: |
     The file `random-numbers.txt` contains a list of 100 random integers.
     Print the number of unique prime numbers contained in the file.
@@ -577,6 +582,7 @@
 
     Remove all files without the .txt and .exe extensions recursively in the current working directory.
   example: find . -type f -regextype posix-extended ! -regex ".*(\.txt|\.exe)$" -exec rm {} +
+  example_fail: echo
 - slug: remove_files_with_a_dash
   openemoji: 1F339
   version: 5
@@ -585,6 +591,7 @@
   description: |
     There are some files in this directory that start with a dash in the filename.  Remove those files.
   example: rm ./-*
+  example_fail: echo
 - slug: print_sorted_by_key
   openemoji: 1F33A
   version: 5

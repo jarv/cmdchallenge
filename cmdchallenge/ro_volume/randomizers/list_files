@@ -1,5 +1,0 @@
-#!/bin/bash
-RAND=$(( RANDOM % 1000 ))
-find . -type f -print0 | xargs -0 -i -n1 mv {} {}.$RAND
-ls
-exit 0

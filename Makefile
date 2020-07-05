@@ -12,7 +12,7 @@ S3_BUCKET_TESTING := testing.cmdchallenge.com
 DISTID_PROD := E2UJHVXTJLOPCD
 S3_BUCKET_PROD:= cmdchallenge.com
 
-all: test-runcmd build-image-cmd test-challenges
+all: build-image-cmd test-challenges
 
 ##################
 # Static site
@@ -79,20 +79,18 @@ build-image-ci:
 	docker build -t $(CI_REGISTRY_IMAGE)/ci:latest \
 		--tag $(CI_REGISTRY_IMAGE)/ci:$(CI_COMMIT_TAG) -f Dockerfile-ci .
 
-build-runcmd:
+build-runcmd-golang:
 	cd $(DIR_CMDCHALLENGE); GOOS=linux GOARCH=amd64 go build -o ./ro_volume/runcmd ./runcmd/runcmd.go ./runcmd/challenges.go
 
-build-runcmd-darwin:
+build-runcmd-golang-darwin:
 	cd $(DIR_CMDCHALLENGE); go build -o ./ro_volume/runcmd-darwin ./runcmd/runcmd.go ./runcmd/challenges.go
+
+build-runcmd:
+	docker run --rm -v $(DIR_CMDCHALLENGE)/runcmd:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
+	mv $(DIR_CMDCHALLENGE)/runcmd/runcmd $(DIR_CMDCHALLENGE)/ro_volume/runcmd
 
 update-challenges:
 	./bin/update-challenges
 
 tar-var:
 	cd $(DIR_CMDCHALLENGE); tar -czf var.tar.gz var/
-
-shellcheck:
-	find cmdchallenge/ro_volume/cmdtests/ cmdchallenge/ro_volume/randomizers/ -type f | xargs -r shellcheck -e SC1090,SC1091
-
-shfmt:
-	find cmdchallenge/ro_volume/cmdtests/ cmdchallenge/ro_volume/randomizers/ -type f | xargs -r shellcheck -e SC1090,SC1091

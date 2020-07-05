@@ -15,3 +15,6 @@
        typeset, ulimit, umask, unalias, unset, until, wait, while.
 
 
+docker run -it --pids-limit 10 registry.gitlab.com/jarv/cmdchallenge/cmd-alpine:latest bash
+
+
