@@ -112,12 +112,13 @@
 - slug: search_for_files_containing_string
   openemoji: 1F41E
   disp_title: search for string
-  version: 5
+  version: 6
   author: cmdchallenge
   description: |
     Print all files in the current directory, one per line (not the path, just the filename) that contain the string "500".
   completions: ["access.log"]
   example: grep -l 500 *
+  example_fail: 'ls *[^2]'
   expected_output:
     order: false
     lines:

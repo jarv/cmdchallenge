@@ -89,9 +89,7 @@ proc list_files(jsonChallenge: JsonNode): seq[string] =
   let randFnames = toSeq(1 .. rand(10)).mapIt(&"{it}-{rand(1000)}")
 
   for fname in randFnames:
-    let f = open(fname, fmWrite)
-    f.writeLine("")
-    f.close
+    writeFile(fname, "")
 
   return expectedFiles.concat(randFnames)
 
@@ -113,6 +111,15 @@ proc sum_all_numbers(jsonChallenge: JsonNode): seq[string] =
 
   return @[&"{expectedSum + randNum}"]
 
+proc search_for_files_containing_string(jsonChallenge: JsonNode): seq[string] =
+  let expectedFiles = jsonChallenge["expected_output"]["lines"].getElems.mapIt(it.getStr)
+  let randFnames = toSeq(1 .. rand(20)).mapIt(&"{it}-{rand(1000)}")
+
+  for fname in randFnames:
+    writeFile(fname, "500")
+
+  return expectedFiles.concat(randFnames)
+
 let randomizers = {
   "count_files": count_files,
   "count_string_in_line": count_string_in_line,
@@ -123,6 +130,7 @@ let randomizers = {
   "list_files": list_files,
   "nested_dirs": nested_dirs,
   "sum_all_numbers": sum_all_numbers,
+  "search_for_files_containing_string": search_for_files_containing_string,
 }.toTable
 
 proc runRandomizer*(jsonChallenge: JsonNode): seq[string] =
