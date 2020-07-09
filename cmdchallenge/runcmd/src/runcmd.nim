@@ -20,10 +20,10 @@ proc errorExit(message: string): void =
   echo j
   quit(0)
 
-proc runCombinedOutput(command: string): (string, int) =
+proc runCombinedOutput(command: string, timeout: int): (string, int) =
   let args = ["-O", "globstar", "-c", &"export MANPAGER=cat;{command}"]
   let process = startProcess(command="bash", args=args, options={poStdErrToStdOut, poUsePath})
-  let ret = waitForExit(p=process)
+  let ret = waitForExit(p=process, timeout=timeout)
   let strm = outputStream(p=process)
   var outp = strm.readAll
   outp.stripLineEnd
@@ -102,12 +102,15 @@ except AssertionError:
   errorExit(&"'{challengeFname}' has an incorrect slug")
 
 
+# For all commands, set a default timeout of 5 seconds
+let challengeTimeout = jsonChallenge{"timeout"}.getInt(5000)
+
 var
   outputPass, testsPass, afterRandOutputPass, cmdTestPass: bool = true
   cmdExitCode, afterRandExitCode: int = 0
   cmdOut, testsOut, afterRandExpectedOutput, afterRandOutput, cmdTestOut: string
   
-(cmdOut, cmdExitCode) = runCombinedOutput(command)
+(cmdOut, cmdExitCode) = runCombinedOutput(command, challengeTimeout)
 outputPass = matchesOutput(cmdOut, jsonChallenge)
 
 (cmdTestOut, cmdTestPass) = runCmdTest(jsonChallenge)
@@ -115,7 +118,7 @@ outputPass = matchesOutput(cmdOut, jsonChallenge)
 let expectedAfterRandomizer = runRandomizer(jsonChallenge)
 
 if expectedAfterRandomizer.len > 0:
-  (afterRandOutput, afterRandExitCode) = runCombinedOutput(command)
+  (afterRandOutput, afterRandExitCode) = runCombinedOutput(command, challengeTimeout)
   afterRandOutputPass = matchesOutput(afterRandOutput, jsonChallenge, expectedAfterRandomizer)
 
 var j = %*
