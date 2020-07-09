@@ -87,7 +87,6 @@ build-runcmd-golang-darwin:
 
 build-runcmd:
 	docker run --rm -v $(DIR_CMDCHALLENGE)/runcmd:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
-	mv $(DIR_CMDCHALLENGE)/runcmd/runcmd $(DIR_CMDCHALLENGE)/ro_volume/runcmd
 
 update-challenges:
 	./bin/update-challenges
