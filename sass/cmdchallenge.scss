@@ -144,9 +144,9 @@ div.navbar {
       display: inline;
     }
     img {
-      width: 50px;
+      width: 40px;
       @media only screen and (max-width: $medium) {
-        width: 30px;
+        width: 20px;
       }
     }
   }
@@ -487,4 +487,13 @@ input:checked {
 #solutions-wrapper .last-updated {
   color: gray;
   font-style: italic;
+}
+
+#solutions-wrapper {
+  text-align: left;
+  overflow: scroll;
+  max-height: 300px;
+  pre {
+    display: grid;
+  }
 }

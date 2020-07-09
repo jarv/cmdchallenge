@@ -41,12 +41,13 @@
             <li class="link"><a href="https://twitter.com/thecmdchallenge"><img src="img/twitter.png" alt="twitter" /></a></li>
             <li class="link"><a href="https://gitlab.com/jarv/cmdchallenge"><img src="img/gitlab.png" alt="gitlab" /></a></li>
             <li class="link"><a href="mailto:info@cmdchallenge.com"><img src="img/email.png" alt="email" /></a></li>
-            <li class="link"><a href="https://www.buymeacoffee.com/jarv" target="_blank"><img src="img/coffee.png" alt="Buy Me A Coffee"  /></a></li>
+            <!-- <li class="link"><a href="https://www.buymeacoffee.com/jarv" target="_blank"><img src="img/coffee.png" alt="Buy Me A Coffee"  /></a></li> -->
           </ul>
         </div>
       </div>
       <div class="wrapper">
         <div id="badges"></div>
+
         <div class="row">
           <div class="col">
             <div class="tabs">
@@ -54,16 +55,16 @@
                 <input type="checkbox" id="chck1">
                 <label class="tab-label" for="chck1">View Solutions</label>
                 <div class="tab-content">
-                  <div class="challenge-wrapper">
-                    <div class="challenge-box">
-                      <ul class="challenges" id="challenges"></ul>
-                    </div>
+                  <div id="solutions-wrapper">
+                    <div class="last-updated"></div>
+                  <pre><code id="solutions" class="language-bash bash hljs"></code></pre>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         <div id="challenge-desc">
           <div class="img-container"></div>
           <div class="desc-container"></div>
@@ -79,10 +80,6 @@
           <div id="completions"></div>
         </div>
         <pre id="challenge-output"></pre>
-        <div id="solutions-wrapper">
-          <div class="last-updated"></div>
-        <pre><code id="solutions" class="language-bash bash hljs"></code></pre>
-        </div>
       </div>
 
       <script src="js/vendor/keyboard-polyfill-0.1.42.js"></script>

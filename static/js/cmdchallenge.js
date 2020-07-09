@@ -146,16 +146,8 @@ jQuery(function($) {
     const routes = {};
     challenges.forEach(function(c) {
       const slug = c.slug;
-      routes['/s/' + slug] = function() {
-        currentChallenge = c;
-        clearChallengeOutput();
-        updateChallengeDesc();
-        updateChallenges();
-        displaySolution();
-      };
       routes['/' + slug] = function() {
         currentChallenge = c;
-        clearSolutions();
         updateChallengeDesc();
         updateChallenges();
         checkForWin();
@@ -163,7 +155,6 @@ jQuery(function($) {
     });
     routes[''] = function() {
       currentChallenge = uncompletedChallenges()[0] || challenges[0];
-      clearSolutions();
       updateChallengeDesc();
       updateChallenges();
       checkForWin();
@@ -198,36 +189,7 @@ jQuery(function($) {
       });
     });
 
-    // update the solutions
-
-    $('ul#challenges').html('');
-    const completedSlugs = completedChallenges().map( (c) => c.slug);
-    challenges.forEach(function(c) {
-      const slug = c.slug;
-      if (completedSlugs.indexOf(slug) !== -1) {
-        $('ul#challenges').append(
-            '<li tabindex=\'-1\'><img src=\'img/' + slug +
-            '.png\' /><a class=\'enable\' id=\'' + slug +
-            '\' href=\'#/' + slug + '\' title=\'' +
-            slug + '\'>' + c.disp_title + '</a></li>');
-        $('a#' + slug).on('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          routie('/s/' + slug);
-          term.focus();
-        });
-      } else {
-        // Blur and lock
-        $('ul#challenges').append(
-            '<li tabindex=\'-1\'><img src=\'img/lock.png\' />' +
-            '<a class=\'disable\' id=\'' + slug +
-            '\' href=\'#' +
-            '\' title=\'' +
-            slug + '\'>' + c.disp_title + '</a></li>');
-      }
-    });
-
-    // highlight active challenge
+    displaySolution()
     underlineCurrent();
 
     if (typeof callback === 'function') {
@@ -285,15 +247,6 @@ jQuery(function($) {
 
   const clearChallengeOutput = function() {
     $('#challenge-output').text('').hide();
-  };
-
-  const clearSolutions = function() {
-    $('#solutions').html('');
-    $('#solutions-wrapper').hide();
-  };
-
-  const showSolutions = function() {
-    $('#solutions-wrapper').show();
   };
 
   const updateInfoText = function(msg, infoStatus) {
@@ -372,7 +325,7 @@ jQuery(function($) {
       dataType: 'json',
       url: '/s/solutions/' + currentChallenge.slug + '.json',
       success: function(resp) {
-        clearSolutions();
+        $('#solutions').html('');
         resp.cmds.forEach(function(cmd) {
           $('#solutions').append(escapeHtml(cmd) + '\n');
         });
@@ -380,7 +333,6 @@ jQuery(function($) {
         $('#solutions-wrapper .last-updated').html(
             'Solutions updated ' + dateDelta(resp.ts) + ' ago'
         );
-        showSolutions();
       },
       error: function() {
         retCode = '☠️';
