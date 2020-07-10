@@ -492,6 +492,7 @@ input:checked {
 #solutions-wrapper {
   text-align: left;
   overflow: scroll;
+  overflow-x: hidden;
   max-height: 300px;
   pre {
     display: grid;
