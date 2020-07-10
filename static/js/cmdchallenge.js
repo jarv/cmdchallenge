@@ -320,7 +320,6 @@ jQuery(function($) {
   };
 
   const displaySolution = function() {
-    $('#info-box').hide();
     $.ajax({
       dataType: 'json',
       url: '/s/solutions/' + currentChallenge.slug + '.json',
