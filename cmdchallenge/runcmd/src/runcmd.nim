@@ -106,20 +106,21 @@ except AssertionError:
 let challengeTimeout = jsonChallenge{"timeout"}.getInt(5000)
 
 var
-  outputPass, testsPass, afterRandOutputPass, cmdTestPass: bool = true
+  outputPass, testsPass, afterRandOutputPass, afterRandTestsPass: bool = true
   cmdExitCode, afterRandExitCode: int = 0
-  cmdOut, testsOut, afterRandExpectedOutput, afterRandOutput, cmdTestOut: string
+  cmdOut, testsOut, afterRandExpectedOutput, afterRandOutput, afterRandTestsOut: string
   
 (cmdOut, cmdExitCode) = runCombinedOutput(command, challengeTimeout)
 outputPass = matchesOutput(cmdOut, jsonChallenge)
 
-(cmdTestOut, cmdTestPass) = runCmdTest(jsonChallenge)
+(testsOut, testsPass) = runCmdTest(jsonChallenge)
 
 let expectedAfterRandomizer = runRandomizer(jsonChallenge)
 
 if expectedAfterRandomizer.len > 0:
   (afterRandOutput, afterRandExitCode) = runCombinedOutput(command, challengeTimeout)
   afterRandOutputPass = matchesOutput(afterRandOutput, jsonChallenge, expectedAfterRandomizer)
+  (afterRandTestsOut, afterRandTestsPass) = runCmdTest(jsonChallenge)
 
 var j = %*
   {
@@ -131,8 +132,8 @@ var j = %*
     "AfterRandOutputPass": afterRandOutputPass,
     "AfterRandExpectedOutput": join(expectedAfterRandomizer, "\n"),
     "AfterRandOutput": afterRandOutput,
-    "AfterRandTestsPass": cmdTestPass,
-    "AfterRandTestsOut": cmdTestOut,
+    "AfterRandTestsPass": afterRandTestsPass,
+    "AfterRandTestsOut": afterRandTestsOut
   }
 
 echo j
