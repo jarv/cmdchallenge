@@ -24,6 +24,7 @@ LOG.setLevel(logging.WARN)
 DOCKER_HOST = environ["DOCKER_EC2_DNS"]
 MAX_OUTPUT_LEN = 10000
 SLACK_SNS_ARN = "arn:aws:sns:us-east-1:414252096707:cmdchallenge-slack"
+MAX_CMD_LENGTH = 300
 
 
 class LambdaValidationError(Exception):
@@ -51,24 +52,37 @@ def merge_two_dicts(x, y):
     return z
 
 
-def default_resp(err, res=None, cmd=None, challenge_slug=None):
-    LOG.debug(f"Responding with: err: {err} res: {res}")
+def default_resp(err=None, res=None, cmd=None, challenge_slug=None):
+    LOG.debug(
+        f"Responding with: err: {err} res: {res}, cmd: {cmd}, challenge_slug: {challenge_slug}"
+    )
+
+    headers = {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "no-cache, no-store",
+    }
+
     if err:
         LOG.warn(
             f"Responding with error: err: {err} res: {res} cmd: {cmd} challenge_slug: {challenge_slug}"
         )
         send_msg(str(err), channel="ops", cmd=cmd, challenge_slug=challenge_slug)
+        return {
+            "statusCode": "400",
+            "body": str(err),
+            "headers": headers,
+        }
 
-    headers = {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
-
-    if err:
-        headers.update({"Cache-Control": "no-cache, no-store"})
-    else:
+    if res["cached"]:
         headers.update({"Cache-Control": "max-age=31536000"})
 
+    if not res["cached"] and res["correct"]:
+        send_msg(channel="commands", cmd=cmd, challenge_slug=challenge_slug)
+
     return {
-        "statusCode": "400" if err else "200",
-        "body": str(err) if err else json.dumps(res),
+        "statusCode": "200",
+        "body": json.dumps(res),
         "headers": headers,
     }
 
@@ -98,37 +112,49 @@ def get_cmd_from_db(hashed_submission):
     return cmd
 
 
+def check_use_cache(cached_response, challenge):
+    if not cached_response:
+        # If there is no cached response, we can't
+        # use the cache obviously
+        return False
+
+    cache_correct = challenge.get("cache_correct", True)
+    cache_incorrect = challenge.get("cache_incorrect", True)
+
+    return cache_correct if cached_response["correct"] else cache_incorrect
+
+
 def handler(event, context):
     if "queryStringParameters" not in event:
-        return default_resp(LambdaValidationError("Missing params."))
+        return default_resp(err="Missing params.")
     body = event["queryStringParameters"]
     if body is None:
-        return default_resp(LambdaValidationError("Missing params."))
+        return default_resp(err="Missing params.")
     if "challenge_slug" not in body:
         LOG.warn(f"Missing challenge_slug in body: {body}")
-        return default_resp(LambdaValidationError("Missing challenge_slug."))
+        return default_resp(err="Missing challenge_slug.")
     if "cmd" not in body:
-        return default_resp(LambdaValidationError("Missing cmd."))
+        return default_resp(err="Missing cmd.")
 
     challenge_slug = body["challenge_slug"]
+    img = body.get("img", "cmd")
+
     try:
         if not path.exists(f"ch/{challenge_slug}.json"):
-            return default_resp(
-                LambdaValidationError(f"Invalid challenge: {challenge_slug}")
-            )
+            return default_resp(err=f"Invalid challenge: {challenge_slug}")
         with open(f"ch/{challenge_slug}.json") as f:
             challenge = json.load(f)
     except IOError as e:
         LOG.exception(f"Error loading challenge {challenge_slug}: {e}")
-        return default_resp(LambdaValidationError("Error loading challenge."))
+        return default_resp(err="Error loading challenge.")
 
     version = challenge.get("version", -1)
     cmd = body["cmd"]
 
-    if len(cmd) > 300:
+    if len(cmd) > MAX_CMD_LENGTH:
         return default_resp(
-            LambdaValidationError("Command is too long."),
-            cmd=cmd[:300] + "(truncated)",
+            err="Command is too long.",
+            cmd=cmd[:MAX_CMD_LENGTH] + "(truncated)",
             challenge_slug=challenge_slug,
         )
 
@@ -138,7 +164,7 @@ def handler(event, context):
         # Add additional fields for http requests
         operation = event["httpMethod"]
         if operation != "GET":
-            return default_resp(ValueError(f"Unsupported method {operation}"))
+            return default_resp(err=f"Unsupported method {operation}")
         identity = event["requestContext"]["identity"]
         if "headers" in event and "X-Forwarded-For" in event["headers"]:
             req_fields["source_ip"] = event["headers"]["X-Forwarded-For"].split(",")[0]
@@ -152,9 +178,9 @@ def handler(event, context):
     try:
         raise_on_rate_limit(req_fields["source_ip"], "submit_with_cache")
     except DynamoValidationError as e:
-        return default_resp(e, cmd=cmd, challenge_slug=challenge_slug)
+        return default_resp(err=str(e), cmd=cmd, challenge_slug=challenge_slug)
     # Check to see if request is already in cache
-    cmd_shlex = ' '.join(shlex.split(cmd))
+    cmd_shlex = " ".join(shlex.split(cmd))
     hashed_submission = hashlib.sha256(
         bytes(f"{cmd_shlex}{json.dumps(challenge)}", "utf-8")
     ).hexdigest()
@@ -162,10 +188,21 @@ def handler(event, context):
     try:
         cached_response = get_cmd_from_db(hashed_submission)
     except LambdaValidationError as e:
-        return default_resp(e, cmd=cmd, challenge_slug=challenge_slug)
+        return default_resp(err=str(e), cmd=cmd, challenge_slug=challenge_slug)
     LOG.debug(f"Cached response is {cached_response}")
 
-    if cached_response is None:
+    use_cached_response = check_use_cache(cached_response, challenge)
+
+    if use_cached_response:
+        LOG.debug(f"Found cmd `{cmd}` in cache")
+        output = str(cached_response["output"])
+        return_code = int(cached_response["return_code"])
+        test_errors = cached_response["test_errors"]
+        correct = cached_response["correct"]
+        rand_output_pass = cached_response.get("rand_output_pass", 0)
+        rand_tests_pass = cached_response.get("rand_tests_pass", 0)
+        rand_error = cached_response.get("rand_error", False)
+    else:
         # not in cache
         # Check to the non-cached rate limit
         LOG.debug(f"Cmd `{cmd}` not in cache")
@@ -173,7 +210,7 @@ def handler(event, context):
         try:
             raise_on_rate_limit(req_fields["source_ip"], "submit_without_cache")
         except DynamoValidationError as e:
-            return default_resp(e)
+            return default_resp(err=str(e))
 
         tls_settings = dict(
             ca_cert="keys/ca.pem",
@@ -185,6 +222,7 @@ def handler(event, context):
             result = output_from_cmd(
                 cmd,
                 challenge,
+                img,
                 docker_version="1.23",
                 docker_base_url=f"https://{DOCKER_HOST}:2376",
                 tls_settings=tls_settings,
@@ -201,22 +239,11 @@ def handler(event, context):
                 # Need to remove all empty strings before storing
                 test_errors = list(filter(None, test_errors.strip().split("\n")))
         except DockerValidationError as e:
-            return default_resp(e, cmd=cmd, challenge_slug=challenge_slug)
+            return default_resp(err=str(e), cmd=cmd, challenge_slug=challenge_slug)
         correct = verify_result(result)
         rand_output_pass = value_output_rand_result(result)
         rand_tests_pass = value_tests_rand_result(result)
         rand_error = not value_rand_pass(result)
-        if correct:
-            send_msg(channel="commands", cmd=cmd, challenge_slug=challenge_slug)
-    else:
-        LOG.debug(f"Found cmd `{cmd}` in cache")
-        output = str(cached_response["output"])
-        return_code = int(cached_response["return_code"])
-        test_errors = cached_response["test_errors"]
-        correct = cached_response["correct"]
-        rand_output_pass = cached_response.get("rand_output_pass", 0)
-        rand_tests_pass = cached_response.get("rand_tests_pass", 0)
-        rand_error = cached_response.get("rand_error", False)
 
     create_time = int(time.time() * 100)
     cmd_len = len(cmd)
@@ -250,23 +277,25 @@ def handler(event, context):
             f"Writing `{cmd}` to the submissions table. cached_response: {cached_response}"
         )
         write_item_to_db(item, SUBMISSIONS_TABLE_NAME)
-        if cached_response is None:
-            # Add to the commands table if it is a new command
+        if not use_cached_response:
+            # Add or update the commands table if it is not a cached command
             item["id"] = hashed_submission
             LOG.debug(f"Writing `{cmd}` to the commands table")
             write_item_to_db(item, COMMANDS_TABLE_NAME)
     except LambdaValidationError as e:
-        return default_resp(e, challenge_slug=challenge_slug, cmd=cmd)
+        return default_resp(err=str(e), challenge_slug=challenge_slug, cmd=cmd)
 
     # Return a successful response
     return default_resp(
-        None,
-        dict(
+        res=dict(
             output=escape(output),
             rand_error=rand_error,
             challenge_slug=challenge_slug,
             return_code=return_code,
             correct=correct,
             test_errors=test_errors,
+            cached=use_cached_response,
         ),
+        challenge_slug=challenge_slug,
+        cmd=cmd,
     )

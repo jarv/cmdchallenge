@@ -29,6 +29,7 @@ if [[ -d "$COPY_DIR/docker_cfg_files" ]]; then
   sudo systemctl stop update-engine
   sudo systemctl disable update-engine
   sudo docker pull registry.gitlab.com/jarv/cmdchallenge/cmd:latest
+  sudo docker pull registry.gitlab.com/jarv/cmdchallenge/cmd-no-bin:latest
 fi
 
 if [[ ! -f /var/swapfile ]]; then
