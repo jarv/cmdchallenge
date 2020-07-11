@@ -1,1 +1,1 @@
-{"slug": "delete_files", "openemoji": "1F99F", "disp_title": "delete files", "version": 6, "author": "cmdchallenge", "description": "Delete all of the files in this challenge directory including all subdirectories and their contents.\n", "example": "find . -delete", "example_fail": "echo"}
+{"slug": "delete_files", "openemoji": "1F421", "disp_title": "delete files", "version": 6, "author": "cmdchallenge", "description": "Delete all of the files in this challenge directory including all subdirectories and their contents.\n", "example": "find . -delete", "example_fail": "echo"}

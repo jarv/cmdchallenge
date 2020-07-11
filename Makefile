@@ -92,4 +92,4 @@ update-challenges:
 	./bin/update-challenges
 
 tar-var:
-	cd $(DIR_CMDCHALLENGE); tar -czf var.tar.gz var/
+	cd $(DIR_CMDCHALLENGE); tar --exclude='.gitignore' -czf var.tar.gz var/

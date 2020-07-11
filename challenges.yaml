@@ -74,6 +74,7 @@
       - 251.111.109.143 - - [09/Jan/2017:22:49:02 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 2477
       - 101.163.230.250 - - [09/Jan/2017:22:52:31 +0100] "DELETE /posts/2/display HTTP/1.0" 404 2477
       - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
+
 - slug: last_lines
   openemoji: 1F578
   version: 5
@@ -90,6 +91,78 @@
       - 251.111.109.143 - - [09/Jan/2017:22:49:02 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 2477
       - 101.163.230.250 - - [09/Jan/2017:22:52:31 +0100] "DELETE /posts/2/display HTTP/1.0" 404 2477
       - 200.19.168.148 - - [09/Jan/2017:22:57:11 +0100] "GET /posts/foo?appID=xxxx HTTP/1.0" 200 3471
+
+- slug: create_file
+  openemoji: 1F433
+  disp_title: Create a file
+  version: 1
+  author: cmdchallenge
+  description: |
+    Create an empty file named `take-the-command-challenge` in the current working directory.
+  example: touch take-the-command-challenge
+  example_fail: echo
+
+- slug: create_directory
+  openemoji: 1F40B
+  disp_title: Create a directory
+  version: 1
+  author: cmdchallenge
+  description: |
+    Create a directory named `tmp/files` in the current working directory
+  example: mkdir -p tmp/files
+  example_fail: echo
+
+- slug: copy_file
+  openemoji: 1F42C
+  version: 1
+  author: cmdchallenge
+  description: |
+    Copy the file named `take-the-command-challenge` to the directory `tmp/files`
+  example: cp take-the-command-challenge tmp/files/.
+  example_fail: echo
+
+- slug: move_file
+  openemoji: 1F41F
+  version: 1
+  author: cmdchallenge
+  description: |
+    Move the file named `take-the-command-challenge` to the directory `tmp/files`
+  example: mv take-the-command-challenge tmp/files/.
+  example_fail: echo
+
+- slug: create_symlink
+  openemoji: 1F420
+  disp_title: Create a symbolic link
+  version: 1
+  author: cmdchallenge
+  description: |
+    A symbolic link is a type of file that is a reference to another file.
+    Create a symbolic link named `take-the-command-challenge` that points to the
+    file `tmp/files/take-the-command-challenge`.
+  example: ln -s tmp/files/take-the-command-challenge
+  example_fail: echo
+
+- slug: delete_files
+  openemoji: 1F421
+  disp_title: delete files
+  version: 6
+  author: cmdchallenge
+  description: |
+    Delete all of the files in this challenge directory including all subdirectories and their contents.
+  example: find . -delete
+  example_fail: echo
+
+- slug: remove_files_with_extension
+  openemoji: 1F43A
+  version: 5
+  author: cmdchallenge
+  disp_title: remove files with extension
+  description: |
+    There are files in this challenge with different file extensions.
+    Remove all files with the .doc extension recursively in the current working directory.
+  example: rm **/*.doc
+  example_fail: echo
+
 - slug: find_string_in_a_file
   openemoji: 1F41D
   disp_title: find string
@@ -190,15 +263,6 @@
       - 4.180.204.195
       - 9.230.96.54
       - 157.143.233.21
-- slug: delete_files
-  openemoji: 1F99F
-  disp_title: delete files
-  version: 6
-  author: cmdchallenge
-  description: |
-    Delete all of the files in this challenge directory including all subdirectories and their contents.
-  example: find . -delete
-  example_fail: echo
 - slug: count_files
   openemoji: 1FAB0
   disp_title: count files
@@ -271,16 +335,6 @@
   expected_output:
     lines:
       - 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100
-- slug: remove_files_with_extension
-  openemoji: 1F43A
-  version: 5
-  author: cmdchallenge
-  disp_title: remove files with extension
-  description: |
-    There are files in this challenge with different file extensions.
-    Remove all files with the .doc extension recursively in the current working directory.
-  example: rm **/*.doc
-  example_fail: echo
 - slug: replace_text_in_files
   openemoji: 1F98A
   disp_title: replace text in files
@@ -448,36 +502,6 @@
     lines: ['(◕‿◕)', '(^̮^)', 'ʘ‿ʘ', 'ಠ_ಠ', 'ಠ⌣ಠ', 'ಠ‿ಠ', '(ʘ‿ʘ)', '(ಠ_ಠ)', '¯\_(ツ)_/¯',
             '(ಠ⌣ಠ', 'ಠಠ⌣ಠ)', '(ಠ‿ಠ)', '٩◔̯◔۶', 'ヽ༼ຈل͜ຈ༽ﾉ', '♥‿♥', '◔̯◔', '⊙﹏⊙',
             '(¬_¬)', '(；一_一)', '(͡° ͜ʖ ͡°)', '(° ͜ʖ °)', '¯\(°_o)/¯', '( ﾟヮﾟ)', '(︺︹︺)']
-- slug: disp_table
-  openemoji: 1F430
-  disp_title: print a table
-  version: 2
-  author: cmdchallenge
-  description: |
-    The file "table.csv" contains the following comma-separated lines:
-
-    ```
-    id,name,count
-    4,susan,11
-    33,alice,22
-    1772,joe,33
-    ```
-
-    Print the rows as a table, like the following:
-
-    ```
-    id    name   count
-    4     susan  11
-    33    alice  22
-    1772  joe    33
-    ```
-  example: cat table.csv | column -t -s","
-  expected_output:
-    lines:
-      - id    name   count
-      - 4     susan  11
-      - 33    alice  22
-      - 1772  joe    33
 - slug: find_primes
   openemoji: 1F43B
   disp_title: finding prime numbers
@@ -492,9 +516,6 @@
   expected_output:
     lines:
       - "12"
-##########
-# Start User Contributed Challenges
-# ########
 - slug: print_common_lines
   openemoji: 1F43C
   version: 5
