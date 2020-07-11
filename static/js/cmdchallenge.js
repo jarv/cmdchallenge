@@ -175,8 +175,8 @@ jQuery(function($) {
           '<div tabindex=\'-1\' class=\'img-container ' +
             slug + '\'><a id=\'badge_' +
             slug + '\' href=\'#/' +
-            slug + '\'><img class=\'badge\' src=\'img/' +
-            slug + '.png\' alt=\'' +
+            slug + '\'><img class=\'badge\' src=\'img/emojis/' +
+            c.openemoji + '.png\' alt=\'' +
             slug + '\'/><span class=\'tooltip\'>' +
             dispTitle +
             '</span></a></li>');
@@ -293,8 +293,8 @@ jQuery(function($) {
 
   const updateChallengeDesc = function() {
     const description = htmlFromMarkdown(currentChallenge.description);
-    $('#challenge-desc .img-container').html('<img src=\'img/' +
-        currentChallenge.slug +
+    $('#challenge-desc .img-container').html('<img src=\'img/emojis/' +
+        currentChallenge.openemoji +
         '.png\' alt=\'' + currentChallenge.disp_title + '\' />');
     $('#challenge-desc .desc-container').html(description);
   };
@@ -324,7 +324,7 @@ jQuery(function($) {
       dataType: 'json',
       url: '/s/solutions/' + currentChallenge.slug + '.json',
       success: function(resp) {
-        $('#solutions').html('');
+        $('#solutions').html('').show();
         resp.cmds.forEach(function(cmd) {
           $('#solutions').append(escapeHtml(cmd) + '\n');
         });
@@ -334,8 +334,10 @@ jQuery(function($) {
         );
       },
       error: function() {
-        retCode = '☠️';
-        updateInfoText('Unable to retrieve solutions :(', INFO_STATUS.error);
+        $('#solutions').html('').hide();
+        $('#solutions-wrapper .last-updated').html(
+            'No solutions for this challenge yet'
+        );
       },
     });
   };

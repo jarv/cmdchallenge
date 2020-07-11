@@ -99,6 +99,7 @@
   author: cmdchallenge
   description: |
     Create an empty file named `take-the-command-challenge` in the current working directory.
+  completions: ["take-the-command-challenge"]
   example: touch take-the-command-challenge
   example_fail: echo
 
@@ -109,6 +110,7 @@
   author: cmdchallenge
   description: |
     Create a directory named `tmp/files` in the current working directory
+  completions: ["take-the-command-challenge", "tmp", "files"]
   example: mkdir -p tmp/files
   example_fail: echo
 
@@ -118,6 +120,7 @@
   author: cmdchallenge
   description: |
     Copy the file named `take-the-command-challenge` to the directory `tmp/files`
+  completions: ["take-the-command-challenge", "tmp", "files"]
   example: cp take-the-command-challenge tmp/files/.
   example_fail: echo
 
@@ -127,6 +130,7 @@
   author: cmdchallenge
   description: |
     Move the file named `take-the-command-challenge` to the directory `tmp/files`
+  completions: ["take-the-command-challenge", "tmp", "files"]
   example: mv take-the-command-challenge tmp/files/.
   example_fail: echo
 
@@ -139,6 +143,7 @@
     A symbolic link is a type of file that is a reference to another file.
     Create a symbolic link named `take-the-command-challenge` that points to the
     file `tmp/files/take-the-command-challenge`.
+  completions: ["take-the-command-challenge", "tmp", "files"]
   example: ln -s tmp/files/take-the-command-challenge
   example_fail: echo
 
