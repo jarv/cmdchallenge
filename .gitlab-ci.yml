@@ -21,14 +21,13 @@ workflow:
     - ./bin/tf-refresh
 
 stages:
-  - image
   - test
   - deploy
 
 #### IMAGE
 
 .image:
-  stage: image
+  stage: test
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_HOST: tcp://docker:2375
