@@ -116,6 +116,7 @@
 
 - slug: copy_file
   openemoji: 1F42C
+  disp_title: copy file
   version: 1
   author: cmdchallenge
   description: |
@@ -126,6 +127,7 @@
 
 - slug: move_file
   openemoji: 1F41F
+  disp_title: move file
   version: 1
   author: cmdchallenge
   description: |
@@ -136,7 +138,7 @@
 
 - slug: create_symlink
   openemoji: 1F420
-  disp_title: Create a symbolic link
+  disp_title: create symlink
   version: 1
   author: cmdchallenge
   description: |
