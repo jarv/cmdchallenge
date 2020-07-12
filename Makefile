@@ -66,13 +66,13 @@ push-image-cmd: build-image-cmd
 	docker push $(CI_REGISTRY_IMAGE)/cmd:$(REF)
 	docker push $(CI_REGISTRY_IMAGE)/cmd:latest
 
+push-image-cmd-testing: build-image-cmd-testing
+	docker push $(CI_REGISTRY_IMAGE)/cmd:$(REF)
+	docker push $(CI_REGISTRY_IMAGE)/cmd:testing
+
 push-image-ci: build-image-ci
 	docker push $(CI_REGISTRY_IMAGE)/ci:$(REF)
 	docker push $(CI_REGISTRY_IMAGE)/ci:latest
-
-push-image-ci-testing: build-image-ci-testing
-	docker push $(CI_REGISTRY_IMAGE)/ci:$(REF)
-	docker push $(CI_REGISTRY_IMAGE)/ci:testing
 
 build-image-cmd: build-runcmd update-challenges tar-var
 	cd $(DIR_CMDCHALLENGE); docker build -t $(CI_REGISTRY_IMAGE)/cmd:latest \
