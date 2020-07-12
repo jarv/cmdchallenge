@@ -8,6 +8,16 @@ variable "CA_PEM_FNAME" {
   default = "../private/ca/ca.pem"
 }
 
+variable "SSH_PUBLIC_KEY" {
+  type    = string
+  default = "../private/ssh/cmd_rsa.pub"
+}
+
+variable "SSH_PRIVATE_KEY" {
+  type    = string
+  default = "../private/ssh/cmd_rsa"
+}
+
 provider "archive" {
   version = "~> 1.3"
 }
@@ -159,8 +169,10 @@ module "gce" {
   source            = "./modules/gce"
   name              = local.is_prod == "yes" ? local.name : format("%v-%v", local.name, local.timestamp_sanitized)
   machine_type      = local.is_prod == "yes" ? "e2-small" : "f1-micro"
-  CA_PEM_FNAME      = var.CA_PEM_FNAME
+  ca_pem_fname      = var.CA_PEM_FNAME
   use_static_ip     = local.is_prod == "yes" ? true : false
   preemptible       = local.is_prod == "yes" ? false : true
   automatic_restart = local.is_prod == "yes" ? true : false
+  ssh_private_key   = var.SSH_PRIVATE_KEY
+  ssh_public_key    = var.SSH_PUBLIC_KEY
 }

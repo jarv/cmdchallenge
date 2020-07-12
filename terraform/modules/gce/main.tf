@@ -1,10 +1,12 @@
 variable "num_instances" {}
 variable "name" {}
-variable "CA_PEM_FNAME" {}
+variable "ca_pem_fname" {}
 variable "machine_type" {}
 variable "use_static_ip" {}
 variable "preemptible" {}
 variable "automatic_restart" {}
+variable "ssh_public_key" {}
+variable "ssh_private_key" {}
 
 resource "google_compute_address" "external" {
   count = var.use_static_ip ? var.num_instances : 0
@@ -51,7 +53,7 @@ resource "google_compute_instance" "default" {
   metadata_startup_script = file("${path.module}/bootstrap.bash")
 
   metadata = {
-    ssh-keys = "jarv:${file("${path.root}/../private/ssh/cmd_rsa.pub")}"
+    ssh-keys = "jarv:${file(var.ssh_public_key)}"
     fqdn = format(
       "%v-%02d.gcp.cmdchallenge.com",
       var.name,
@@ -111,7 +113,7 @@ resource "google_compute_instance" "default" {
     type        = "ssh"
     user        = "jarv"
     timeout     = "10m"
-    private_key = file("${path.root}/../private/ssh/cmd_rsa")
+    private_key = file(var.ssh_private_key)
     script_path = "/tmp/bootstrap.sh"
   }
 
@@ -135,7 +137,7 @@ resource "google_compute_instance" "default" {
   }
 
   provisioner "file" {
-    source      = var.CA_PEM_FNAME
+    source      = var.ca_pem_fname
     destination = "/var/tmp/ca.pem"
   }
 
@@ -146,7 +148,7 @@ resource "google_compute_instance" "default" {
       type        = "ssh"
       user        = "jarv"
       timeout     = "10m"
-      private_key = file("${path.root}/../private/ssh/cmd_rsa")
+      private_key = file(var.ssh_private_key)
       script_path = "/var/lib/cloud/bootstrap/bootstrap.sh"
     }
   }
