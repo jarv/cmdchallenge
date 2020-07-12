@@ -130,7 +130,7 @@
   author: cmdchallenge
   description: |
     Move the file named `take-the-command-challenge` to the directory `tmp/files`
-  completions: ["take-the-command-challenge", "tmpfiles"]
+  completions: ["take-the-command-challenge", "tmp/files"]
   example: mv take-the-command-challenge tmp/files/.
   example_fail: echo
 
@@ -141,9 +141,10 @@
   author: cmdchallenge
   description: |
     A symbolic link is a type of file that is a reference to another file.
+
     Create a symbolic link named `take-the-command-challenge` that points to the
     file `tmp/files/take-the-command-challenge`.
-  completions: ["take-the-command-challenge", "tmp/files"]
+  completions: ["take-the-command-challenge", "tmp/files/take-the-command-challenge"]
   example: ln -s /var/challenges/create_symlink/tmp/files/take-the-command-challenge
   example_fail: echo
 
