@@ -9,7 +9,7 @@ workflow:
 
 stages:
   - test
-  - deploy:staging
+  - deploy:testing
   - promote
   - deploy:prod
 
