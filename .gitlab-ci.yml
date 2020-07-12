@@ -79,7 +79,6 @@ test:image:
     - pushd terraform
     - terraform init
     - terraform workspace list
-    - terraform workspace select $TF_WORKSPACE
 
 deploy:testing:tf:
   extends: .deploy:tf
