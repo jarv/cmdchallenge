@@ -15,7 +15,11 @@ variable "code_fname" {
 
 variable "is_prod" {
 }
+
 variable "name" {
+}
+
+variable "short_sha" {
 }
 
 resource "aws_lambda_function" "default" {
@@ -34,6 +38,7 @@ resource "aws_lambda_function" "default" {
       COMMANDS_TABLE_NAME    = var.commands_table_name
       DOCKER_EC2_DNS         = var.ec2_public_dns
       IS_PROD                = var.is_prod
+      SHORT_SHA              = var.short_sha
     }
   }
 }

@@ -45,16 +45,10 @@ image:ci:manual:
     - 'apk add make git'
     - make push-image-ci
 
-image:cmd:manual:
+image:cmd:
   extends: .image
-  when: manual
   script:
     - make push-image-cmd
-
-image:cmd:testing:
-  extends: .image
-  script:
-    - make push-image-cmd-testing
 
 #### TEST
 

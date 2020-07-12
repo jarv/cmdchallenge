@@ -12,7 +12,7 @@ S3_BUCKET_TESTING := testing.cmdchallenge.com
 DISTID_PROD := E2UJHVXTJLOPCD
 S3_BUCKET_PROD:= cmdchallenge.com
 
-all: build-image-cmd-testing test-challenges
+all: build-image-cmd test-challenges
 
 ##################
 # Static site
@@ -66,21 +66,12 @@ push-image-cmd: build-image-cmd
 	docker push $(CI_REGISTRY_IMAGE)/cmd:$(REF)
 	docker push $(CI_REGISTRY_IMAGE)/cmd:latest
 
-push-image-cmd-testing: build-image-cmd-testing
-	docker push $(CI_REGISTRY_IMAGE)/cmd:$(REF)
-	docker push $(CI_REGISTRY_IMAGE)/cmd:testing
-
 push-image-ci: build-image-ci
 	docker push $(CI_REGISTRY_IMAGE)/ci:$(REF)
 	docker push $(CI_REGISTRY_IMAGE)/ci:latest
 
 build-image-cmd: build-runcmd update-challenges tar-var
 	cd $(DIR_CMDCHALLENGE); docker build -t $(CI_REGISTRY_IMAGE)/cmd:latest \
-		--tag $(CI_REGISTRY_IMAGE)/cmd:$(REF) .
-	rm -f var.tar.gz
-
-build-image-cmd-testing: build-runcmd update-challenges tar-var
-	cd $(DIR_CMDCHALLENGE); docker build -t $(CI_REGISTRY_IMAGE)/cmd:testing \
 		--tag $(CI_REGISTRY_IMAGE)/cmd:$(REF) .
 	rm -f var.tar.gz
 

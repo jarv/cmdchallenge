@@ -16,6 +16,10 @@ provider "null" {
   version = "~> 2.1"
 }
 
+provider "external" {
+  version = "~> 1.2"
+}
+
 terraform {
   backend "s3" {
     bucket  = "terraform-cmdchallenge"
@@ -33,6 +37,10 @@ output "test-hello-world" {
   value = "curl '${module.api.invoke_url}/?cmd=echo+hello+world&challenge_slug=hello_world'"
 }
 
+data "external" "short-sha" {
+  program = ["sh", "short-sha.sh"]
+}
+
 output "instance-fqdn" {
   value = module.gce.public_dns
 }
@@ -42,6 +50,7 @@ locals {
   timestamp           = "${timestamp()}"
   timestamp_sanitized = "${replace("${local.timestamp}", "/[- TZ:]/", "")}"
   name                = "${terraform.workspace}-cmdchallenge"
+  short_sha           = "${data.external.short-sha.result.short_sha}"
 }
 
 # Hack to assert if the terraform workspace
@@ -131,6 +140,7 @@ module "lambda" {
   code_fname     = data.archive_file.lambda_runcmd_zip.output_path
   is_prod        = local.is_prod
   name           = "${local.name}-lambda"
+  short_sha      = local.short_sha
 }
 
 module "lambda-cron" {

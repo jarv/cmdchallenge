@@ -13,8 +13,8 @@ LOG = logging.getLogger()
 DOCKER_TIMEOUT = 8
 BASE_WORKING_DIR = "/var/challenges"
 
-IMAGE_TAG = "latest" if environ.get('IS_PROD') == "yes" else "testing"
-REGISTRY_IMAGE = f"registry.gitlab.com/jarv/cmdchallenge/cmd:{IMAGE_TAG}"
+SHORT_SHA = environ.get('SHORT_SHA')
+REGISTRY_IMAGE = f"registry.gitlab.com/jarv/cmdchallenge/cmd:{SHORT_SHA}"
 
 dir_path = dirname(realpath(__file__))
 dir_cmdchallenge = join(dir_path, "../../cmdchallenge")
