@@ -71,7 +71,7 @@ test:image:
 ######################
 
 .deploy:tf:
-  before_script:
+  script:
     - export TF_VAR_GCP_CRED_JSON_FNAME="$GCP_CRED_JSON_FNAME"
     - export TF_VAR_CA_PEM_FNAME="$CA_PEM_FNAME"
     - export TF_VAR_SSH_PUBLIC_KEY="$SSH_PUBLIC_KEY"
@@ -79,15 +79,13 @@ test:image:
     - pushd terraform
     - terraform init
     - terraform workspace list
+    - terraform apply -auto-approve
 
 deploy:testing:tf:
   extends: .deploy:tf
   stage: deploy:testing
   variables:
     TF_WORKSPACE: testing
-  script:
-    - terraform taint module.gce.google_compute_instance.default[0]
-    - terraform apply -auto-approve
   resource_group: testing:tf
 
 deploy:testing:static:
@@ -109,8 +107,6 @@ deploy:prod:tf:
   stage: deploy:prod
   variables:
     TF_WORKSPACE: prod
-  script:
-    - terraform apply -auto-approve
   resource_group: prod:tf
   when: manual
 
