@@ -113,7 +113,7 @@ proc sum_all_numbers(jsonChallenge: JsonNode): seq[string] =
 
 proc search_for_files_containing_string(jsonChallenge: JsonNode): seq[string] =
   let expectedFiles = jsonChallenge["expected_output"]["lines"].getElems.mapIt(it.getStr)
-  let randFnames = toSeq(5 .. rand(10..20)).mapIt(&"access.log.{it}")
+  let randFnames = toSeq(5 .. rand(13..20)).mapIt(&"access.log.{it}")
 
   for fname in randFnames:
     writeFile(fname, "500")
