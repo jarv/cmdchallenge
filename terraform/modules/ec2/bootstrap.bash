@@ -24,5 +24,5 @@ sudo systemctl start docker
 sudo systemctl stop update-engine
 sudo systemctl disable update-engine
 
-docker pull registry.gitlab.com/jarv/cmdchallenge/cmd
-# sudo reboot
+docker pull registry.gitlab.com/jarv/cmdchallenge/cmd:testing
+docker pull registry.gitlab.com/jarv/cmdchallenge/cmd:latest
