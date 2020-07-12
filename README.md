@@ -48,6 +48,8 @@ The following CI vars are necessary to run the full pipeline
 * `STATE_S3_BUCKET`: where to store terraform state
 * `STATE_S3_KEY`: key for storing state
 * `STATE_S3_REGION`: region for deployment
+* `SSH_PRIVATE_KEY`: Private ssh key for the remote docker machine
+* `SSH_PUBLIC_KEY` : Public ssh key for the remote docker machine
 
 ### Terraform vars from env
 

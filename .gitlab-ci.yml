@@ -10,7 +10,6 @@ workflow:
 stages:
   - test
   - deploy:testing
-  - promote
   - deploy:prod
 
 #### IMAGE
@@ -93,14 +92,6 @@ deploy:testing:static:
   script:
     - make publish_testing
   resource_group: testing:static
-
-promote:
-  image: alpine
-  stage: promote
-  when: manual
-  allow_failure: false  # this forces the job to block downstream jobs
-  script:
-    - echo "Promoting to prod"
 
 deploy:prod:tf:
   extends: .deploy:tf
