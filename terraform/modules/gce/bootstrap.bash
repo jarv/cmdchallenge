@@ -28,7 +28,6 @@ if [[ -d "$COPY_DIR/docker_cfg_files" ]]; then
   sudo systemctl start docker
   sudo systemctl stop update-engine
   sudo systemctl disable update-engine
-  sudo docker pull registry.gitlab.com/jarv/cmdchallenge/cmd:testing
   sudo docker pull registry.gitlab.com/jarv/cmdchallenge/cmd:latest
 fi
 
