@@ -9,6 +9,7 @@ ARG PYENV_HOME=/root/.pyenv
 ENV PATH $PYENV_HOME/shims:$PYENV_HOME/bin:$PATH
 
 RUN apk add --no-cache --update \
+    jq \
     git \
     bash \
     libffi-dev \
