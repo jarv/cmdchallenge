@@ -44,8 +44,9 @@ proc chCreateSymlink(jsonChallenge: JsonNode): (string, bool) =
   if not symlinkExists("take-the-command-challenge"):
     return (&"Test failed, symlink does not exist", false)
 
-  let symlinkDest = expandSymlink("take-the-command-challenge")
-  if symlinkDest != "tmp/files/take-the-command-challenge":
+  let fullSymlinkPath = expandFilename(expandSymlink("take-the-command-challenge"))
+
+  if fullSymlinkPath != "/var/challenges/create_symlink/tmp/files/take-the-command-challenge":
     return (&"Test failed, symlink does not point to tmp/files/take-the-command-challenge", false)
 
   ("", true)

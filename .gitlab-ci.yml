@@ -54,6 +54,12 @@ image:cmd:manual:
   script:
     - make push-image-cmd
 
+image:cmd:testing:
+  extends: .image
+  allow_failure: true
+  script:
+    - make push-image-cmd-testing
+
 #### TEST
 
 python-black:

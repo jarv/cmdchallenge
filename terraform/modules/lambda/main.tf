@@ -33,6 +33,7 @@ resource "aws_lambda_function" "default" {
       SUBMISSIONS_TABLE_NAME = var.submissions_table_name
       COMMANDS_TABLE_NAME    = var.commands_table_name
       DOCKER_EC2_DNS         = var.ec2_public_dns
+      IS_PROD                = var.is_prod
     }
   }
 }

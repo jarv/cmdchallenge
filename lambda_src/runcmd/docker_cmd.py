@@ -13,7 +13,8 @@ LOG = logging.getLogger()
 DOCKER_TIMEOUT = 8
 BASE_WORKING_DIR = "/var/challenges"
 
-REGISTRY_IMAGE = "registry.gitlab.com/jarv/cmdchallenge/cmd"
+IMAGE_TAG = "latest" if environ.get('IS_PROD') == "yes" else "testing"
+REGISTRY_IMAGE = f"registry.gitlab.com/jarv/cmdchallenge/cmd:{IMAGE_TAG}"
 
 dir_path = dirname(realpath(__file__))
 dir_cmdchallenge = join(dir_path, "../../cmdchallenge")
@@ -31,7 +32,6 @@ DOCKER_OPTS = dict(
     volumes={volume_dir: {"bind": "/ro_volume", "mode": "ro"}},
     network_mode=None,
     network_disabled=True,
-#    pids_limit=2,
     remove=True,
     stderr=True,
     detach=False,
