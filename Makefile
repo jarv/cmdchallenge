@@ -1,5 +1,6 @@
 .PHONY: all test docker update runcmd runcmd-darwin update-challenges test-runcmd test-challenges tar-var push-image-cmd push-image-ci build-image-cmd build-image-ci
 REF=$(shell git rev-parse --short HEAD)
+PWD=$(shell pwd)
 BASEDIR=$(CURDIR)
 DIR_CMDCHALLENGE=$(CURDIR)/cmdchallenge
 CI_REGISTRY_IMAGE?=registry.gitlab.com/jarv/cmdchallenge
@@ -93,3 +94,6 @@ update-challenges:
 
 tar-var:
 	cd $(DIR_CMDCHALLENGE); tar --exclude='.gitignore' -czf var.tar.gz var/
+
+cmdshell:
+	docker run -it  --mount type=bind,source="$(PWD)/cmdchallenge/ro_volume",target=/ro_volume  registry.gitlab.com/jarv/cmdchallenge/cmd:latest bash
