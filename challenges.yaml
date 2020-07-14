@@ -9,7 +9,7 @@
 #   order: whether or not order matters (optional, default is true)
 #   re_sub: regex substitution on the output lines (optional)
 #   regex: lines are regular expressions (optional)
-#   version: if the challenge is modified this number should be bumped
+#   version: *REQUIRED* if the challenge is modified this number should be bumped
 #            refresh the cache.
 #   author: Add a field for contributions.
 #   completions: array of completions for challenge
@@ -25,6 +25,8 @@
     Try it below and good luck!
   completions: ["place your advertisement here!"]
   example: echo 'hello world'
+  expected_failures:
+    - echo "nope"
   expected_output:
     lines:
       - 'hello world'
@@ -36,13 +38,15 @@
   description: |
     Print the current working directory.
   example: pwd
+  expected_failures:
+    - echo "nope"
   expected_output:
     lines:
       - '/var/challenges/current_working_directory'
 - slug: list_files
   openemoji: 1F41B
   disp_title: list files
-  version: 6
+  version: 7
   author: cmdchallenge
   description: |
     List names of all the files in the current directory, one file per line.
@@ -53,6 +57,8 @@
       - '02-the.txt'
       - '03-command.txt'
       - '04-challenge.txt'
+  expected_failures:
+    - echo -e "01-take.txt\n02-the.txt\n03-command.txt\n04-challenge.txt"
 - slug: print_file_contents
   openemoji: 1F41C
   disp_title: file contents
@@ -95,13 +101,15 @@
 - slug: create_file
   openemoji: 1F433
   disp_title: Create a file
-  version: 1
+  version: 2
   author: cmdchallenge
   description: |
     Create an empty file named `take-the-command-challenge` in the current working directory.
   completions: ["take-the-command-challenge"]
   example: touch take-the-command-challenge
-  example_fail: echo
+  expected_failures:
+    - echo
+    - echo ' ' > take-the-command-challenge
 
 - slug: create_directory
   openemoji: 1F40B
@@ -112,18 +120,21 @@
     Create a directory named `tmp/files` in the current working directory
   completions: ["take-the-command-challenge", "tmp/files"]
   example: mkdir -p tmp/files
-  example_fail: echo
+  expected_failures:
+    - echo
 
 - slug: copy_file
   openemoji: 1F42C
   disp_title: copy file
-  version: 1
+  version: 2
   author: cmdchallenge
   description: |
     Copy the file named `take-the-command-challenge` to the directory `tmp/files`
   completions: ["take-the-command-challenge", "tmp/files"]
   example: cp take-the-command-challenge tmp/files/.
-  example_fail: echo
+  expected_failures:
+    - echo
+    - mv take-the-command-challenge tmp/files
 
 - slug: move_file
   openemoji: 1F41F
@@ -134,7 +145,8 @@
     Move the file named `take-the-command-challenge` to the directory `tmp/files`
   completions: ["take-the-command-challenge", "tmp/files"]
   example: mv take-the-command-challenge tmp/files/.
-  example_fail: echo
+  expected_failures:
+    - echo
 
 - slug: create_symlink
   openemoji: 1F420
@@ -148,17 +160,19 @@
     file `tmp/files/take-the-command-challenge`.
   completions: ["take-the-command-challenge", "tmp/files/take-the-command-challenge"]
   example: ln -s /var/challenges/create_symlink/tmp/files/take-the-command-challenge
-  example_fail: echo
+  expected_failures:
+    - echo
 
 - slug: delete_files
   openemoji: 1F421
   disp_title: delete files
-  version: 6
+  version: 7
   author: cmdchallenge
   description: |
     Delete all of the files in this challenge directory including all subdirectories and their contents.
   example: find . -delete
-  example_fail: echo
+  expected_failures:
+    - rm -rf /var/challenges/delete_files
 
 - slug: remove_files_with_extension
   openemoji: 1F43A
@@ -169,7 +183,8 @@
     There are files in this challenge with different file extensions.
     Remove all files with the .doc extension recursively in the current working directory.
   example: rm **/*.doc
-  example_fail: echo
+  expected_failures:
+    - echo
 
 - slug: find_string_in_a_file
   openemoji: 1F41D
@@ -199,7 +214,8 @@
     Print all files in the current directory, one per line (not the path, just the filename) that contain the string "500".
   completions: ["access.log"]
   example: grep -l 500 *
-  example_fail: 'ls *[^2]'
+  expected_failures:
+    - 'ls *[^2]'
   expected_output:
     order: false
     lines:
@@ -279,7 +295,8 @@
   description: |
     Count the number of files in the current working directory. Print the number of files as a single integer.
   example: find -L . -type f | wc -l
-  example_fail: echo 2
+  expected_failures:
+    - echo 2
   expected_output:
     re_sub: ['^\s+', '']
     lines:
@@ -314,7 +331,8 @@
     Print the number of lines in access.log that contain the string "GET".
   completions: ["access.log"]
   example: grep -c "GET" access.log
-  example_fail: echo 8
+  expected_failures:
+    - echo 8
   expected_output:
     re_sub: ['^\s+', '']
     lines:
@@ -349,7 +367,8 @@
   version: 5
   author: cmdchallenge
   example: sed -i 's/challenges are difficult//g' **/*.txt
-  example_fail: echo
+  expected_failures:
+    - echo
   description: |
     This challenge has text files (with a .txt extension) that contain the phrase "challenges are difficult".  Delete this phrase from all text files recursively.
 
@@ -360,7 +379,8 @@
   version: 6
   author: cmdchallenge
   example: paste -sd+ sum-me.txt | bc
-  example_fail: echo 42
+  expected_failures:
+    - echo 42
   description: |
     The file sum-me.txt has a list of numbers, one per line. Print the sum of these numbers.
   expected_output:
@@ -393,7 +413,8 @@
   description: |
     Rename all files removing the extension from them in the current directory recursively.
   example: for f in $(find . -type f -name "*.*"); do mv "$f" "${f%.*}"; done
-  example_fail: echo
+  expected_failures:
+    - echo
 - slug: replace_spaces_in_filenames
   openemoji: 1F434
   disp_title: replace spaces
@@ -516,7 +537,8 @@
   version: 2
   author: cmdchallenge
   example: 'for num in $(cat random-numbers.txt); do [[ $num == $(factor $num | cut -d" " -f2) ]] && echo $num; done | sort | uniq | wc -l'
-  example_fail: echo 12
+  expected_failures:
+    - echo 12
   completions: ["random-numbers.txt"]
   description: |
     The file `random-numbers.txt` contains a list of 100 random integers.
@@ -586,7 +608,8 @@
 
     Show its contents on the screen.
   example: cat ./.../\ \ /.\ .the\ flag.txt
-  example_fail: echo you got it!
+  expected_failures:
+    - echo you got it!
   expected_output:
     lines:
       - 'you got it!'
@@ -598,7 +621,8 @@
   description: |
     How many lines contain tab characters in the file named `file-with-tabs.txt` in the current directory.
   example: grep -P '\t' file-with-tabs.txt | wc -l
-  example_fail: echo 3
+  expected_failures:
+    - echo 3
   expected_output:
     lines:
       - "3"
@@ -612,7 +636,8 @@
 
     Remove all files without the .txt and .exe extensions recursively in the current working directory.
   example: find . -type f -regextype posix-extended ! -regex ".*(\.txt|\.exe)$" -exec rm {} +
-  example_fail: echo
+  expected_failures:
+    - echo
 - slug: remove_files_with_a_dash
   openemoji: 1F339
   version: 5
@@ -621,7 +646,8 @@
   description: |
     There are some files in this directory that start with a dash in the filename.  Remove those files.
   example: rm ./-*
-  example_fail: echo
+  expected_failures:
+    - echo
 - slug: print_sorted_by_key
   openemoji: 1F33A
   version: 5

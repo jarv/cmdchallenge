@@ -13,6 +13,9 @@ proc existsFileNotSymlink(fname: string): bool =
 proc chCreateFile(jsonChallenge: JsonNode): (string, bool) =
   if not existsFileNotSymlink("take-the-command-challenge"):
     return (&"Test failed, file does not exist", false)
+  
+  if readFile("take-the-command-challenge") != "":
+    return (&"Test failed, file is not empty", false)
 
   ("", true)
 
@@ -25,6 +28,9 @@ proc chCreateDirectory(jsonChallenge: JsonNode): (string, bool) =
 proc chCopyFile(jsonChallenge: JsonNode): (string, bool) =
   if not existsFileNotSymlink("tmp/files/take-the-command-challenge"):
     return (&"Test failed, file does not exist", false)
+
+  if not existsFileNotSymlink("take-the-command-challenge"):
+    return (&"Test failed, original file still exists", false)
 
   ("", true)
 
@@ -52,6 +58,12 @@ proc chCreateSymlink(jsonChallenge: JsonNode): (string, bool) =
   ("", true)
 
 proc chDeleteFiles(jsonChallenge: JsonNode): (string, bool) =
+  try:
+    if not existsDir("/var/challenges/delete_files"):
+      return (&"Test failed, challenge directory was removed", false)
+  except IOError:
+    return (&"Test failed, challenge directory was removed", false)
+
   let files = toSeq(walkDirRec("."))
   if files.len > 0:
     return (&"Test failed, {files.len} files or directories remain", false)

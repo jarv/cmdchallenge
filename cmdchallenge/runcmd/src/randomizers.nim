@@ -34,12 +34,6 @@ proc count_string_in_line(jsonChallenge: JsonNode): seq[string] =
 
   return @[&"{randNum + numMatches}"]
 
-proc delete_files(jsonChallenge: JsonNode): seq[string] =
-  # Just make some random files
-  for _ in 1 .. rand(10):
-    writeFile(&"{rand(1000)}", "")
-  return @[""]
-
 proc dirs_containing_files_with_extension(jsonChallenge: JsonNode): seq[string] =
   # Make some random files
   let expectedLines = jsonChallenge["expected_output"]["lines"].getElems.mapIt(it.getStr)
@@ -86,7 +80,7 @@ proc find_tabs_in_a_file(jsonChallenge: JsonNode): seq[string] =
 
 proc list_files(jsonChallenge: JsonNode): seq[string] =
   let expectedFiles = jsonChallenge["expected_output"]["lines"].getElems.mapIt(it.getStr)
-  let randFnames = toSeq(1 .. rand(10)).mapIt(&"{it}-{rand(1000)}")
+  let randFnames = toSeq(1 .. rand(10..20)).mapIt(&"{it}-{rand(1000)}")
 
   for fname in randFnames:
     writeFile(fname, "")
@@ -123,7 +117,6 @@ proc search_for_files_containing_string(jsonChallenge: JsonNode): seq[string] =
 let randomizers = {
   "count_files": count_files,
   "count_string_in_line": count_string_in_line,
-  "delete_files": delete_files,
   "dirs_containing_files_with_extension": dirs_containing_files_with_extension,
   "find_primes": find_primes,
   "find_tabs_in_a_file": find_tabs_in_a_file,

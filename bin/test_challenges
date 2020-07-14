@@ -53,11 +53,11 @@ def main(challenge_name):
                 )
             continue
 
-        example_cmd_fail = challenge.get("example_fail", None)
-        if example_cmd_fail:
+        expected_failures = challenge.get("expected_failures", [])
+        for failure in expected_failures:
             try:
                 # Test should fail
-                result_fail = output_from_cmd(example_cmd_fail, challenge)
+                result_fail = output_from_cmd(failure, challenge)
                 correct_fail = verify_result(result_fail)
             except DockerValidationError as e:
                 ret = 1
@@ -68,9 +68,9 @@ def main(challenge_name):
                 ret = 1
                 print(f"\t{Fore.LIGHTRED_EX}{FAIL}{Style.RESET_ALL}", end="")
                 print(
-                    f"\t{Fore.LIGHTCYAN_EX}Got a correct answer for an expected failure '{example_cmd_fail}'\t{Fore.LIGHTBLACK_EX}{result_fail}{Style.RESET_ALL}"
+                    f"\t{Fore.LIGHTCYAN_EX}Got a correct answer for an expected failure '{failure}'\t{Fore.LIGHTBLACK_EX}{result_fail}{Style.RESET_ALL}"
                 )
-                continue
+            continue
         print(f"\t{Fore.LIGHTGREEN_EX}{PASS}{Style.RESET_ALL}", end="")
         print("\t", end="")
         print("")

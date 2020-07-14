@@ -11,7 +11,9 @@ from os.path import join, dirname, realpath
 LOG = logging.getLogger()
 LOG.setLevel(logging.WARN)
 KEY_PREFIX = "s/solutions"
-COMMANDS_TABLE_NAME = environ.get("COMMANDS_TABLE_NAME", "testing-cmdchallenge-db-commands")
+COMMANDS_TABLE_NAME = environ.get(
+    "COMMANDS_TABLE_NAME", "testing-cmdchallenge-db-commands"
+)
 BUCKET_NAME = environ.get("BUCKET_NAME", "testing.cmdchallenge.com")
 SHARD_INDEX = int(environ.get("SHARD_INDEX", "0"))
 NUM_SHARDS = int(environ.get("SHARD", "10"))
@@ -19,53 +21,59 @@ dir_path = dirname(realpath(__file__))
 static_path = join(dir_path, "../../static")
 
 
-def slug_slice(slugs):
+def challenges_slice(challenges):
     """
-    Given a list of slugs returns a subset based the shard index
+    Given a list, returns a subset based the shard index
     and the number of shards
     """
-    last_slug_index = len(slugs) - 1
+    last_slug_index = len(challenges) - 1
     start_index = int((last_slug_index * SHARD_INDEX) / NUM_SHARDS)
     if (SHARD_INDEX + 1) == NUM_SHARDS:
-        end_index = len(slugs)
+        end_index = len(challenges)
     else:
         end_index = int((last_slug_index * (SHARD_INDEX + 1)) / NUM_SHARDS)
-    return slugs[start_index:end_index]
+    return challenges[start_index:end_index]
 
 
 def handler(event, context):
     cmds = set()
-    challenges = json.loads(open(join(dir_path, "ch/all-challenges.json")).read())
+    challenges = json.loads(open(join(dir_path, "ch/challenges.json")).read())
 
-    if environ.get('LOCAL'):
-        b = boto3.session.Session(profile_name='cmdchallenge', region_name='us-east-1')
-        s3 = b.client('s3')
-        table = b.resource('dynamodb').Table(COMMANDS_TABLE_NAME)
-        slugs = challenges
+    if environ.get("LOCAL"):
+        b = boto3.session.Session(profile_name="cmdchallenge", region_name="us-east-1")
+        s3 = b.client("s3")
+        table = b.resource("dynamodb").Table(COMMANDS_TABLE_NAME)
     else:
-        s3 = boto3.client('s3')
-        table = boto3.resource('dynamodb').Table(COMMANDS_TABLE_NAME)
-        slugs = slug_slice(challenges)
+        s3 = boto3.client("s3")
+        table = boto3.resource("dynamodb").Table(COMMANDS_TABLE_NAME)
+        challenges = challenges_slice(challenges)
 
-
-    for slug_name in slugs:
+    for challenge in challenges:
+        slug_name = challenge["slug"]
         resp = table.query(
             IndexName="challenge_slug-correct_length-index",
-            KeyConditionExpression=Key("challenge_slug").eq(slug_name) & Key("correct_length").lt(20000000000),
+            KeyConditionExpression=Key("challenge_slug").eq(slug_name)
+            & Key("correct_length").lt(20000000000),
             ScanIndexForward=True,
         )
-        data = resp["Items"]
+        data = [
+            item for item in resp["Items"] if item["version"] == challenge["version"]
+        ]
         while "LastEvaluatedKey" in resp:
             resp = table.query(
                 ExclusiveStartKey=resp["LastEvaluatedKey"],
                 IndexName="challenge_slug-correct_length-index",
-                KeyConditionExpression=Key("challenge_slug").eq(slug_name) & Key("correct_length").lt(20000000000),
+                KeyConditionExpression=Key("challenge_slug").eq(slug_name)
+                & Key("correct_length").lt(20000000000),
                 ScanIndexForward=True,
             )
-            data.extend(resp["Items"])
-
-        # TODO: only use the latest version
-        # data = [i for i in data if i.get("version", 0) >= 5]
+            data.extend(
+                [
+                    item
+                    for item in resp["Items"]
+                    if item["version"] == challenge["version"]
+                ]
+            )
 
         cmds = sorted(
             list(set(re.sub(r"\s{2,}", " ", i["cmd"].strip()) for i in data)),
