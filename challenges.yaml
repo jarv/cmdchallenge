@@ -126,7 +126,7 @@
 - slug: copy_file
   openemoji: 1F42C
   disp_title: copy file
-  version: 2
+  version: 3
   author: cmdchallenge
   description: |
     Copy the file named `take-the-command-challenge` to the directory `tmp/files`

@@ -30,7 +30,7 @@ proc chCopyFile(jsonChallenge: JsonNode): (string, bool) =
     return (&"Test failed, file does not exist", false)
 
   if not existsFileNotSymlink("take-the-command-challenge"):
-    return (&"Test failed, original file still exists", false)
+    return (&"Test failed, original file was removed", false)
 
   ("", true)
 
