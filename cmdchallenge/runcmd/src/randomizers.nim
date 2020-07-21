@@ -7,6 +7,13 @@ import json
 import sequtils
 import sugar
 
+proc oops_list_files(jsonChallenge: JsonNode): seq[string] =
+  let expectedFiles = jsonChallenge["expected_output"]["lines"].getElems[0].getStr
+  let randFile = &"zzz-{rand(100)}"
+  writeFile(randFile, "")
+  
+  return @[&"{expectedFiles} {randFile}"]
+
 proc count_files(jsonChallenge: JsonNode): seq[string] =
   # Create a random number of empty files
   let expectedFiles = parseInt(
@@ -25,7 +32,7 @@ proc count_string_in_line(jsonChallenge: JsonNode): seq[string] =
     jsonChallenge["expected_output"]["lines"].getElems[0].getStr
   )
 
-  let randNum = rand(200)
+  let randNum = rand(10 .. 20)
 
   for _ in 1 .. randNum:
     let f = open("access.log", fmAppend)
@@ -38,7 +45,7 @@ proc dirs_containing_files_with_extension(jsonChallenge: JsonNode): seq[string] 
   # Make some random files
   let expectedLines = jsonChallenge["expected_output"]["lines"].getElems.mapIt(it.getStr)
 
-  var randFnames = toSeq(1 .. rand(10)).mapIt(&"some/random/dir/{it}-{rand(1000)}/some-file.tf")
+  var randFnames = toSeq(1 .. rand(10 .. 20)).mapIt(&"some/random/dir/{it}-{rand(1000)}/some-file.tf")
   var randDirs: seq[string]
   
   for fname in randFnames:
@@ -124,6 +131,7 @@ let randomizers = {
   "nested_dirs": nested_dirs,
   "sum_all_numbers": sum_all_numbers,
   "search_for_files_containing_string": search_for_files_containing_string,
+  "oops_list_files": oops_list_files
 }.toTable
 
 proc runRandomizer*(jsonChallenge: JsonNode): seq[string] =

@@ -1,12 +1,27 @@
 /* eslint strict: ["error", "global"] */
 
 'use strict';
+const HOSTNAME = window.location.hostname.split('.');
+const BASEURL = HOSTNAME.filter((i) => i != "oops").join(".")
+const OOPS_IMG = '<img src="img/emojis/1F92D.png" alt="" />';
+const CMD_IMG = '<img src="img/cmdchallenge-round.png" alt="" />';
 
-const GLOBAL_VERSION = 2; // for cache busting
-const CMD_URL = window.location.hostname == 'localhost' ? 'https://testing.cmdchallenge.com/r' : '/r';
-const TAB_COMPLETION = ['find', 'echo', 'awk', 'sed', 'perl', 'wc', 'grep',
-  'cat', 'sort', 'cut', 'ls', 'tac', 'jq', 'paste', 'tr', 'rm', 'tail', 'comm',
-  'egrep'];
+const BASEURLS = {
+  CMD: '//' + BASEURL,
+  OOPS: '//oops.' + BASEURL,
+}
+const SITES = {
+  CMD: "cmdchallenge",
+  OOPS: "oops"
+}
+const FLAVOR = HOSTNAME[0].match(/oops/) !== null ? SITES.OOPS : SITES.CMD
+const SITE_LINKS = {
+  CMD: '<a href="//' + BASEURLS.CMD + '">' + CMD_IMG + '</a>',
+  OOPS: '<a href="//' + BASEURLS.OOPS + '">' + OOPS_IMG + '</a>',
+}
+
+const CMD_URL = window.location.hostname.match(/local/) ? 'https://testing.cmdchallenge.com/r' : '/r';
+const TAB_COMPLETION = FLAVOR === SITES.OOPS ? ['echo', 'read'] : ['find', 'echo', 'awk', 'sed', 'perl', 'wc', 'grep', 'cat', 'sort', 'cut', 'ls', 'tac', 'jq', 'paste', 'tr', 'rm', 'tail', 'comm', 'egrep'];
 
 const STORAGE_CORRECT = 'correct_answers';
 const INFO_STATUS = {
@@ -21,15 +36,13 @@ jQuery(function($) {
   let challenges = [];
   let retCode;
 
-  // Emojis for info-box ---
-
   const stepGen = function* (steps) {
     while (true) yield* steps;
   };
 
   const errorEmoji=stepGen(['1F63F.png']);
   const incorrectEmoji=stepGen(
-      ['E282.png', '1F645-200D-2640-FE0F.png', '1F645-200D-2642-FE0F.png']
+      ['E282.png', '1F645-200D-2640-FE0F.png', '1F645-200D-2642-FE0F.png', '1F940.png']
   );
   const correctEmojiBeg=stepGen(
       ['1F471-200D-2640-FE0F.png', '1F471-200D-2642-FE0F.png']
@@ -44,10 +57,13 @@ jQuery(function($) {
   );
 
   const correctEmojiAdv=stepGen(
-      ['1F478.png', '1F482.png', '1F9DD.png', '1F9DD-200D-2640-FE0F.png']
+      ['1F478.png', '1F482.png', '1F9DD.png', '1F9DD-200D-2640-FE0F.png', '1F680.png']
   );
 
-  // ---------------------
+  const correctEmojiOops=stepGen(
+      ['1F600.png', '1F604.png', '1F970.png', '1F60D.png', '1F929.png']
+  );
+
 
   const cmReader = new commonmark.Parser();
   const cmWriter = new commonmark.HtmlRenderer();
@@ -93,7 +109,14 @@ jQuery(function($) {
 
   const checkForWin = function() {
     if (uncompletedChallenges().length === 0) {
-      $('.title .won').show();
+      switch (FLAVOR) {
+        case SITES.OOPS:
+          $('.title .won').html('🎉 Congrats, you completed the challenge! 🎉 Try <a href="' + BASEURLS.CMD + '">even more challenges!</a>').show()
+          break;
+        case SITES.CMD:
+          $('.title .won').html('🎉 Congrats, you completed the challenge! 🎉').show()
+          break;
+      }
       return true;
     } else {
       $('.title .won').hide();
@@ -203,7 +226,14 @@ jQuery(function($) {
       url: '/challenges/challenges.json',
       success: function(resp) {
         if (typeof callback === 'function') {
-          callback(resp);
+          switch (FLAVOR) {
+            case SITES.OOPS:
+              callback(resp.filter((o) => (o.tags || []).includes('oops')))
+              break;
+            case SITES.CMD:
+              callback(resp.filter((o) => !(o.tags)));
+              break;
+          }
         }
       },
       error: function() {
@@ -218,7 +248,7 @@ jQuery(function($) {
       'cmd': command,
       'challenge_slug': currentChallenge.slug,
       'version': currentChallenge.version,
-      'g_version': GLOBAL_VERSION,
+      'img': currentChallenge.img || 'cmd',
     };
     $.ajax({
       type: 'GET',
@@ -255,13 +285,22 @@ jQuery(function($) {
       case INFO_STATUS.correct:
         const index = challenges.indexOf(currentChallenge);
         let emojiFname;
-        if (index < 4) {
-          emojiFname = correctEmojiBeg.next().value;
-        } else if (index >= 4 && index < 20) {
-          emojiFname = correctEmojiInt.next().value;
-        } else {
-          emojiFname = correctEmojiAdv.next().value;
+
+        switch (FLAVOR) {
+          case SITES.OOPS:
+            emojiFname = correctEmojiOops.next().value;
+            break;
+          case SITES.CMD:
+            if (index < 4) {
+              emojiFname = correctEmojiBeg.next().value;
+            } else if (index >= 4 && index < 20) {
+              emojiFname = correctEmojiInt.next().value;
+            } else {
+              emojiFname = correctEmojiAdv.next().value;
+            }
+            break;
         }
+
         $('#info-box .gradient').removeClass(
             'incorrect correct error').addClass('correct');
         $('#info-box .img').html(
@@ -432,6 +471,22 @@ jQuery(function($) {
 
   // main
 
+  // Setup for different site types
+  switch (FLAVOR) {
+    case SITES.OOPS:
+      $('#header-img').html(OOPS_IMG);
+      $('#header-text').html('Oops I deleted my bin/ dir :(');
+      $('#links ul').prepend(SITE_LINKS.CMD);
+      break;
+    case SITES.CMD:
+      $('#links ul').prepend(SITE_LINKS.OOPS);
+      break;
+  }
+
+  $('#header-img').show();
+  $('#header-text').show();
+
+
   retCode = colorize('0', 'green');
   // Prevent backspace from doing anything except
   // where we input text
@@ -445,13 +500,6 @@ jQuery(function($) {
       }
     }
   });
-
-  // Refocus the term when you click on solutions
-  $('#chck1').change(
-      function() {
-        term.focus();
-      }
-  );
 
   getChallenges(function(c) {
     challenges = c;

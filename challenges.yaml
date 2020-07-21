@@ -12,7 +12,116 @@
 #   version: *REQUIRED* if the challenge is modified this number should be bumped
 #            refresh the cache.
 #   author: Add a field for contributions.
-#   completions: array of completions for challenge
+#   completions: Array of completions for challenge
+#   tags: Array of tags used to filter for different flavors of cmdchallenge
+#   cache_correct: Cache correct answers (defaults to True)
+#   cache_incorrect: Cache incorrect answers (defaults to True)
+
+- slug: oops_cwd
+  openemoji: 1F62D
+  disp_title: current working directory
+  version: 1
+  description: |
+    A rogue process on this computer somehow deleted all of the files in the bin
+    directory!
+
+    ---
+    The good news is that you still have a bash shell prompt to figure out how to prevent
+    it from doing even more damage though you are only given one command to complete
+    each task.
+
+    For the first challenge, all you need to do is figure out where you are,
+    print the current working directory.
+  example: pwd
+  expected_output:
+    lines:
+      - '/var/challenges/oops_cwd'
+  img: cmd-no-bin
+  tags: ["oops"]
+
+- slug: oops_list_files
+  disp_title: list files
+  version: 2
+  openemoji: 1F92F
+  description: |
+    Great, now that you know which directory you are in, you want to see what else
+    is here. List all of the files on a single line, in the current working directory.
+
+    Hint: You won't be able to use the `ls` command, instead you will need to use
+    a bash builtin
+  expected_failures:
+    - echo "another-file.txt my-dissertation.txt"
+  expected_output:
+    lines:
+      - 'another-file.txt my-dissertation.txt'
+  example: echo *
+  img: cmd-no-bin
+  tags: ["oops"]
+
+- slug: oops_print_file_contents
+  disp_title: print file contents
+  version: 1
+  openemoji: 1F630
+  description: |
+    Oh no! You now remember there is a very important file in this directory.
+
+    Print its contents before the data is lost for forever!
+  completions: ["my-dissertation.txt"]
+  example: 'while read x; do echo $x; done < my-dissertation.txt'
+  expected_output:
+    lines:
+      - Rooter: A Methodology for the Typical Unification
+      - ""
+      - of Access Points and Redundancy
+      - ""
+      - Jeremy Stribling, Daniel Aguayo and Maxwell Krohn
+      - ""
+      - ABSTRACT
+      - ""
+      - Many physicists would agree that, had it not been for
+      - congestion control, the evaluation of web browsers might never
+      - have occurred. In fact, few hackers worldwide would disagree
+      - with the essential uniﬁcation of voice-over-IP and public-
+      - private key pair. In order to solve this riddle, we conﬁrm that
+      - SMPs can be made stochastic, cacheable, and interposable.
+      - ...
+  img: cmd-no-bin
+  tags: ["oops"]
+
+- slug: oops_print_process
+  disp_title: print process name
+  version: 2
+  openemoji: 1F627
+  description: |
+    You know there is a process on machine that is deleting files, the first thing
+    you want to do is identify the name of it. Print the name of the process
+
+    Hint: process information is stored in /proc, maybe there is a something there
+    that will help?
+  example: 'read x < /proc/42/cmdline ; echo $x'
+  expected_output:
+    lines:
+      - 'oops-this-will-delete-bin-dirs'
+  img: cmd-no-bin
+  tags: ["oops"]
+
+- slug: oops_kill_a_process
+  disp_title: kill a process
+  version: 2
+  openemoji: 1F625
+  description: |
+    You are doing great!
+
+    You managed to save your important file.
+    Now that you know the process name
+    it will be good to kill it before it does any more damanage.
+
+    Kill the running process
+  example: 'kill -9 42'
+  expected_failures:
+    - echo
+  img: cmd-no-bin
+  tags: ["oops"]
 
 - slug: hello_world
   openemoji: 1F40C
@@ -20,7 +129,8 @@
   version: 5
   author: cmdchallenge
   description: |
-    Print "hello world".
+    Your first challenge is to print "hello world" on the terminal in a single command.
+
     Hint: There are many ways to print text on the command line, one way is with the 'echo' command.
     Try it below and good luck!
   completions: ["place your advertisement here!"]
@@ -46,12 +156,13 @@
 - slug: list_files
   openemoji: 1F41B
   disp_title: list files
-  version: 7
+  version: 8
   author: cmdchallenge
   description: |
     List names of all the files in the current directory, one file per line.
   example: ls
   expected_output:
+    order: false
     lines:
       - '01-take.txt'
       - '02-the.txt'

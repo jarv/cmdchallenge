@@ -25,3 +25,4 @@ sudo systemctl stop update-engine
 sudo systemctl disable update-engine
 
 docker pull registry.gitlab.com/jarv/cmdchallenge/cmd:latest
+docker pull registry.gitlab.com/jarv/cmdchallenge/cmd-no-bin:latest

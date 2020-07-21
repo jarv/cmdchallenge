@@ -118,6 +118,12 @@ div.navbar {
     .title {
       display: table-cell;
       vertical-align: middle;
+      #header-text {
+        display: none
+      }
+      #header-img {
+        display: none
+      }
       .won {
         display: none;
         img {

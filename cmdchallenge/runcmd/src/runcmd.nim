@@ -2,7 +2,6 @@ import algorithm
 import argparse
 import base64
 import json
-import json
 import os
 import osproc
 import randomizers
@@ -11,6 +10,7 @@ import re
 import sequtils
 import strformat
 import strutils
+import oops
 
 proc errorExit(message: string): void =
   var j = %*
@@ -101,26 +101,32 @@ try:
 except AssertionError:
   errorExit(&"'{challengeFname}' has an incorrect slug")
 
-
 # For all commands, set a default timeout of 5 seconds
 let challengeTimeout = jsonChallenge{"timeout"}.getInt(5000)
+
 
 var
   outputPass, testsPass, afterRandOutputPass, afterRandTestsPass: bool = true
   cmdExitCode, afterRandExitCode: int = 0
   cmdOut, testsOut, afterRandExpectedOutput, afterRandOutput, afterRandTestsOut: string
-  
+
+# For some challenges, start the oops process
+var oopsProc = OopsProc(slug: opts.slug)
+oopsProc.start()
+ 
 (cmdOut, cmdExitCode) = runCombinedOutput(command, challengeTimeout)
 outputPass = matchesOutput(cmdOut, jsonChallenge)
 
-(testsOut, testsPass) = runCmdTest(jsonChallenge)
+(testsOut, testsPass) = runCmdTest(jsonChallenge, oopsProc)
+
+oopsProc.stop()
 
 let expectedAfterRandomizer = runRandomizer(jsonChallenge)
 
 if expectedAfterRandomizer.len > 0:
   (afterRandOutput, afterRandExitCode) = runCombinedOutput(command, challengeTimeout)
   afterRandOutputPass = matchesOutput(afterRandOutput, jsonChallenge, expectedAfterRandomizer)
-  (afterRandTestsOut, afterRandTestsPass) = runCmdTest(jsonChallenge)
+  (afterRandTestsOut, afterRandTestsPass) = runCmdTest(jsonChallenge, oopsProc)
 
 var j = %*
   {

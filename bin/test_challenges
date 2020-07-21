@@ -27,10 +27,11 @@ def main(challenge_name):
             continue
         d = challenge["slug"]
         example_cmd = challenge["example"]
+        img = challenge.get("img", "cmd")
         print(f"{Fore.LIGHTBLUE_EX}{d}", end="")
         print(f"\t{Fore.LIGHTBLACK_EX}`{example_cmd}`{Style.RESET_ALL}", end="")
         try:
-            result = output_from_cmd(example_cmd, challenge)
+            result = output_from_cmd(example_cmd, challenge, img)
             exit_ok = result["CmdExitCode"] == 0
             correct = verify_result(result)
         except DockerValidationError as e:
@@ -57,7 +58,7 @@ def main(challenge_name):
         for failure in expected_failures:
             try:
                 # Test should fail
-                result_fail = output_from_cmd(failure, challenge)
+                result_fail = output_from_cmd(failure, challenge, img)
                 correct_fail = verify_result(result_fail)
             except DockerValidationError as e:
                 ret = 1

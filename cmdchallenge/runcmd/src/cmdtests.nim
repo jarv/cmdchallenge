@@ -6,11 +6,22 @@ import json
 import sequtils
 import sugar
 import oswalkdir
+import oops
+import osproc
 
 proc existsFileNotSymlink(fname: string): bool =
   return (existsFile(fname) and not symlinkExists(fname))
 
-proc chCreateFile(jsonChallenge: JsonNode): (string, bool) =
+proc chOopsKillAProcess(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
+  # Wait up to 500 ms for the process to be killed
+  for i in toSeq(1 .. 5):
+    if oopsProc.p == nil or not oopsProc.p.running:
+      return ("", true)
+    sleep(10)
+
+  return (&"Test failed, process is still running ", false)
+
+proc chCreateFile(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   if not existsFileNotSymlink("take-the-command-challenge"):
     return (&"Test failed, file does not exist", false)
   
@@ -19,13 +30,13 @@ proc chCreateFile(jsonChallenge: JsonNode): (string, bool) =
 
   ("", true)
 
-proc chCreateDirectory(jsonChallenge: JsonNode): (string, bool) =
+proc chCreateDirectory(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   if not existsDir("tmp/files"):
     return (&"Test failed, directory does not exist", false)
 
   ("", true)
 
-proc chCopyFile(jsonChallenge: JsonNode): (string, bool) =
+proc chCopyFile(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   if not existsFileNotSymlink("tmp/files/take-the-command-challenge"):
     return (&"Test failed, file does not exist", false)
 
@@ -34,7 +45,7 @@ proc chCopyFile(jsonChallenge: JsonNode): (string, bool) =
 
   ("", true)
 
-proc chMoveFile(jsonChallenge: JsonNode): (string, bool) =
+proc chMoveFile(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   if not existsFileNotSymlink("tmp/files/take-the-command-challenge"):
     return (&"Test failed, file does not exist", false)
 
@@ -46,7 +57,7 @@ proc chMoveFile(jsonChallenge: JsonNode): (string, bool) =
 
   ("", true)
 
-proc chCreateSymlink(jsonChallenge: JsonNode): (string, bool) =
+proc chCreateSymlink(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   if not symlinkExists("take-the-command-challenge"):
     return (&"Test failed, symlink does not exist", false)
 
@@ -57,7 +68,7 @@ proc chCreateSymlink(jsonChallenge: JsonNode): (string, bool) =
 
   ("", true)
 
-proc chDeleteFiles(jsonChallenge: JsonNode): (string, bool) =
+proc chDeleteFiles(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   try:
     if not existsDir("/var/challenges/delete_files"):
       return (&"Test failed, challenge directory was removed", false)
@@ -70,7 +81,7 @@ proc chDeleteFiles(jsonChallenge: JsonNode): (string, bool) =
 
   ("", true)
 
-proc chRemoveExtensionsFromFiles(jsonChallenge: JsonNode): (string, bool) =
+proc chRemoveExtensionsFromFiles(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   for f in walkDirRec("."):
     let (dir, name, ext) = splitFile(f)
     if ext != "":
@@ -78,7 +89,7 @@ proc chRemoveExtensionsFromFiles(jsonChallenge: JsonNode): (string, bool) =
 
   ("", true)
 
-proc chRemoveFilesWithADash(jsonChallenge: JsonNode): (string, bool) =
+proc chRemoveFilesWithADash(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   if toSeq(walkDirRec(".")).filterIt(it.existsFile).len != 1:
       return (&"Test failed, expecting one file", false)
 
@@ -88,7 +99,7 @@ proc chRemoveFilesWithADash(jsonChallenge: JsonNode): (string, bool) =
 
   ("", true)
 
-proc chRemoveFilesWithExtension(jsonChallenge: JsonNode): (string, bool) =
+proc chRemoveFilesWithExtension(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   if toSeq(walkDirRec(".")).filterIt(it.existsFile).len != 4:
       return (&"Test failed, expecting 4 files", false)
   for f in walkDirRec("."):
@@ -98,7 +109,7 @@ proc chRemoveFilesWithExtension(jsonChallenge: JsonNode): (string, bool) =
 
   ("", true)
 
-proc chRemoveFilesWithoutExtension(jsonChallenge: JsonNode): (string, bool) =
+proc chRemoveFilesWithoutExtension(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   if toSeq(walkDirRec(".")).filterIt(it.existsFile).len != 4:
       return (&"Test failed, expecting 4 files", false)
 
@@ -111,7 +122,7 @@ proc chRemoveFilesWithoutExtension(jsonChallenge: JsonNode): (string, bool) =
 
   ("", true)
 
-proc chReplaceTextInFiles(jsonChallenge: JsonNode): (string, bool) =
+proc chReplaceTextInFiles(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   if toSeq(walkDirRec(".")).filterIt(it.existsFile and it.endswith(".txt")).len != 3:
     return (&"Test failed, expecting 3 .txt files", false)
 
@@ -138,12 +149,13 @@ let cmdTests = {
   "create_symlink": chCreateSymlink,
   "copy_file": chCopyFile,
   "move_file": chMoveFile,
+  "oops_kill_a_process": chOopsKillAProcess,
 }.toTable
 
-proc runCmdTest*(jsonChallenge: JsonNode): (string, bool) =
+proc runCmdTest*(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   let slug = jsonChallenge["slug"].getStr
   if cmdTests.hasKey(slug):
-    return cmdTests[slug](jsonChallenge)
+    return cmdTests[slug](jsonChallenge, oopsProc)
   else:
     return ("", true)
 

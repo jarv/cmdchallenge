@@ -13,13 +13,12 @@ LOG = logging.getLogger()
 DOCKER_TIMEOUT = 8
 BASE_WORKING_DIR = "/var/challenges"
 
-IMAGE_TAG = environ.get('SHORT_SHA', 'latest')
-REGISTRY_IMAGE = f"registry.gitlab.com/jarv/cmdchallenge/cmd:{IMAGE_TAG}"
+IMAGE_TAG = environ.get("SHORT_SHA", "latest")
 
 dir_path = dirname(realpath(__file__))
 dir_cmdchallenge = join(dir_path, "../../cmdchallenge")
 
-if environ.get('LAMBDA_RUNTIME_DIR'):
+if environ.get("LAMBDA_RUNTIME_DIR"):
     volume_dir = "/var/ro_volume"
 else:
     volume_dir = join(dir_cmdchallenge, "ro_volume")
@@ -63,8 +62,10 @@ class timeout:
 
 
 def output_from_cmd(
-    cmd, challenge, docker_version=None, docker_base_url=None, tls_settings=None
+    cmd, challenge, img, docker_version=None, docker_base_url=None, tls_settings=None
 ):
+    registry_image = f"registry.gitlab.com/jarv/cmdchallenge/{img}:{IMAGE_TAG}"
+
     if tls_settings:
         tls_config = docker.tls.TLSConfig(**tls_settings)
     else:
@@ -89,7 +90,7 @@ def output_from_cmd(
             LOG.debug(f"Running `{docker_cmd}` in container")
 
             output = client.containers.run(
-                REGISTRY_IMAGE, docker_cmd, working_dir=challenge_dir, **DOCKER_OPTS
+                registry_image, docker_cmd, working_dir=challenge_dir, **DOCKER_OPTS
             ).decode("utf-8")
         except SSLError:
             LOG.exception(f"SSL validation error connecting to {docker_base_url}")

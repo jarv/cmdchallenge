@@ -66,6 +66,8 @@ test-challenges:
 push-image-cmd: build-image-cmd
 	docker push $(CI_REGISTRY_IMAGE)/cmd:$(REF)
 	docker push $(CI_REGISTRY_IMAGE)/cmd:latest
+	docker push $(CI_REGISTRY_IMAGE)/cmd-no-bin:$(REF)
+	docker push $(CI_REGISTRY_IMAGE)/cmd-no-bin:latest
 
 push-image-ci: build-image-ci
 	docker push $(CI_REGISTRY_IMAGE)/ci:$(REF)
@@ -74,20 +76,20 @@ push-image-ci: build-image-ci
 build-image-cmd: build-runcmd update-challenges tar-var
 	cd $(DIR_CMDCHALLENGE); docker build -t $(CI_REGISTRY_IMAGE)/cmd:latest \
 		--tag $(CI_REGISTRY_IMAGE)/cmd:$(REF) .
+	cd $(DIR_CMDCHALLENGE); docker build -t $(CI_REGISTRY_IMAGE)/cmd-no-bin:latest \
+		--tag $(CI_REGISTRY_IMAGE)/cmd-no-bin:$(REF) -f Dockerfile-no-bin .
 	rm -f var.tar.gz
 
 build-image-ci:
 	docker build -t $(CI_REGISTRY_IMAGE)/ci:latest \
 		--tag $(CI_REGISTRY_IMAGE)/ci:$(CI_COMMIT_TAG) -f Dockerfile-ci .
 
-build-runcmd-golang:
-	cd $(DIR_CMDCHALLENGE); GOOS=linux GOARCH=amd64 go build -o ./ro_volume/runcmd ./runcmd/runcmd.go ./runcmd/challenges.go
-
-build-runcmd-golang-darwin:
-	cd $(DIR_CMDCHALLENGE); go build -o ./ro_volume/runcmd-darwin ./runcmd/runcmd.go ./runcmd/challenges.go
-
 build-runcmd:
 	docker run --rm -v $(DIR_CMDCHALLENGE)/runcmd:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
+	docker run --rm -v $(DIR_CMDCHALLENGE)/oops:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
+
+build-test:
+	docker run --rm -v $(DIR_CMDCHALLENGE)/test:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
 
 update-challenges:
 	./bin/update-challenges
@@ -96,4 +98,10 @@ tar-var:
 	cd $(DIR_CMDCHALLENGE); tar --exclude='.gitignore' -czf var.tar.gz var/
 
 cmdshell:
-	docker run -it  --mount type=bind,source="$(PWD)/cmdchallenge/ro_volume",target=/ro_volume  registry.gitlab.com/jarv/cmdchallenge/cmd:latest bash
+	docker run -it --privileged --mount type=bind,source="$(PWD)/cmdchallenge/ro_volume",target=/ro_volume  registry.gitlab.com/jarv/cmdchallenge/cmd:latest bash
+
+oopsshell:
+	docker run -it --privileged --mount type=bind,source="$(PWD)/cmdchallenge/ro_volume",target=/ro_volume  registry.gitlab.com/jarv/cmdchallenge/cmd-no-bin:latest bash
+
+testshell:
+	docker run -it --privileged --mount type=bind,source="$(PWD)/cmdchallenge/test",target=/tmp registry.gitlab.com/jarv/cmdchallenge/cmd:latest bash
