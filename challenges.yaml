@@ -20,17 +20,16 @@
 - slug: oops_cwd
   openemoji: 1F62D
   disp_title: current working directory
-  version: 1
+  version: 2
   description: |
-    A rogue process on this computer somehow deleted all of the files in the bin
-    directory!
+    A process on this computer managed to delete all of the files in
+    the /bin and /usr/bin directories!
 
     ---
-    The good news is that you still have a bash shell prompt to figure out how to prevent
-    it from doing even more damage though you are only given one command to complete
-    each task.
+    The good news is that you still have a shell prompt, the bad news
+    is that you are only able to execute one command to complete each challenge.
 
-    For the first challenge, all you need to do is figure out where you are,
+    For now, all you need to do is figure out where you are,
     print the current working directory.
   example: pwd
   expected_output:
@@ -60,7 +59,7 @@
 
 - slug: oops_print_file_contents
   disp_title: print file contents
-  version: 1
+  version: 2
   openemoji: 1F630
   description: |
     Oh no! You now remember there is a very important file in this directory.
