@@ -95,7 +95,7 @@ update-challenges:
 	./bin/update-challenges
 
 tar-var:
-	cd $(DIR_CMDCHALLENGE); tar --exclude='.gitignore' -czf var.tar.gz var/
+	cd $(DIR_CMDCHALLENGE); tar --exclude='.gitignore' --exclude='.gitkeep' -czf var.tar.gz var/
 
 cmdshell:
 	docker run -it --privileged --mount type=bind,source="$(PWD)/cmdchallenge/ro_volume",target=/ro_volume  registry.gitlab.com/jarv/cmdchallenge/cmd:latest bash

@@ -40,7 +40,7 @@
 
 - slug: oops_list_files
   disp_title: list files
-  version: 2
+  version: 3
   openemoji: 1F92F
   description: |
     Great, now that you know which directory you are in, you want to see what else
