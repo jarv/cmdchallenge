@@ -64,7 +64,7 @@
   description: |
     Oh no! You now remember there is a very important file in this directory.
 
-    Print its contents before the data is lost for forever!
+    Display its contents before the data is lost for forever!
   completions: ["my-dissertation.txt"]
   example: 'while read x; do echo $x; done < my-dissertation.txt'
   expected_output:
