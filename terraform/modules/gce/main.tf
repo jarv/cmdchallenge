@@ -41,7 +41,8 @@ resource "google_compute_firewall" "default" {
 }
 
 resource "google_compute_instance" "default" {
-  count = var.num_instances
+  allow_stopping_for_update = true
+  count                     = var.num_instances
   name = format(
     "%v-%02d",
     var.name,
