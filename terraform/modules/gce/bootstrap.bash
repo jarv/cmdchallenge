@@ -4,6 +4,7 @@ set -ex
 exec &> >(tee -a "/var/tmp/bootstrap-$(date +%Y%m%d-%H%M%S).log")
 
 COPY_DIR="/var/tmp"
+DOCKER_CFG_DIR="$COPY_DIR/docker_cfg_files"
 BASE_PROM_DIR="/var/lib/docker/prometheus"
 NODE_EXPORTER_VERSION="1.0.1"
 
@@ -33,13 +34,13 @@ if [[ -d "$COPY_DIR/docker_cfg_files" ]]; then
   sudo cp -r $COPY_DIR/ro_volume /var/
   sudo chmod -v 0400 /etc/docker/server-key.pem
   sudo chmod -v 0444 /etc/docker/ca.pem /etc/docker/server-cert.pem
-  sudo cp $COPY_DIR/docker_cfg_files/10-tls-verify.conf /etc/systemd/system/docker.service.d/10-tls-verify.conf
-  sudo cp $COPY_DIR/docker_cfg_files/docker-tls-tcp.socket /etc/systemd/system/docker-tls-tcp.socket
-  sudo cp $COPY_DIR/docker_cfg_files/docker-cleanup.timer /etc/systemd/system/docker-cleanup.timer
-  sudo cp $COPY_DIR/docker_cfg_files/docker-cleanup.service /etc/systemd/system/docker-cleanup.service
-  sudo cp $COPY_DIR/docker_cfg_files/prometheus.service /etc/systemd/system/prometheus.service
-  sudo cp $COPY_DIR/docker_cfg_files/node-exporter.service /etc/systemd/system/node-exporter.service
-  sudo cp $COPY_DIR/prometheus.yml "$BASE_PROM_DIR/prometheus/prometheus.yml"
+  sudo cp $DOCKER_CFG_DIR/10-tls-verify.conf /etc/systemd/system/docker.service.d/10-tls-verify.conf
+  sudo cp $DOCKER_CFG_DIR/docker-tls-tcp.socket /etc/systemd/system/docker-tls-tcp.socket
+  sudo cp $DOCKER_CFG_DIR/docker-cleanup.timer /etc/systemd/system/docker-cleanup.timer
+  sudo cp $DOCKER_CFG_DIR/docker-cleanup.service /etc/systemd/system/docker-cleanup.service
+  sudo cp $DOCKER_CFG_DIR/prometheus.service /etc/systemd/system/prometheus.service
+  sudo cp $DOCKER_CFG_DIR/node-exporter.service /etc/systemd/system/node-exporter.service
+  sudo cp $DOCKER_CFG_DIR/prometheus.yml "$BASE_PROM_DIR/prometheus/prometheus.yml"
   sudo systemctl daemon-reload
   sudo systemctl enable docker-tls-tcp.socket
   sudo systemctl enable docker-cleanup.timer
