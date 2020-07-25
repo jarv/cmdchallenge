@@ -3,7 +3,7 @@
 set -ex
 exec &> >(tee -a "/var/tmp/bootstrap-$(date +%Y%m%d-%H%M%S).log")
 
-echo "Starting bootstrap for user: $USER"
+echo "Starting bootstrap for user: $USER uid: $UID"
 
 COPY_DIR="/var/tmp"
 DOCKER_CFG_DIR="$COPY_DIR/docker_cfg_files"
@@ -15,20 +15,22 @@ sudo mkdir -p /var/lib/cloud/bootstrap
 sudo chmod 777 /var/lib/cloud/bootstrap
 sudo mkdir -p "$BASE_PROM_DIR"
 
-if [[ ! -f "$BASE_PROM_DIR/node_exporter" ]]; then
-  sudo curl -L -o /tmp/node-exporter.tar.gz "https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-$NODE_EXPORTER_VERSION.linux-amd64.tar.gz"
-  sudo tar -C /tmp -zxf /tmp/node-exporter.tar.gz
-  sudo cp /tmp/node_exporter-*/node_exporter "$BASE_PROM_DIR/node_exporter"
-  sudo rm -rf /tmp/node_exporter-*
-fi
-
-if [[ ! -d "$BASE_PROM_DIR/prometheus" ]]; then
-  sudo curl -L -o /tmp/prometheus.tar.gz "https://github.com/prometheus/prometheus/releases/download/v$PROMETHEUS_VERSION/prometheus-$PROMETHEUS_VERSION.linux-amd64.tar.gz"
-  sudo tar -C /tmp -zxf /tmp/prometheus.tar.gz
-  sudo mv /tmp/prometheus-* "$BASE_PROM_DIR/prometheus"
-fi
 
 if [[ -d "$COPY_DIR/docker_cfg_files" ]]; then
+
+  if [[ ! -f "$BASE_PROM_DIR/node_exporter" ]]; then
+    sudo curl -L -o /tmp/node-exporter.tar.gz "https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-$NODE_EXPORTER_VERSION.linux-amd64.tar.gz"
+    sudo tar -C /tmp -zxf /tmp/node-exporter.tar.gz
+    sudo cp /tmp/node_exporter-*/node_exporter "$BASE_PROM_DIR/node_exporter"
+    sudo rm -rf /tmp/node_exporter-*
+  fi
+
+  if [[ ! -d "$BASE_PROM_DIR/prometheus" ]]; then
+    sudo curl -L -o /tmp/prometheus.tar.gz "https://github.com/prometheus/prometheus/releases/download/v$PROMETHEUS_VERSION/prometheus-$PROMETHEUS_VERSION.linux-amd64.tar.gz"
+    sudo tar -C /tmp -zxf /tmp/prometheus.tar.gz
+    sudo mv /tmp/prometheus-* "$BASE_PROM_DIR/prometheus"
+  fi
+
   sudo mkdir -p /etc/docker
   sudo mkdir -p /etc/systemd/system/docker.service.d
   sudo cp $COPY_DIR/*cmdchallenge.com/* /etc/docker/
