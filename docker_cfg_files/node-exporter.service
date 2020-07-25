@@ -1,0 +1,13 @@
+[Unit]
+Description=Node Exporter
+Documentation=https://prometheus.io/docs/introduction/overview/
+After=network-online.target
+
+[Service]
+User=root
+Restart=on-failure
+
+ExecStart=/var/lib/docker/prometheus/node_exporter
+
+[Install]
+WantedBy=multi-user.target
