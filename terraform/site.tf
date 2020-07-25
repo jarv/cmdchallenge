@@ -168,7 +168,7 @@ module "gce" {
   num_instances     = 1
   source            = "./modules/gce"
   name              = local.is_prod == "yes" ? local.name : format("%v-%v", local.name, local.timestamp_sanitized)
-  machine_type      = local.is_prod == "yes" ? "e2-small" : "f1-micro"
+  machine_type      = local.is_prod == "yes" ? "e2-micro" : "f1-micro"
   ca_pem_fname      = var.CA_PEM_FNAME
   use_static_ip     = local.is_prod == "yes" ? true : false
   preemptible       = local.is_prod == "yes" ? false : true
