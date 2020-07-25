@@ -3,28 +3,30 @@
 set -ex
 exec &> >(tee -a "/var/tmp/bootstrap-$(date +%Y%m%d-%H%M%S).log")
 
+echo "Starting bootstrap for user: $USER"
+
 COPY_DIR="/var/tmp"
 DOCKER_CFG_DIR="$COPY_DIR/docker_cfg_files"
 BASE_PROM_DIR="/var/lib/docker/prometheus"
 NODE_EXPORTER_VERSION="1.0.1"
+PROMETHEUS_VERSION="2.20.0"
 
 sudo mkdir -p /var/lib/cloud/bootstrap
 sudo chmod 777 /var/lib/cloud/bootstrap
-mkdir -p "$BASE_PROM_DIR"
+sudo mkdir -p "$BASE_PROM_DIR"
 
 if [[ ! -f "$BASE_PROM_DIR/node_exporter" ]]; then
-  curl -L -o /tmp/node-exporter.tar.gz "https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-$NODE_EXPORTER_VERSION.linux-amd64.tar.gz"
-  tar -C /tmp -zxf /tmp/node-exporter.tar.gz
-  cp /tmp/node_exporter-*/node_exporter "$BASE_PROM_DIR/node_exporter"
-  rm -rf /tmp/node_exporter-*
+  sudo curl -L -o /tmp/node-exporter.tar.gz "https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-$NODE_EXPORTER_VERSION.linux-amd64.tar.gz"
+  sudo tar -C /tmp -zxf /tmp/node-exporter.tar.gz
+  sudo cp /tmp/node_exporter-*/node_exporter "$BASE_PROM_DIR/node_exporter"
+  sudo rm -rf /tmp/node_exporter-*
 fi
 
 if [[ ! -d "$BASE_PROM_DIR/prometheus" ]]; then
-  curl -L -o /tmp/prometheus.tar.gz "https://github.com/prometheus/prometheus/releases/download/v2.20.0/prometheus-2.20.0.linux-amd64.tar.gz"
-  tar -C /tmp -zxf /tmp/prometheus.tar.gz
-  mv /tmp/prometheus-* "$BASE_PROM_DIR/prometheus"
+  sudo curl -L -o /tmp/prometheus.tar.gz "https://github.com/prometheus/prometheus/releases/download/v$PROMETHEUS_VERSION/prometheus-$PROMETHEUS_VERSION.linux-amd64.tar.gz"
+  sudo tar -C /tmp -zxf /tmp/prometheus.tar.gz
+  sudo mv /tmp/prometheus-* "$BASE_PROM_DIR/prometheus"
 fi
-
 
 if [[ -d "$COPY_DIR/docker_cfg_files" ]]; then
   sudo mkdir -p /etc/docker
@@ -41,6 +43,7 @@ if [[ -d "$COPY_DIR/docker_cfg_files" ]]; then
   sudo cp $DOCKER_CFG_DIR/prometheus.service /etc/systemd/system/prometheus.service
   sudo cp $DOCKER_CFG_DIR/node-exporter.service /etc/systemd/system/node-exporter.service
   sudo cp $DOCKER_CFG_DIR/prometheus.yml "$BASE_PROM_DIR/prometheus/prometheus.yml"
+  sudo cp $DOCKER_CFG_DIR/daemon.json /etc/docker/daemon.json
   sudo systemctl daemon-reload
   sudo systemctl enable docker-tls-tcp.socket
   sudo systemctl enable docker-cleanup.timer
