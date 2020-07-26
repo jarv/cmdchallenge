@@ -18,6 +18,7 @@ sudo mkdir -p "$BASE_PROM_DIR"
 
 if [[ -d "$COPY_DIR/docker_cfg_files" ]]; then
 
+
   if [[ ! -f "$BASE_PROM_DIR/node_exporter" ]]; then
     sudo curl -L -o /tmp/node-exporter.tar.gz "https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-$NODE_EXPORTER_VERSION.linux-amd64.tar.gz"
     sudo tar -C /tmp -zxf /tmp/node-exporter.tar.gz
@@ -30,6 +31,9 @@ if [[ -d "$COPY_DIR/docker_cfg_files" ]]; then
     sudo tar -C /tmp -zxf /tmp/prometheus.tar.gz
     sudo mv /tmp/prometheus-* "$BASE_PROM_DIR/prometheus"
   fi
+
+  sudo useradd prometheus
+  sudo chown -R prometheus "$BASE_PROM_DIR/prometheus"
 
   sudo mkdir -p /etc/docker
   sudo mkdir -p /etc/systemd/system/docker.service.d
