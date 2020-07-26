@@ -196,13 +196,11 @@ jQuery(function($) {
       const dispTitle = c.disp_title;
       $('div#badges').append(
           '<div tabindex=\'-1\' class=\'img-container ' +
-            slug + '\'><a id=\'badge_' +
+            slug + '\'><a title=\'' + dispTitle + '\' id=\'badge_' +
             slug + '\' href=\'#/' +
             slug + '\'><img class=\'badge\' src=\'img/emojis/' +
             c.openemoji + '.png\' alt=\'' +
-            slug + '\'/><span class=\'tooltip\'>' +
-            dispTitle +
-            '</span></a></li>');
+            slug + '\'/></a></li>');
       $('a#badge_' + slug).on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();

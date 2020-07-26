@@ -360,12 +360,6 @@ div#badges {
     padding: 0;
     float: left;
 
-    img.badge:hover {
-      + .tooltip  {
-        visibility: visible;
-        opacity: 1;
-      }
-    }
     img.badge {
       position: relative;
       display: inline-block;
@@ -373,21 +367,6 @@ div#badges {
       width: 40px;
       @media only screen and (max-width: $medium) {
         width: 30px;
-      }
-      + .tooltip {
-        visibility: hidden;
-        font-size: 1em;
-        width: 250%;
-        background-color: lighten($gray, 5%);
-        color: lighten($cmdblue, 50%);
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px;
-        position: absolute;
-        z-index: 1;
-        top: 50%;
-        left: 60%;
-        font-family: Arial;
       }
     }
   }
