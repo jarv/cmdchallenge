@@ -70,7 +70,7 @@ test:image:
 ######################
 
 .deploy:tf:
-  script:
+  before_script:
     - export TF_VAR_GCP_CRED_JSON_FNAME="$GCP_CRED_JSON_FNAME"
     - export TF_VAR_CA_PEM_FNAME="$CA_PEM_FNAME"
     - export TF_VAR_SSH_PUBLIC_KEY="$SSH_PUBLIC_KEY"
@@ -78,7 +78,6 @@ test:image:
     - pushd terraform
     - terraform init
     - terraform workspace list
-    - terraform apply -auto-approve
 
 deploy:testing:tf:
   extends: .deploy:tf
@@ -86,12 +85,22 @@ deploy:testing:tf:
   variables:
     TF_WORKSPACE: testing
   resource_group: testing:tf
+  script:
+    - terraform apply -auto-approve
 
 deploy:testing:static:
   stage: deploy:testing
   script:
     - make publish_testing
   resource_group: testing:static
+
+deploy:prod:plan:
+  extends: .deploy:tf
+  stage: deploy:testing
+  variables:
+    TF_WORKSPACE: prod
+  script:
+    - terraform plan
 
 deploy:prod:tf:
   extends: .deploy:tf
@@ -100,6 +109,8 @@ deploy:prod:tf:
     TF_WORKSPACE: prod
   resource_group: prod:tf
   when: manual
+  script:
+    - terraform apply -auto-approve
 
 deploy:prod:static:
   stage: deploy:prod
