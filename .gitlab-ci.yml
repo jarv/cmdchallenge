@@ -9,8 +9,7 @@ workflow:
 
 stages:
   - test
-  - deploy:testing
-  - deploy:prod
+  - deploy
 
 #### IMAGE
 
@@ -81,7 +80,7 @@ test:image:
 
 deploy:testing:tf:
   extends: .deploy:tf
-  stage: deploy:testing
+  stage: deploy
   variables:
     TF_WORKSPACE: testing
   resource_group: testing:tf
@@ -89,14 +88,14 @@ deploy:testing:tf:
     - terraform apply -auto-approve
 
 deploy:testing:static:
-  stage: deploy:testing
+  stage: deploy
   script:
     - make publish_testing
   resource_group: testing:static
 
 deploy:prod:plan:
   extends: .deploy:tf
-  stage: deploy:testing
+  stage: deploy
   variables:
     TF_WORKSPACE: prod
   script:
@@ -104,7 +103,7 @@ deploy:prod:plan:
 
 deploy:prod:tf:
   extends: .deploy:tf
-  stage: deploy:prod
+  stage: deploy
   variables:
     TF_WORKSPACE: prod
   resource_group: prod:tf
@@ -113,7 +112,7 @@ deploy:prod:tf:
     - terraform apply -auto-approve
 
 deploy:prod:static:
-  stage: deploy:prod
+  stage: deploy
   script:
     - make publish_prod
   resource_group: prod:static
