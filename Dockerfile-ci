@@ -3,7 +3,7 @@ COPY Pipfile /Pipfile
 COPY Pipfile.lock /Pipfile.lock
 
 ## Versions ##
-ARG TERRAFORM_VERSION=0.12.24
+ARG TERRAFORM_VERSION=0.13.5
 ARG PYTHON_VERSION='3.7.0'
 ARG PYENV_HOME=/root/.pyenv
 ENV PATH $PYENV_HOME/shims:$PYENV_HOME/bin:$PATH
