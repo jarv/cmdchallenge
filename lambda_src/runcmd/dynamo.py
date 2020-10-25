@@ -28,6 +28,10 @@ class commands:
 
 
 def raise_on_rate_limit(ip, limit_type="submit_with_cache"):
+    if environ.get('IS_PROD') == 'false':
+        LOG.debug('Skipping rate limit check because this is not production')
+        return
+
     LOG.debug("Checking request for rate limiting: {}".format(limit_type))
     dynamo_updates = boto3.resource("dynamodb").Table(SUBMISSIONS_TABLE_NAME)
     time_span = int(time.time() * 100) - (RATE_LIMITS[limit_type]["time_span"] * 100)
