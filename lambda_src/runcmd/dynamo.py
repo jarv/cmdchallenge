@@ -28,7 +28,7 @@ class commands:
 
 
 def raise_on_rate_limit(ip, limit_type="submit_with_cache"):
-    if environ.get('IS_PROD') == 'false':
+    if environ.get('IS_PROD') == 'no':
         LOG.debug('Skipping rate limit check because this is not production')
         return
 

@@ -133,10 +133,7 @@ module "dynamo" {
 
 module "api" {
   source     = "./modules/api"
-  region     = "us-east-1"
-  account_id = data.aws_caller_identity.current.account_id
   lambda_arn = module.lambda.arn
-  is_prod    = local.is_prod
   name       = "${local.name}-api"
 }
 
