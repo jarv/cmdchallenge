@@ -57,10 +57,10 @@ output "instance-fqdn" {
 
 locals {
   is_prod             = terraform.workspace == "prod" ? "yes" : "no"
-  timestamp           = "${timestamp()}"
-  timestamp_sanitized = "${replace("${local.timestamp}", "/[- TZ:]/", "")}"
+  timestamp           = timestamp()
+  timestamp_sanitized = replace(local.timestamp, "/[- TZ:]/", "")
   name                = "${terraform.workspace}-cmdchallenge"
-  short_sha           = "${data.external.short-sha.result.short_sha}"
+  short_sha           = data.external.short-sha.result.short_sha
 }
 
 # Hack to assert if the terraform workspace
@@ -83,10 +83,10 @@ provider "aws" {
 }
 
 provider "google" {
-  credentials = file("${var.GCP_CRED_JSON_FNAME}")
+  credentials = file(var.GCP_CRED_JSON_FNAME)
   project     = "cmdchallenge-1"
   region      = "us-east1"
-  version     = "~> 3.19"
+  version     = "~> 3.39"
 }
 
 data "aws_caller_identity" "current" {
