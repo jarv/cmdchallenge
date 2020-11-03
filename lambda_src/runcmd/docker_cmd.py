@@ -82,7 +82,7 @@ def output_from_cmd(
         client = docker.from_env()
 
     b64cmd = b64encode(cmd.encode("utf-8"))
-    challenge_dir = join(BASE_WORKING_DIR, challenge["slug"])
+    challenge_dir = join(BASE_WORKING_DIR, challenge.get("dir", challenge["slug"]))
     docker_cmd = f'runcmd --slug {challenge["slug"]} {b64cmd.decode("utf-8")}'
 
     with timeout(seconds=DOCKER_TIMEOUT):

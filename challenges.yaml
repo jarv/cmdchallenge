@@ -16,6 +16,7 @@
 #   tags: Array of tags used to filter for different flavors of cmdchallenge
 #   cache_correct: Cache correct answers (defaults to True)
 #   cache_incorrect: Cache incorrect answers (defaults to True)
+#   dir: Directory for the challenge, by default uses the slug unless this is set
 
 - slug: oops_cwd
   openemoji: 1F62D
