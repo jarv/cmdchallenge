@@ -52,6 +52,7 @@ publish_prod_profile: gen-deps
 
 gen-deps:
 	./bin/gen-deps
+	./bin/update-challenges
 
 ###################
 # CMD Challenge
@@ -105,3 +106,7 @@ oopsshell:
 
 testshell:
 	docker run -it --privileged --mount type=bind,source="$(PWD)/cmdchallenge/test",target=/tmp registry.gitlab.com/jarv/cmdchallenge/cmd:latest bash
+
+clean:
+	rm -f $(PWD)/cmdchallenge/ro_volume/ch/*
+	rm -f $(PWD)/static/challenges/*

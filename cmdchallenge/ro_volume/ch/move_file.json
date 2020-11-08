@@ -1,1 +1,0 @@
-{"slug": "move_file", "openemoji": "1F41F", "disp_title": "move file", "version": 1, "author": "cmdchallenge", "description": "Move the file named `take-the-command-challenge` to the directory `tmp/files`\n", "completions": ["take-the-command-challenge", "tmp/files"], "example": "mv take-the-command-challenge tmp/files/.", "expected_failures": ["echo"]}

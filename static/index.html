@@ -10,13 +10,18 @@
     <title>Commandline Challenge</title>
     <link rel="stylesheet" href="css/jquery.terminal.min.css" />
     <link rel="stylesheet" href="css/cmdchallenge.css"/>
+<!--    <link href="https://fonts.googleapis.com/css2?family=Snowburst+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas&display=swap" rel="stylesheet"> -->
     <meta name="description" content="One-line shell challenges, to help improve your skill on the commandline."/>
+    <link rel="stylesheet" href="css/highlight-js-10.0.0-railscasts.min.css" />
 
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/styles/railscasts.min.css" />
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/highlight.min.js"></script>
-<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/languages/bash.min.js"></script>
+<!-- <link rel="preconnect" href="https://fonts.gstatic.com"> -->
+<!-- <link href="https://fonts.googleapis.com/css2?family=Niconne&display=swap" rel="stylesheet"> -->
 
-  </head>
+    <script src="js/vendor/highlight-10.0.0.min.js"></script>
+    <script charset="UTF-8" src="js/vendor/bash-10.0.0.min.js"></script>
+    <script src="js/vendor/webfont-1.6.26.js"></script>
+</head>
   <body>
       <!--[if lt IE 8]>
           <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -26,28 +31,23 @@
       </noscript>
 
       <div class="navbar">
+        <div id="links">
+          <ul><li class="link"><a href="https://twitter.com/thecmdchallenge"><img src="img/twitter.png" alt="twitter" /></a></li><li class="link"><a href="https://gitlab.com/jarv/cmdchallenge"><img src="img/gitlab.png" alt="gitlab" /></a></li><li class="link"><a href="mailto:info@cmdchallenge.com"><img src="img/email.png" alt="email" /></a></li></ul>
+        </div>
         <div id="header">
           <div class="image">
-            <a id="header-img" href="/"><img src="img/cmdchallenge.png" alt="" /></a>
+            <a id="header-img" href="/"></a>
           </div>
           <div class="title">
-            <div><a id="header-text" href="/">Command Challenge</a></div>
+            <div><a id="header-text" href="/"></a></div>
             <div class="won"></div>
           </div>
-        </div>
-        <div id="links">
-          <ul>
-            <li class="link"><a href="https://twitter.com/thecmdchallenge"><img src="img/twitter.png" alt="twitter" /></a></li>
-            <li class="link"><a href="https://gitlab.com/jarv/cmdchallenge"><img src="img/gitlab.png" alt="gitlab" /></a></li>
-            <li class="link"><a href="mailto:info@cmdchallenge.com"><img src="img/email.png" alt="email" /></a></li>
-            <!-- <li class="link"><a href="https://www.buymeacoffee.com/jarv" target="_blank"><img src="img/coffee.png" alt="Buy Me A Coffee"  /></a></li> -->
-          </ul>
         </div>
       </div>
       <div class="wrapper">
         <div id="badges"></div>
 
-        <div class="row">
+        <div id="solution-box" class="row">
           <div class="col">
             <div class="tabs">
               <div class="tab">
@@ -64,10 +64,28 @@
           </div>
         </div>
 
+        <div id="learn-box" class="row">
+          <div class="col">
+            <div class="tabs-learn">
+              <div class="tab">
+                <input type="checkbox" id="chck2">
+                <label class="tab-label" for="chck2">Learn</label>
+                <div class="tab-content">
+                  <div id="learn">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         <div id="challenge-desc">
           <div class="img-container"></div>
           <div class="desc-container"></div>
         </div>
+
+
         <div id="term-spinner" style="display: none;"><img src="img/spinner.gif" alt="" /></div>
         <div id="term-challenge"></div>
         <div id="info-wrapper">

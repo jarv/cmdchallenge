@@ -5,7 +5,6 @@ import strutils
 import os
 import json
 import sequtils
-import sugar
 
 proc oops_list_files(jsonChallenge: JsonNode): seq[string] =
   let expectedFiles = jsonChallenge["expected_output"]["lines"].getElems[0].getStr

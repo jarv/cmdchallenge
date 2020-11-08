@@ -1,1 +1,0 @@
-{"slug": "delete_files", "openemoji": "1F421", "disp_title": "delete files", "version": 7, "author": "cmdchallenge", "description": "Delete all of the files in this challenge directory including all subdirectories and their contents.\n", "example": "find . -delete", "expected_failures": ["rm -rf /var/challenges/delete_files"]}

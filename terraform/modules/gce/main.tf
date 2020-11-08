@@ -122,6 +122,10 @@ resource "google_compute_instance" "default" {
     command = "${path.root}/../bin/create-server-keys ${self.metadata.fqdn}"
   }
 
+  provisioner "local-exec" {
+    command = "${path.root}/../bin/update-challenges"
+  }
+
   provisioner "file" {
     source      = "${path.root}/../cmdchallenge/ro_volume"
     destination = "/var/tmp/"

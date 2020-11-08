@@ -1,16 +1,15 @@
-import tables
+import algorithm
+import json
+import oops
+import os
+import osproc
+import sequtils
 import strformat
 import strutils
-import os
-import json
-import sequtils
-import sugar
-import oswalkdir
-import oops
-import osproc
+import tables
 
-proc existsFileNotSymlink(fname: string): bool =
-  return (existsFile(fname) and not symlinkExists(fname))
+proc fileExistsNotSymlink(fname: string): bool =
+  return (fileExists(fname) and not symlinkExists(fname))
 
 proc chOopsKillAProcess(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   # Wait up to 500 ms for the process to be killed
@@ -22,7 +21,7 @@ proc chOopsKillAProcess(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, b
   return (&"Test failed, process is still running ", false)
 
 proc chCreateFile(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
-  if not existsFileNotSymlink("take-the-command-challenge"):
+  if not fileExistsNotSymlink("take-the-command-challenge"):
     return (&"Test failed, file does not exist", false)
   
   if readFile("take-the-command-challenge") != "":
@@ -31,25 +30,25 @@ proc chCreateFile(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   ("", true)
 
 proc chCreateDirectory(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
-  if not existsDir("tmp/files"):
+  if not dirExists("tmp/files"):
     return (&"Test failed, directory does not exist", false)
 
   ("", true)
 
 proc chCopyFile(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
-  if not existsFileNotSymlink("tmp/files/take-the-command-challenge"):
+  if not fileExistsNotSymlink("tmp/files/take-the-command-challenge"):
     return (&"Test failed, file does not exist", false)
 
-  if not existsFileNotSymlink("take-the-command-challenge"):
+  if not fileExistsNotSymlink("take-the-command-challenge"):
     return (&"Test failed, original file was removed", false)
 
   ("", true)
 
 proc chMoveFile(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
-  if not existsFileNotSymlink("tmp/files/take-the-command-challenge"):
+  if not fileExistsNotSymlink("tmp/files/take-the-command-challenge"):
     return (&"Test failed, file does not exist", false)
 
-  if existsFile("take-the-command-challenge"):
+  if fileExists("take-the-command-challenge"):
     return (&"Test failed, file was not moved", false)
 
   if readFile("tmp/files/take-the-command-challenge") != "":
@@ -70,7 +69,7 @@ proc chCreateSymlink(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool
 
 proc chDeleteFiles(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   try:
-    if not existsDir("/var/challenges/delete_files"):
+    if not dirExists("/var/challenges/delete_files"):
       return (&"Test failed, challenge directory was removed", false)
   except IOError:
     return (&"Test failed, challenge directory was removed", false)
@@ -90,7 +89,7 @@ proc chRemoveExtensionsFromFiles(jsonChallenge: JsonNode, oopsProc: OopsProc): (
   ("", true)
 
 proc chRemoveFilesWithADash(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
-  if toSeq(walkDirRec(".")).filterIt(it.existsFile).len != 1:
+  if toSeq(walkDirRec(".")).filterIt(it.fileExists).len != 1:
       return (&"Test failed, expecting one file", false)
 
   for f in walkDirRec("."):
@@ -100,7 +99,7 @@ proc chRemoveFilesWithADash(jsonChallenge: JsonNode, oopsProc: OopsProc): (strin
   ("", true)
 
 proc chRemoveFilesWithExtension(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
-  if toSeq(walkDirRec(".")).filterIt(it.existsFile).len != 4:
+  if toSeq(walkDirRec(".")).filterIt(it.fileExists).len != 4:
       return (&"Test failed, expecting 4 files", false)
   for f in walkDirRec("."):
     let (dir, name, ext) = splitFile(f)
@@ -110,11 +109,11 @@ proc chRemoveFilesWithExtension(jsonChallenge: JsonNode, oopsProc: OopsProc): (s
   ("", true)
 
 proc chRemoveFilesWithoutExtension(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
-  if toSeq(walkDirRec(".")).filterIt(it.existsFile).len != 4:
+  if toSeq(walkDirRec(".")).filterIt(it.fileExists).len != 4:
       return (&"Test failed, expecting 4 files", false)
 
   for f in walkDirRec("."):
-    if not f.existsFile:
+    if not f.fileExists:
       continue
     let (_, _, ext) = splitFile(f)
     if not (ext in [".txt", ".exe"]):
@@ -123,18 +122,28 @@ proc chRemoveFilesWithoutExtension(jsonChallenge: JsonNode, oopsProc: OopsProc):
   ("", true)
 
 proc chReplaceTextInFiles(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
-  if toSeq(walkDirRec(".")).filterIt(it.existsFile and it.endswith(".txt")).len != 3:
+  if toSeq(walkDirRec(".")).filterIt(it.fileExists and it.endswith(".txt")).len != 3:
     return (&"Test failed, expecting 3 .txt files", false)
 
   for fname in walkDirRec("."):
-    if fname.existsFile and fname.endswith(".txt"):
+    if fname.fileExists and fname.endswith(".txt"):
       for line in fname.lines:
         if "challenges are difficult" in line:
           return ("Test failed, found the string 'challenges are difficult", false)
   
   if not ("challenges are difficult" in readFile("not-a-text-file")):
-    return ("Test failed, files without .txt extension must remain unmodified.", false)
+    return (&"Test failed, files without .txt extension must remain unmodified.", false)
 
+  ("", true)
+
+proc chXmas8(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
+  let elves = toSeq(walkDirRec("Elves"))
+  if elves.len != 0:
+      return (&"Test failed, elves are still in Elves/", false)
+  let workshop = toSeq(walkDirRec("Workshop")).sorted
+
+  if workshop != @["Workshop/Alabaster Snowball", "Workshop/Buddy", "Workshop/Bushy Evergreen", "Workshop/Hermey", "Workshop/Pepper Minstix", "Workshop/Shinny Upatree", "Workshop/Sugarplum Mary", "Workshop/Wunorse Openslae"]:
+    return (&"Test failed, Elves are not in the Workshop! Got: {workshop}", false)
   ("", true)
 
 let cmdTests = {
@@ -150,6 +159,7 @@ let cmdTests = {
   "copy_file": chCopyFile,
   "move_file": chMoveFile,
   "oops_kill_a_process": chOopsKillAProcess,
+  "xmas_8": chXmas8,
 }.toTable
 
 proc runCmdTest*(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =

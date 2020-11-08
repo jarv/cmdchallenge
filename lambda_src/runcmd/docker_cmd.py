@@ -116,7 +116,7 @@ def output_from_cmd(
             output_json = json.loads(output)
         except ValueError:
             LOG.exception("JSON decode error")
-            raise DockerValidationError("Command failure")
+            raise DockerValidationError(f"Command failure, got: {output}")
     if "Error" in output_json:
         LOG.error("Command execution error: {}".format(output_json["Error"]))
         raise DockerValidationError("Command execution error")

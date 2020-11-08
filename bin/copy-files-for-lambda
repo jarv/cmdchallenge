@@ -2,6 +2,7 @@
 set -eu -o pipefail
 
 dir=$(dirname "$0")
+"$dir"/update-challenges
 private_dir="${dir}/../private"
 cmdchallenge_dir="${dir}/../cmdchallenge"
 runcmd_src_dir="${dir}/../lambda_src/runcmd"

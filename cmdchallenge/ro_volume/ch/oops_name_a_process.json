@@ -1,1 +1,0 @@
-{"slug": "oops_name_a_process", "openemoji": "1F622", "description": "You know there is a process on machine that is deleting files, the first thing\nyou want to do is identify the name of it. Print the name of the process\n\nHint: process information is stored in /proc, maybe there is a something there\nthat will help?\n", "tags": ["oops"]}
