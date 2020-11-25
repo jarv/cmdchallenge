@@ -1,7 +1,6 @@
 import os
 import argparse
 import sequtils
-import strformat
 
 let p = newParser("oops"):
   option("-t", "--timeout", help="how many seconds to sleep", default="10000")

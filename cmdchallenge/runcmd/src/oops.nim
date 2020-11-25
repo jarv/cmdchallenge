@@ -1,6 +1,5 @@
 import osproc
 import os
-import strformat
 import strutils
 
 const OOPS_PROG = "oops-this-will-delete-bin-dirs"

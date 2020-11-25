@@ -1,1 +1,0 @@
-{"slug": "remove_files_with_a_dash", "openemoji": "1F339", "version": 5, "author": "anonymous", "disp_title": "Remove files that start with a dash", "description": "There are some files in this directory that start with a dash in the filename.  Remove those files.\n", "example": "rm ./-*", "expected_failures": ["echo"]}

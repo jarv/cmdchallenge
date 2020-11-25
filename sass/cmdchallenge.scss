@@ -24,14 +24,22 @@ $dkblue: #41A8DF;
 $dkerblue: #298EC3;
 $textblue: #072f44;
 $buttonclr :#599bb3;
+
+// Fonts
 $courier: courier-new, courier, monospace;
 $monospace: monospace;
 $helvetica: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
-$lennyfont: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+$lucidafont: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+$snowburst: 'Snowburst One', cursive;
+$xmas_font: 'Princess Sofia';
+$xmas_font_size: 1em;
+$christmas: 'Mountains of Christmas', cursive;
+$cursive: cursive;
+$times: "Times New Roman", Times, serif;
 
 * {
   box-sizing: border-box;
-  font-family: monospace;
+  font-family: $monospace;
 }
 
 li {
@@ -86,31 +94,19 @@ a:hover {
 }
 
 div.navbar {
-  // background-color: darken($badge-border, 10%);
   font-size: 1.5em;
   width: 100%;
   color: white;
   display: inline-block;
   div#header {
-    width: 60%;
-    float: left;
     display: table;
     text-align: left;
     font-size: 1.2em;
-    @media only screen and (max-width: $medium) {
-      font-size: .8em;
-    }
     .image {
       display: table-cell;
       width: 60px;
-      @media only screen and (max-width: $medium) {
-        width: 40px;
-      }
       img {
         width: 60px;
-        @media only screen and (max-width: $medium) {
-          width: 40px;
-        }
         border-radius: 10px;
         margin-right: .5em;
       }
@@ -119,10 +115,10 @@ div.navbar {
       display: table-cell;
       vertical-align: middle;
       #header-text {
-        display: none
+        display: none;
       }
       #header-img {
-        display: none
+        display: none;
       }
       .won {
         display: none;
@@ -136,24 +132,23 @@ div.navbar {
         text-decoration: none;
         color: white;
       }
+      .snowburst { 
+        font-family: $snowburst;
+      }
     }
   }
   div#links {
-    width: 20%;
-    display: table-cell;
+    width: 100%;
     text-align: right;
     ul {
       margin: 0;
       padding: 0;
     }
     li.link {
-      display: inline;
+       display: inline;
     }
     img {
       width: 40px;
-      @media only screen and (max-width: $medium) {
-        width: 20px;
-      }
     }
   }
 }
@@ -205,8 +200,14 @@ div#term-challenge {
 body {
   background-color: black;
   color: black;
-  margin: 2em;
+  margin: 0em;
+  margin: auto;
+  max-width: 900px;
+  min-width: auto;
+  width: 100vw;
+  overflow-x: hidden;
 }
+
 
 div#challenge-desc {
   display: inline-block;
@@ -216,8 +217,9 @@ div#challenge-desc {
   border-bottom: 2px solid darken($cmdblue, 25%); // lighten($gray, 10%);
   border-top: 1px solid darken($cmdblue, 25%); // lighten($gray, 10%);
   border-radius: 0px 0px 10px 10px;
-  background-color: $gray;
   margin-bottom: 1em;
+  background-color: $gray;
+  // margin-bottom: 1em;
   div.img-container {
     position: relative;
     float: left;
@@ -226,9 +228,17 @@ div#challenge-desc {
   }
 
   div.desc-container {
+    font-family: $snowburst;
     font-size: 1.2em;
     color: white;
     padding: 1em;
+  }
+
+  div.twelve-days {
+    font-family: $xmas_font;
+    font-size: $xmas_font_size;
+    width: auto;
+    display: table;
   }
 
   pre {
@@ -247,7 +257,7 @@ div#challenge-desc {
 }
 
 pre#challenge-output {
-  font-family: monospace;
+  font-family: $monospace;
   background-color: darken($gray, 20%);
   // width: em(440);
   border-radius: .25em;
@@ -365,9 +375,9 @@ div#badges {
       display: inline-block;
       height: auto;
       width: 40px;
-      @media only screen and (max-width: $medium) {
-        width: 30px;
-      }
+      // @media only screen and (max-width: $medium) {
+      //   width: 30px;
+      // }
     }
   }
 }
@@ -387,8 +397,46 @@ div#badges {
   opacity: .6;
 }
 
+//---- accordian for learn
 
-//---- accordian
+#learn-box {
+  display: none;
+}
+#learn {
+  color: white;
+  background-color: darken($cmdblue, 50%);
+  font-family: $times;
+  code {
+    color: $term-green2;
+    font-size: .8em;
+  }
+  pre {
+    background-color: darken($cmdblue, 50%);
+    padding: .1em;
+    margin: .8em;
+  }
+
+  pre code {
+    background-color: black;
+    padding: .5em;
+  }
+  p {
+    // background-color: red;
+    margin: 0;
+    padding-top: .5em;
+    padding-bottom: .5em;
+  }
+}
+/* Accordion styles */
+.tabs-learn {
+  border: 2px solid darken($cmdblue, 25%); // lighten($gray, 10%);
+  border-bottom: 0; 
+  border-top: 1px dotted darken($cmdblue, 25%);
+  border-radius: 0px 0px 0px 0px;
+  overflow: hidden;
+}
+
+//---- accordian for solutions
 
 input {
   position: absolute;
@@ -408,9 +456,13 @@ input {
   border-bottom: 0; 
   border-radius: 10px 10px 0px 0px;
   overflow: hidden;
-  text-align: right;
+  // text-align: right;
 }
 .tab {
+  background-color: darken($cmdblue, 50%);
+  .transition {
+    transition: all .35s;
+  }
   width: 100%;
   color: white;
   overflow: hidden;
@@ -437,8 +489,7 @@ input {
     max-height: 0;
     padding: 0 1em;
     color: $gray;
-    background: black;
-    transition: all .35s;
+    background-color: darken($cmdblue, 50%);
   }
   &-close {
     display: flex;
@@ -463,7 +514,8 @@ input:checked {
   }
   ~ .tab-content {
     max-height: 100vh;
-    padding: 1em;
+    padding: 0 1em;
+    background-color: darken($cmdblue, 50%);
   }
 }
 
@@ -482,4 +534,13 @@ input:checked {
   pre {
     display: grid;
   }
+}
+
+// tree ---
+
+div.tree {
+  position: absolute;
+  height: 600px;
+  background-image: url("../img/xmas_tree_color.png"); 
+  background-repeat: no-repeat;
 }

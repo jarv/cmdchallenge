@@ -1,1 +1,0 @@
-{"slug": "current_working_directory", "openemoji": "1F98B", "disp_title": "cwd", "version": 5, "author": "cmdchallenge", "description": "Print the current working directory.\n", "example": "pwd", "expected_failures": ["echo \"nope\""], "expected_output": {"lines": ["/var/challenges/current_working_directory"]}}

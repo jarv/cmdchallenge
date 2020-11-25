@@ -40,6 +40,7 @@ proc matchesOutput(cmdOut: string, jsonChallenge: JsonNode, expectedLines: seq[s
   if not expectedOutput.hasKey("lines"):
     return true
 
+
   var cmdLines = cmdOut.splitLines
 
   # If expectedLines is not passed then default to the values
@@ -49,21 +50,21 @@ proc matchesOutput(cmdOut: string, jsonChallenge: JsonNode, expectedLines: seq[s
                       else:
                         expectedOutput["lines"].getElems.mapIt(it.getStr)
 
-  let orderMatters = expectedOutput{"order"}.getBool(true)
-
   if cmdLines.len != expectedLines.len:
     return false
-
-  if not orderMatters:
-    expectedLines.sort
-    cmdLines.sort
 
   if expectedOutput.hasKey("re_sub"):
     let reSub = expectedOutput["re_sub"].getElems
     apply(cmdLines, proc (line: var string) =
       line = line.replace(re(reSub[0].getStr), by=reSub[1].getStr))
 
-  return not expectedLines.anyIt(it notin cmdLines)
+  let orderMatters = expectedOutput{"order"}.getBool(true)
+
+  if not orderMatters:
+    expectedLines.sort
+    cmdLines.sort
+
+  return expectedLines == cmdLines
 
 ## MAIN
 
@@ -98,7 +99,7 @@ except JsonParsingError:
 
 try:
   assert jsonChallenge{"slug"}.getStr == opts.slug
-except AssertionError:
+except AssertionDefect:
   errorExit(&"'{challengeFname}' has an incorrect slug")
 
 # For all commands, set a default timeout of 5 seconds

@@ -2,22 +2,28 @@
 
 'use strict';
 const HOSTNAME = window.location.hostname.split('.');
-const BASEURL = HOSTNAME.filter((i) => i != "oops").join(".")
+const BASEURL = HOSTNAME.filter((i) => ! ["oops", "12days"].includes(i)).join(".")
 const OOPS_IMG = '<img src="img/emojis/1F92D.png" alt="" />';
 const CMD_IMG = '<img src="img/cmdchallenge-round.png" alt="" />';
+const XMAS_IMG = '<img src="img/emojis/1F384.png" alt="" />'
 
 const BASEURLS = {
   CMD: '//' + BASEURL,
   OOPS: '//oops.' + BASEURL,
+  XMAS: '//12days.' + BASEURL,
 }
 const SITES = {
   CMD: "cmdchallenge",
-  OOPS: "oops"
+  OOPS: "oops",
+  XMAS: "12days",
 }
-const FLAVOR = HOSTNAME[0].match(/oops/) !== null ? SITES.OOPS : SITES.CMD
+
+const FLAVOR = ["oops", "12days"].includes(HOSTNAME[0]) ? HOSTNAME[0] : "cmdchallenge";
+
 const SITE_LINKS = {
   CMD: '<a href="//' + BASEURLS.CMD + '">' + CMD_IMG + '</a>',
   OOPS: '<a href="//' + BASEURLS.OOPS + '">' + OOPS_IMG + '</a>',
+  XMAS: '<a href="//' + BASEURLS.XMAS + '">' + XMAS_IMG + '</a>',
 }
 
 const CMD_URL = window.location.hostname.match(/local/) ? 'https://testing.cmdchallenge.com/r' : '/r';
@@ -40,28 +46,32 @@ jQuery(function($) {
     while (true) yield* steps;
   };
 
-  const errorEmoji=stepGen(['1F63F.png']);
+  const errorEmoji=stepGen(['emojis/1F63F.png']);
   const incorrectEmoji=stepGen(
-      ['E282.png', '1F645-200D-2640-FE0F.png', '1F645-200D-2642-FE0F.png', '1F940.png']
+      ['emojis/E282.png', 'emojis/1F645-200D-2640-FE0F.png', 'emojis/1F645-200D-2642-FE0F.png', 'emojis/1F940.png']
   );
   const correctEmojiBeg=stepGen(
-      ['1F471-200D-2640-FE0F.png', '1F471-200D-2642-FE0F.png']
+      ['emojis/1F471-200D-2640-FE0F.png', 'emojis/1F471-200D-2642-FE0F.png']
   );
 
   const correctEmojiInt=stepGen(
       [
-        '1F9D4.png', '1F468-200D-1F9B1.png', '1F468-200D-1F9B0.png',
-        '1F468-200D-1F33E.png', '1F468-200D-1F52C.png',
-        '1F468-200D-1F373.png', '1F468-200D-1F393.png',
+        'emojis/1F9D4.png', 'emojis/1F468-200D-1F9B1.png', 'emojis/1F468-200D-1F9B0.png',
+        'emojis/1F468-200D-1F33E.png', 'emojis/1F468-200D-1F52C.png',
+        'emojis/1F468-200D-1F373.png', 'emojis/1F468-200D-1F393.png',
       ]
   );
 
   const correctEmojiAdv=stepGen(
-      ['1F478.png', '1F482.png', '1F9DD.png', '1F9DD-200D-2640-FE0F.png', '1F680.png']
+      ['emojis/1F478.png', 'emojis/1F482.png', 'emojis/1F9DD.png', 'emojis/1F9DD-200D-2640-FE0F.png', 'emojis/1F680.png']
   );
 
   const correctEmojiOops=stepGen(
-      ['1F600.png', '1F604.png', '1F970.png', '1F60D.png', '1F929.png']
+      ['emojis/1F600.png', 'emojis/1F604.png', 'emojis/1F970.png', 'emojis/1F60D.png', 'emojis/1F929.png']
+  );
+
+  const correctEmojiXmas=stepGen(
+      ['emojis/1F936.png', 'emojis/1F385.png', 'emojis/1F36D.png', 'emojis/2603.png']
   );
 
 
@@ -176,7 +186,7 @@ jQuery(function($) {
         checkForWin();
       };
     });
-    routes[''] = function() {
+    routes['*'] = function() {
       currentChallenge = uncompletedChallenges()[0] || challenges[0];
       updateChallengeDesc();
       updateChallenges();
@@ -198,20 +208,23 @@ jQuery(function($) {
           '<div tabindex=\'-1\' class=\'img-container ' +
             slug + '\'><a title=\'' + dispTitle + '\' id=\'badge_' +
             slug + '\' href=\'#/' +
-            slug + '\'><img class=\'badge\' src=\'img/emojis/' +
-            c.openemoji + '.png\' alt=\'' +
+            slug + '\'><img class=\'badge\' src=\'img/' +
+            c.emoji + '.png\' alt=\'' +
             slug + '\'/></a></li>');
       $('a#badge_' + slug).on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        $('#chck1').prop('checked', false);
         term.focus();
         routie('/' + slug);
       });
     });
 
-    displaySolution()
+    displaySolution();
     underlineCurrent();
+    $('#learn').html('');
+    if (currentChallenge.learn) {
+      displayLearn();
+    }
 
     if (typeof callback === 'function') {
       callback();
@@ -227,6 +240,9 @@ jQuery(function($) {
           switch (FLAVOR) {
             case SITES.OOPS:
               callback(resp.filter((o) => (o.tags || []).includes('oops')))
+              break;
+            case SITES.XMAS:
+              callback(resp.filter((o) => (o.tags || []).includes('12days')))
               break;
             case SITES.CMD:
               callback(resp.filter((o) => !(o.tags)));
@@ -297,12 +313,15 @@ jQuery(function($) {
               emojiFname = correctEmojiAdv.next().value;
             }
             break;
+          case SITES.XMAS:
+            emojiFname = correctEmojiXmas.next().value;
+            break;
         }
 
         $('#info-box .gradient').removeClass(
             'incorrect correct error').addClass('correct');
         $('#info-box .img').html(
-            '<img src=\'img/emojis/' + emojiFname +
+            '<img src=\'img/' + emojiFname +
             '\' alt=\'correct\' />'
         );
         break;
@@ -310,7 +329,7 @@ jQuery(function($) {
         $('#info-box .gradient').removeClass(
             'incorrect correct error').addClass('incorrect');
         $('#info-box .img').html(
-            '<img src=\'img/emojis/' + incorrectEmoji.next().value +
+            '<img src=\'img/' + incorrectEmoji.next().value +
             '\' alt=\'incorrect\' />'
         );
         break;
@@ -318,7 +337,7 @@ jQuery(function($) {
         $('#info-box .gradient').removeClass(
             'incorrect correct error').addClass('error');
         $('#info-box .img').html(
-            '<img src=\'img/emojis/' + errorEmoji.next().value +
+            '<img src=\'img/' + errorEmoji.next().value +
             '\' alt=\'correct\' />'
         );
         break;
@@ -330,8 +349,8 @@ jQuery(function($) {
 
   const updateChallengeDesc = function() {
     const description = htmlFromMarkdown(currentChallenge.description);
-    $('#challenge-desc .img-container').html('<img src=\'img/emojis/' +
-        currentChallenge.openemoji +
+    $('#challenge-desc .img-container').html('<img src=\'img/' +
+        currentChallenge.emoji +
         '.png\' alt=\'' + currentChallenge.disp_title + '\' />');
     $('#challenge-desc .desc-container').html(description);
   };
@@ -354,6 +373,16 @@ jQuery(function($) {
   const completedChallenges = function() {
     const completed = getArrayFromStorage(STORAGE_CORRECT);
     return challenges.filter((o) => completed.includes(o.slug));
+  };
+
+  const displayLearn = function() {
+    if (currentChallenge.disp_learn) {
+      $('#chck2').prop('checked', true);
+    } else {
+      $('#chck2').prop('checked', false);
+    }
+    $('#learn').html(htmlFromMarkdown(currentChallenge.learn));
+    $('#learn-box').show();
   };
 
   const displaySolution = function() {
@@ -468,15 +497,34 @@ jQuery(function($) {
   };
 
   // main
-
   // Setup for different site types
   switch (FLAVOR) {
     case SITES.OOPS:
       $('#header-img').html(OOPS_IMG);
       $('#header-text').html('Oops I deleted my bin/ dir :(');
-      $('#links ul').prepend(SITE_LINKS.CMD);
+      // $('#links ul').prepend('<li class="link">' + SITE_LINKS.XMAS + '</li>');
+      $('#links ul').prepend('<li class="link">' + SITE_LINKS.CMD + '</li>');
+      break;
+    case SITES.XMAS:
+      WebFont.load({
+        custom: {
+          families: ['Snowburst One', 'Princess Sofia'],
+          urls: ['../css/fonts.css'],
+        },
+        active: function() {
+          $('#header-img').html(XMAS_IMG);
+          $('#header-text').addClass("snowburst");
+          $('#header-text').html('12 Days of Shell');
+          $('#links ul').prepend(SITE_LINKS.OOPS);
+          $('#links ul').prepend(SITE_LINKS.CMD);
+        },
+      });
       break;
     case SITES.CMD:
+      console.log("cmd!");
+      $('#header-text').html('Command Challenge');
+      $('#header-img').html(CMD_IMG);
+      // $('#links ul').prepend(SITE_LINKS.XMAS);
       $('#links ul').prepend(SITE_LINKS.OOPS);
       break;
   }
