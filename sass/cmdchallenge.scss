@@ -37,9 +37,14 @@ $christmas: 'Mountains of Christmas', cursive;
 $cursive: cursive;
 $times: "Times New Roman", Times, serif;
 
+.wrapper {
+  padding-bottom: 50px;
+}
+
 .footer {
   font-size: .8em;
   position: fixed;
+  height: 50px;
   left: 0;
   bottom: 0;
   width: 100%;
