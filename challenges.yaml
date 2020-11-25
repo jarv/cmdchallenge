@@ -453,7 +453,7 @@
     For the final day all you need to do is print out the contents of `twelve-days-of-shell.txt`.
 
     If you enjoyed these exercises [follow us on twitter](https://twitter.com/thecmdchallenge)
-    or try your hand at even more [excercises on the command line](https://cmdchallenge.com)!
+    or try more [command line challenges](https://cmdchallenge.com)!
   example: cat twelve-days-of-shell.txt
   expected_output:
     lines:
