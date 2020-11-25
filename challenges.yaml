@@ -266,7 +266,7 @@
       - Santa's village
   tags: ["12days"]
 - slug: 12days_8
-  version: 1
+  version: 2
   disp_title: Eight elves
   dir: elves
   emoji: 12days/12days_8
@@ -298,6 +298,7 @@
     mv Elves/* Workshop/
     ```
   example: mv Elves/* Workshop/
+  expected_failures: ["cp Elves/* Workshop/"]
   tags: ["12days"]
 - slug: 12days_9
   version: 1
@@ -448,7 +449,7 @@
     </div>
   learn: |
     We have reached the twelfth of Shell!<br />
-    For the final day all we need to do is print out the contents of `twelve-days-of-shell.txt`.
+    For the final day all you need to do is print out the contents of `twelve-days-of-shell.txt`.
 
     If you enjoyed these exercises [follow us on twitter](https://twitter.com/thecmdchallenge)
     or try your hand at even more [excercises on the command line](https://cmdchallenge.com)!

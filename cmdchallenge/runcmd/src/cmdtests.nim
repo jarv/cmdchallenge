@@ -136,14 +136,14 @@ proc chReplaceTextInFiles(jsonChallenge: JsonNode, oopsProc: OopsProc): (string,
 
   ("", true)
 
-proc chXmas8(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
+proc ch12Days8(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
   let elves = toSeq(walkDirRec("Elves"))
   if elves.len != 0:
       return (&"Test failed, elves are still in Elves/", false)
   let workshop = toSeq(walkDirRec("Workshop")).sorted
 
   if workshop != @["Workshop/Alabaster Snowball", "Workshop/Buddy", "Workshop/Bushy Evergreen", "Workshop/Hermey", "Workshop/Pepper Minstix", "Workshop/Shinny Upatree", "Workshop/Sugarplum Mary", "Workshop/Wunorse Openslae"]:
-    return (&"Test failed, Elves are not in the Workshop! Got: {workshop}", false)
+    return (&"Test failed, Elves are not in the Workshop!", false)
   ("", true)
 
 let cmdTests = {
@@ -159,7 +159,7 @@ let cmdTests = {
   "copy_file": chCopyFile,
   "move_file": chMoveFile,
   "oops_kill_a_process": chOopsKillAProcess,
-  "xmas_8": chXmas8,
+  "12days_8": ch12Days8,
 }.toTable
 
 proc runCmdTest*(jsonChallenge: JsonNode, oopsProc: OopsProc): (string, bool) =
