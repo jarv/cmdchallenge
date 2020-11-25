@@ -437,6 +437,7 @@
       - ♫ piping ♫
   tags: ["12days"]
 - slug: 12days_12
+  disp_learn: true
   version: 1
   dir: twelve_days_of_shell
   emoji: 12days/12days_12
@@ -448,7 +449,7 @@
     Twelve Days of Shell on the terminal!
     </div>
   learn: |
-    We have reached the twelfth of Shell!<br />
+    We have reached the twelfth day of Shell!<br />
     For the final day all you need to do is print out the contents of `twelve-days-of-shell.txt`.
 
     If you enjoyed these exercises [follow us on twitter](https://twitter.com/thecmdchallenge)
