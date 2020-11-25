@@ -254,6 +254,8 @@
     Will match both files named `Santa's hat` and `santa's toys`.
   example: ls -1  [Ss]anta*
   expected_output:
+    order: false
+    re_sub: ['^.*\/', '']
     lines:
       - Santa's beard
       - Santa's belly
