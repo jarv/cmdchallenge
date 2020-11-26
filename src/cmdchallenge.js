@@ -1,6 +1,16 @@
 /* eslint strict: ["error", "global"] */
 
 'use strict';
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+import hljs from 'highlight.js/lib/core';
+import bash from 'highlight.js/lib/languages/bash';
+import routie from 'routie';
+import WebFont from 'webfontloader';
+import commonmark from 'commonmark';
+
+hljs.registerLanguage('bash', bash);
+
 const HOSTNAME = window.location.hostname.split('.');
 const BASEURL = HOSTNAME.filter((i) => ! ["oops", "12days"].includes(i)).join(".")
 const OOPS_IMG = '<img src="img/emojis/1F92D.png" alt="" />';
@@ -500,12 +510,14 @@ jQuery(function($) {
   // Setup for different site types
   switch (FLAVOR) {
     case SITES.OOPS:
+      document.title = "Oops, I deleted my bin/ dir :("
       $('#header-img').html(OOPS_IMG);
       $('#header-text').html('Oops I deleted my bin/ dir :(');
       // $('#links ul').prepend('<li class="link">' + SITE_LINKS.XMAS + '</li>');
       $('#links ul').prepend('<li class="link">' + SITE_LINKS.CMD + '</li>');
       break;
     case SITES.XMAS:
+      document.title = "🎄 12 days of Shell 🎄"
       WebFont.load({
         custom: {
           families: ['Snowburst One', 'Princess Sofia'],
@@ -521,7 +533,7 @@ jQuery(function($) {
       });
       break;
     case SITES.CMD:
-      console.log("cmd!");
+      document.title = "Command Challenge!"
       $('#header-text').html('Command Challenge');
       $('#header-img').html(CMD_IMG);
       // $('#links ul').prepend(SITE_LINKS.XMAS);

@@ -30,28 +30,27 @@ update:
 wsass:
 	bundle exec sass --watch sass:static/css --style compressed
 
-publish_testing: gen-deps
+publish_testing: update-challenges
 	cp static/robots.txt.disable static/robots.txt
 	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read --exclude "s/solutions/*" --delete
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	rm -f static/robots.txt
 
-publish_testing_profile: gen-deps
+publish_testing_profile: update-challenges
 	cp static/robots.txt.disable static/robots.txt
 	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --exclude "s/solutions/*"  --delete
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	rm -f static/robots.txt
 
-publish_prod: gen-deps
+publish_prod: update-challenges
 	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read --exclude "s/solutions/*" --delete
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
 
-publish_prod_profile: gen-deps
+publish_prod_profile: update-challenges
 	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read  --exclude "s/solutions/*"  --delete
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
 
-gen-deps:
-	./bin/gen-deps
+update-challenges:
 	./bin/update-challenges
 
 ###################
