@@ -2,3 +2,4 @@ python 3.7.6
 terraform 0.13.5
 ruby 2.6.5
 nodejs 12.7.0
+nim 1.4.0
