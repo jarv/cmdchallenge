@@ -49,8 +49,8 @@ function haml(hljs) {
             begin: '\\.[\\w-]+'
           },
           {
-            begin: '{\\s*',
-            end: '\\s*}',
+            begin: /\{\s*/,
+            end: /\s*\}/,
             contains: [
               {
                 begin: ':\\w+\\s*=>',
@@ -104,9 +104,9 @@ function haml(hljs) {
         begin: '^\\s*[=~]\\s*'
       },
       {
-        begin: '#{',
+        begin: /#\{/,
         starts: {
-          end: '}',
+          end: /\}/,
           subLanguage: 'ruby'
         }
       }

@@ -1,17 +1,30 @@
 {
   "dependencies": {
-    "@babel/polyfill": "^7.10.1",
+    "@babel/polyfill": "^7.12.1",
     "commonmark": "^0.29.1",
-    "highlight.js": "^10.0.3",
+    "fg-loadcss": "^3.1.0",
+    "highlight.js": "^10.4.0",
+    "html-webpack-plugin": "^4.5.0",
     "jquery.terminal": "^2.14.1",
     "lodash": "^4.17.15",
-    "routie": "https://github.com/jgallen23/routie.git"
+    "routie": "https://github.com/jgallen23/routie.git",
+    "webfontloader": "^1.6.28"
   },
   "devDependencies": {
-    "@babel/cli": "^7.10.1",
-    "@babel/core": "^7.10.2",
-    "@babel/preset-env": "^7.10.2",
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
+    "@babel/preset-env": "^7.12.7",
+    "babel-loader": "^8.2.1",
+    "babel-preset-modern-browsers": "^15.0.2",
+    "core-js": "^3.8.0",
     "eslint": "^7.1.0",
-    "eslint-config-google": "^0.14.0"
+    "eslint-config-google": "^0.14.0",
+    "expose-loader": "^1.0.2",
+    "uglify-js": "^3.12.0",
+    "webpack": "^5.7.0",
+    "webpack-cli": "^4.2.0"
+  },
+  "scripts": {
+    "babel": "babel --presets es2015 static/js/cmdchallenge.js -o main.bundle.js"
   }
 }

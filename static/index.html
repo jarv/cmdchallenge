@@ -5,27 +5,19 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="css/normalize.css" />
-    <link rel="stylesheet" href="css/main.css" />
-    <title>Commandline Challenge</title>
-    <link rel="stylesheet" href="css/jquery.terminal.min.css" />
     <link rel="stylesheet" href="css/cmdchallenge.css"/>
-<!--    <link href="https://fonts.googleapis.com/css2?family=Snowburst+One&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas&display=swap" rel="stylesheet"> -->
+    <title></title>
+
+    <link rel="preload" href="css/highlight-js-10.0.0-railscasts.min.css" as="style">
+    <link rel="stylesheet" href="css/highlight-js-10.0.0-railscasts.min.css" media="print" onload="this.media='all'">
+
+    <link rel="preload" href="css/jquery.terminal.min.css" as="style">
+    <link rel="stylesheet" href="css/jquery.terminal.min.css" media="print" onload="this.media='all'">
+
+
     <meta name="description" content="One-line shell challenges, to help improve your skill on the commandline."/>
-    <link rel="stylesheet" href="css/highlight-js-10.0.0-railscasts.min.css" />
-
-<!-- <link rel="preconnect" href="https://fonts.gstatic.com"> -->
-<!-- <link href="https://fonts.googleapis.com/css2?family=Niconne&display=swap" rel="stylesheet"> -->
-
-    <script src="js/vendor/highlight-10.0.0.min.js"></script>
-    <script charset="UTF-8" src="js/vendor/bash-10.0.0.min.js"></script>
-    <script src="js/vendor/webfont-1.6.26.js"></script>
 </head>
   <body>
-      <!--[if lt IE 8]>
-          <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-      <![endif]-->
       <noscript>
           It looks like you don't have javascript enabled which is required for cmdchallenge.
       </noscript>
@@ -105,11 +97,8 @@
         </p>
       </div>
 
-      <script src="js/vendor/keyboard-polyfill-0.1.42.js"></script>
-      <script src="js/vendor/modernizr-3.8.0.min.js"></script>
-      <script src="js/vendor/commonmark.min.js"></script>
-      <script src="js/deps.min.js"></script>
-      <script src="js/cmdchallenge.js"></script>
+      <script src="vendor.js"></script>
+      <script src="app.js"></script>
       <script data-goatcounter="https://cmdchallenge.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
   </body>

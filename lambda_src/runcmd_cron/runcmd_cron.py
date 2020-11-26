@@ -12,7 +12,7 @@ LOG = logging.getLogger()
 LOG.setLevel(logging.WARN)
 KEY_PREFIX = "s/solutions"
 COMMANDS_TABLE_NAME = environ.get(
-    "COMMANDS_TABLE_NAME", "testing-cmdchallenge-db-commands"
+    "COMMANDS_TABLE_NAME", "prod-cmdchallenge-db-commands"
 )
 BUCKET_NAME = environ.get("BUCKET_NAME", "testing.cmdchallenge.com")
 SHARD_INDEX = int(environ.get("SHARD_INDEX", "0"))
@@ -43,6 +43,7 @@ def handler(event, context):
         b = boto3.session.Session(profile_name="cmdchallenge", region_name="us-east-1")
         s3 = b.client("s3")
         table = b.resource("dynamodb").Table(COMMANDS_TABLE_NAME)
+        challenges = challenges_slice(challenges)
     else:
         s3 = boto3.client("s3")
         table = boto3.resource("dynamodb").Table(COMMANDS_TABLE_NAME)

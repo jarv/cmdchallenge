@@ -12,4 +12,4 @@ bin           = @["test"]
 # Dependencies
 
 requires "nim >= 1.2.2"
-requires "https://github.com/iffy/nim-argparse"
+requires "https://github.com/iffy/nim-argparse#v0.10.1"

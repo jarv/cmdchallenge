@@ -1,6 +1,7 @@
 .PHONY: all test docker update runcmd runcmd-darwin update-challenges test-runcmd test-challenges tar-var push-image-cmd push-image-ci build-image-cmd build-image-ci
 REF=$(shell git rev-parse --short HEAD)
 PWD=$(shell pwd)
+DATE_TS=$(shell date -u +%Y%M%d%S)
 BASEDIR=$(CURDIR)
 DIR_CMDCHALLENGE=$(CURDIR)/cmdchallenge
 CI_REGISTRY_IMAGE?=registry.gitlab.com/jarv/cmdchallenge
@@ -30,28 +31,27 @@ update:
 wsass:
 	bundle exec sass --watch sass:static/css --style compressed
 
-publish_testing: gen-deps
+publish_testing: update-challenges cache-bust-index
 	cp static/robots.txt.disable static/robots.txt
-	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read --exclude "s/solutions/*" --delete
+	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read --exclude "s/solutions/*" --delete --cache-control max-age=604800
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	rm -f static/robots.txt
 
-publish_testing_profile: gen-deps
+publish_testing_profile: update-challenges cache-bust-index
 	cp static/robots.txt.disable static/robots.txt
-	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --exclude "s/solutions/*"  --delete
+	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --exclude "s/solutions/*"  --delete --cache-control max-age=604800
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	rm -f static/robots.txt
 
-publish_prod: gen-deps
-	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read --exclude "s/solutions/*" --delete
+publish_prod: update-challenges cache-bust-index
+	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read --exclude "s/solutions/*" --delete --cache-control max-age=604800
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
 
-publish_prod_profile: gen-deps
-	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read  --exclude "s/solutions/*"  --delete
+publish_prod_profile: update-challenges cache-bust-index
+	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read  --exclude "s/solutions/*"  --delete --cache-control max-age=604800
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
 
-gen-deps:
-	./bin/gen-deps
+update-challenges:
 	./bin/update-challenges
 
 ###################
@@ -110,3 +110,7 @@ testshell:
 clean:
 	rm -f $(PWD)/cmdchallenge/ro_volume/ch/*
 	rm -f $(PWD)/static/challenges/*
+
+cache-bust-index:
+	sed -i -e "s/\.css\"/.css?$(DATE_TS)\"/" static/index.html
+	sed -i -e "s/\.js\"/.js?$(DATE_TS)\"/" static/index.html

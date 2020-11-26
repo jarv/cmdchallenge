@@ -27,8 +27,6 @@ RUN apk add --no-cache --update \
     libc6-compat \
     make \
     alpine-sdk \
-    npm \
-    && npm install -g uglify-es \
     && git clone --depth 1 https://github.com/pyenv/pyenv.git $PYENV_HOME \
     && rm -rfv $PYENV_HOME/.git \
     && pyenv install $PYTHON_VERSION \
