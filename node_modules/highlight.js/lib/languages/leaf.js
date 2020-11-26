@@ -4,17 +4,17 @@ Author: Hale Chan <halechan@qq.com>
 Description: Based on the Leaf reference from https://vapor.github.io/documentation/guide/leaf.html.
 */
 
-function leaf (hljs) {
+function leaf(hljs) {
   return {
     name: 'Leaf',
     contains: [
       {
         className: 'function',
         begin: '#+' + '[A-Za-z_0-9]*' + '\\(',
-        end:' {',
+        end: / \{/,
         returnBegin: true,
         excludeEnd: true,
-        contains : [
+        contains: [
           {
             className: 'keyword',
             begin: '#+'
@@ -25,7 +25,8 @@ function leaf (hljs) {
           },
           {
             className: 'params',
-            begin: '\\(', end: '\\)',
+            begin: '\\(',
+            end: '\\)',
             endsParent: true,
             contains: [
               {

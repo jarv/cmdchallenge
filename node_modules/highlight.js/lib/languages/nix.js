@@ -5,9 +5,8 @@ Description: Nix functional language
 Website: http://nixos.org/nix
 */
 
-
 function nix(hljs) {
-  var NIX_KEYWORDS = {
+  const NIX_KEYWORDS = {
     keyword:
       'rec with let in inherit assert if else then',
     literal:
@@ -16,14 +15,15 @@ function nix(hljs) {
       'import abort baseNameOf dirOf isNull builtins map removeAttrs throw ' +
       'toString derivation'
   };
-  var ANTIQUOTE = {
+  const ANTIQUOTE = {
     className: 'subst',
     begin: /\$\{/,
-    end: /}/,
+    end: /\}/,
     keywords: NIX_KEYWORDS
   };
-  var ATTRS = {
-    begin: /[a-zA-Z0-9-_]+(\s*=)/, returnBegin: true,
+  const ATTRS = {
+    begin: /[a-zA-Z0-9-_]+(\s*=)/,
+    returnBegin: true,
     relevance: 0,
     contains: [
       {
@@ -32,15 +32,21 @@ function nix(hljs) {
       }
     ]
   };
-  var STRING = {
+  const STRING = {
     className: 'string',
-    contains: [ANTIQUOTE],
+    contains: [ ANTIQUOTE ],
     variants: [
-      {begin: "''", end: "''"},
-      {begin: '"', end: '"'}
+      {
+        begin: "''",
+        end: "''"
+      },
+      {
+        begin: '"',
+        end: '"'
+      }
     ]
   };
-  var EXPRESSIONS = [
+  const EXPRESSIONS = [
     hljs.NUMBER_MODE,
     hljs.HASH_COMMENT_MODE,
     hljs.C_BLOCK_COMMENT_MODE,
@@ -50,7 +56,7 @@ function nix(hljs) {
   ANTIQUOTE.contains = EXPRESSIONS;
   return {
     name: 'Nix',
-    aliases: ["nixos"],
+    aliases: [ "nixos" ],
     keywords: NIX_KEYWORDS,
     contains: EXPRESSIONS
   };

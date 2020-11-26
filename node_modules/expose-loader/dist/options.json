@@ -1,0 +1,65 @@
+{
+  "definitions": {
+    "ObjectPattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "globalName": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            }
+          ]
+        },
+        "moduleLocalName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "override": {
+          "type": "boolean"
+        }
+      },
+      "required": ["globalName"]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "exposes": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "$ref": "#/definitions/ObjectPattern"
+        },
+        {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/definitions/ObjectPattern"
+              }
+            ]
+          },
+          "minItems": 1
+        }
+      ]
+    }
+  },
+  "anyOf": [{ "required": ["exposes"] }],
+  "additionalProperties": false
+}

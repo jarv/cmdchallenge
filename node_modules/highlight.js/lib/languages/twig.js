@@ -48,10 +48,10 @@ function twig(hljs) {
     case_insensitive: true,
     subLanguage: 'xml',
     contains: [
-      hljs.COMMENT(/\{#/, /#}/),
+      hljs.COMMENT(/\{#/, /#\}/),
       {
         className: 'template-tag',
-        begin: /\{%/, end: /%}/,
+        begin: /\{%/, end: /%\}/,
         contains: [
           {
             className: 'name',
@@ -67,7 +67,7 @@ function twig(hljs) {
       },
       {
         className: 'template-variable',
-        begin: /\{\{/, end: /}}/,
+        begin: /\{\{/, end: /\}\}/,
         contains: ['self', FILTER, FUNCTIONS]
       }
     ]
