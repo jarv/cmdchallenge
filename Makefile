@@ -2,6 +2,7 @@
 REF=$(shell git rev-parse --short HEAD)
 PWD=$(shell pwd)
 DATE_TS=$(shell date -u +%Y%M%d%S)
+IS_INDEX_CLEAN=$(shell git diff-index HEAD -- | grep -q static/index.html && echo "no" || echo "yes")
 BASEDIR=$(CURDIR)
 DIR_CMDCHALLENGE=$(CURDIR)/cmdchallenge
 CI_REGISTRY_IMAGE?=registry.gitlab.com/jarv/cmdchallenge
@@ -50,9 +51,6 @@ publish_prod: update-challenges cache-bust-index
 publish_prod_profile: update-challenges cache-bust-index
 	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read  --exclude "s/solutions/*"  --delete --cache-control max-age=604800
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
-
-update-challenges:
-	./bin/update-challenges
 
 ###################
 # CMD Challenge
@@ -112,5 +110,8 @@ clean:
 	rm -f $(PWD)/static/challenges/*
 
 cache-bust-index:
+ifneq ($(IS_INDEX_CLEAN),yes)
+	$(error "static/index.html is not clean, aborting!")
+endif
 	sed -i -e "s/\.css\"/.css?$(DATE_TS)\"/" static/index.html
 	sed -i -e "s/\.js\"/.js?$(DATE_TS)\"/" static/index.html

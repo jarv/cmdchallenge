@@ -517,7 +517,7 @@ jQuery(function($) {
       $('#links ul').prepend('<li class="link">' + SITE_LINKS.CMD + '</li>');
       break;
     case SITES.XMAS:
-      document.title = "🎄 12 days of Shell 🎄"
+      document.title = "🎄 Twelve Days of Shell 🎄"
       WebFont.load({
         custom: {
           families: ['Snowburst One', 'Princess Sofia'],
@@ -526,7 +526,7 @@ jQuery(function($) {
         active: function() {
           $('#header-img').html(XMAS_IMG);
           $('#header-text').addClass("snowburst");
-          $('#header-text').html('12 Days of Shell');
+          $('#header-text').html('Twelve Days of Shell');
           $('#links ul').prepend(SITE_LINKS.OOPS);
           $('#links ul').prepend(SITE_LINKS.CMD);
         },

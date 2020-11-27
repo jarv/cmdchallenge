@@ -97,9 +97,9 @@
         </p>
       </div>
 
-      <script src="vendor.js?2020222715"></script>
-      <script src="app.js?2020222715"></script>
+      <script src="vendor.js"></script>
+      <script src="app.js"></script>
       <script data-goatcounter="https://cmdchallenge.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js?2020222715"></script>
+        async src="//gc.zgo.at/count.js"></script>
   </body>
 </html>
