@@ -291,6 +291,11 @@ jQuery(function($) {
       },
       error: function(resp) {
         if (typeof callback === 'function') {
+          window.goatcounter.count({
+              path:  "❗ " + FLAVOR + " / " + resp.responseText,
+              title: FLAVOR,
+              event: true,
+          })
           const output = resp.responseText || 'Unknown Error :(';
           callback({
             output: output,
@@ -467,6 +472,13 @@ jQuery(function($) {
     } else {
       updateChallengeOutput(resp.output);
       if (resp.correct) {
+
+        window.goatcounter.count({
+            path:  "✅ " + FLAVOR + location.hash,
+            title: FLAVOR,
+            event: true,
+        })
+
         addItemToStorage(
             resp.challenge_slug,
             STORAGE_CORRECT,
@@ -489,6 +501,11 @@ jQuery(function($) {
             }
         );
       } else {
+        window.goatcounter.count({
+            path:  "❌ " + FLAVOR + location.hash,
+            title: FLAVOR,
+            event: true,
+        })
         updateInfoText(
             'Incorrect answer, try again',
             INFO_STATUS.incorrect
