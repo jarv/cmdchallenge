@@ -35,22 +35,31 @@ wsass:
 publish_testing: update-challenges cache-bust-index
 	cp static/robots.txt.disable static/robots.txt
 	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read --exclude "s/solutions/*" --delete --cache-control max-age=604800
+	aws s3 cp s3://$(S3_BUCKET_TESTING)/index.html s3://$(S3_BUCKET_TESTING)/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read
+	aws s3 cp s3://$(S3_BUCKET_TESTING)/challenges/challenges.json s3://$(S3_BUCKET_TESTING)/challenges/challenges.json --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type application/json --acl public-read
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	rm -f static/robots.txt
 
 publish_testing_profile: update-challenges cache-bust-index
 	cp static/robots.txt.disable static/robots.txt
 	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read  --exclude "s/solutions/*"  --delete --cache-control max-age=604800
+	aws --region us-east-1 --profile $(AWS_PROFILE) s3 cp s3://$(S3_BUCKET_TESTING)/index.html s3://$(S3_BUCKET_TESTING)/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read
+	aws --region us-east-1 --profile $(AWS_PROFILE) s3 cp s3://$(S3_BUCKET_TESTING)/challenges/challenges.json s3://$(S3_BUCKET_TESTING)/challenges/challenges.json --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type application/json --acl public-read
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
 	rm -f static/robots.txt
 
 publish_prod: update-challenges cache-bust-index
 	aws s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read --exclude "s/solutions/*" --delete --cache-control max-age=604800
+	aws s3 cp s3://$(S3_BUCKET_PROD)/index.html s3://$(S3_BUCKET_PROD)/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read
+	aws s3 cp s3://$(S3_BUCKET_PROD)/challenges/challenges.json s3://$(S3_BUCKET_PROD)/challenges/challenges.json --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type application/json --acl public-read
 	aws --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
 
 publish_prod_profile: update-challenges cache-bust-index
 	aws --profile cmdchallenge s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read  --exclude "s/solutions/*"  --delete --cache-control max-age=604800
+	aws --region us-east-1 --profile $(AWS_PROFILE) s3 cp s3://$(S3_BUCKET_PROD)/index.html s3://$(S3_BUCKET_PROD)/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read
+	aws --region us-east-1 --profile $(AWS_PROFILE) s3 cp s3://$(S3_BUCKET_PROD)/challenges/challenges.json s3://$(S3_BUCKET_PROD)/challenges/challenges.json --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type application/json --acl public-read
 	aws --region us-east-1 --profile $(AWS_PROFILE) cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
+
 
 ###################
 # CMD Challenge
@@ -113,5 +122,5 @@ cache-bust-index:
 ifneq ($(IS_INDEX_CLEAN),yes)
 	$(error "static/index.html is not clean, aborting!")
 endif
-	sed -i -e "s/\.css\"/.css?$(DATE_TS)\"/" static/index.html
-	sed -i -e "s/\.js\"/.js?$(DATE_TS)\"/" static/index.html
+	sed -i '' -e "s/\.css\"/.css?$(DATE_TS)\"/" static/index.html
+	sed -i '' -e "s/\.js\"/.js?$(DATE_TS)\"/" static/index.html
