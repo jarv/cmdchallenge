@@ -31,12 +31,6 @@ const SITES = {
 
 const FLAVOR = ["oops", "12days"].includes(HOSTNAME[0]) ? HOSTNAME[0] : "cmdchallenge";
 
-const SITE_LINKS = {
-  CMD: '<a href="//' + BASEURLS.CMD + '">' + CMD_IMG + '</a>',
-  OOPS: '<a href="//' + BASEURLS.OOPS + '">' + OOPS_IMG + '</a>',
-  XMAS: '<a href="//' + BASEURLS.XMAS + '">' + XMAS_IMG + '</a>',
-}
-
 const CMD_URL = window.location.hostname.match(/local/) ? 'https://testing.cmdchallenge.com/r' : '/r';
 const TAB_COMPLETION = FLAVOR === SITES.OOPS ? ['echo', 'read'] : ['find', 'echo', 'awk', 'sed', 'perl', 'wc', 'grep', 'cat', 'sort', 'cut', 'ls', 'tac', 'jq', 'paste', 'tr', 'rm', 'tail', 'comm', 'egrep'];
 
@@ -534,8 +528,6 @@ jQuery(function($) {
       document.title = "Oops, I deleted my bin/ dir :("
       $('#header-img').html(OOPS_IMG);
       $('#header-text').html('Oops I deleted my bin/ dir :(');
-      $('#links ul').prepend('<li class="link">' + SITE_LINKS.XMAS + '</li>');
-      $('#links ul').prepend('<li class="link">' + SITE_LINKS.CMD + '</li>');
       break;
     case SITES.XMAS:
       document.title = "🎄 Twelve Days of Shell 🎄"
@@ -548,8 +540,6 @@ jQuery(function($) {
           $('#header-img').html(XMAS_IMG);
           $('#header-text').addClass("snowburst");
           $('#header-text').html('Twelve Days of Shell');
-          $('#links ul').prepend(SITE_LINKS.OOPS);
-          $('#links ul').prepend(SITE_LINKS.CMD);
         },
       });
       break;
@@ -557,8 +547,6 @@ jQuery(function($) {
       document.title = "Command Challenge!"
       $('#header-text').html('Command Challenge');
       $('#header-img').html(CMD_IMG);
-      $('#links ul').prepend(SITE_LINKS.XMAS);
-      $('#links ul').prepend(SITE_LINKS.OOPS);
       break;
   }
 
