@@ -136,6 +136,9 @@ jQuery(function($) {
         case SITES.CMD:
           $('.title .won').html('🎉 Congrats, you completed the challenge! 🎉').show()
           break;
+        case SITES.XMAS:
+          $('.title .won').html('🎄 Congrats, you completed all 12 days! 🎄 Try <a href="' + BASEURLS.CMD + '">even more challenges!</a>').show()
+          break;
       }
       return true;
     } else {
@@ -473,7 +476,7 @@ jQuery(function($) {
                 challenges[0];
               if (checkForWin()) {
                 updateInfoText(
-                    'Correct! You you completed all of the challenges, ' +
+                    'Correct! You have completed all of the challenges, ' +
                     'but feel free to keep on going!', INFO_STATUS.correct
                 );
               } else {
