@@ -147,6 +147,13 @@ div.navbar {
         }
         font-size: .8em;
         color: $cmdblue;
+        a {
+          text-decoration: underline;
+          color: $lightblue;
+        }
+        a:hover {
+          color: $lightpurple;
+        }
       }
       a {
         text-decoration: none;
