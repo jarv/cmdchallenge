@@ -6,3 +6,4 @@ cmdchallenge/venv2.7/
 tags
 *.zip
 private/
+*.html-e
