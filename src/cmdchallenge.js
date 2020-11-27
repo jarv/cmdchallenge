@@ -12,6 +12,7 @@ import commonmark from 'commonmark';
 hljs.registerLanguage('bash', bash);
 
 const HOSTNAME = window.location.hostname.split('.');
+const HOSTNAME_EVENT = location.host.replace('.cmdchallenge.com', '').replace('.com', '');
 const BASEURL = HOSTNAME.filter((i) => ! ["oops", "12days"].includes(i)).join(".")
 const OOPS_IMG = '<img src="img/emojis/1F92D.png" alt="" />';
 const CMD_IMG = '<img src="img/cmdchallenge-round.png" alt="" />';
@@ -292,7 +293,7 @@ jQuery(function($) {
       error: function(resp) {
         if (typeof callback === 'function') {
           window.goatcounter.count({
-              path:  "❗ " + FLAVOR + " / " + resp.responseText,
+              path:  "❗ " + HOSTNAME_EVENT + " / " + resp.responseText,
               title: FLAVOR,
               event: true,
           })
@@ -474,7 +475,7 @@ jQuery(function($) {
       if (resp.correct) {
 
         window.goatcounter.count({
-            path:  "✅ " + FLAVOR + location.hash,
+            path:  "✅ " + HOSTNAME_EVENT + location.hash,
             title: FLAVOR,
             event: true,
         })
@@ -502,7 +503,7 @@ jQuery(function($) {
         );
       } else {
         window.goatcounter.count({
-            path:  "❌ " + FLAVOR + location.hash,
+            path:  "❌ " + HOSTNAME_EVENT + location.hash,
             title: FLAVOR,
             event: true,
         })
