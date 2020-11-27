@@ -126,5 +126,5 @@ cache-bust-index:
 ifneq ($(IS_INDEX_CLEAN),yes)
 	$(error "static/index.html is not clean, aborting!")
 endif
-	sed -i '' -e "s/\.css\"/.css?$(DATE_TS)\"/" static/index.html
-	sed -i '' -e "s/\.js\"/.js?$(DATE_TS)\"/" static/index.html
+	sed -i -e "s/\.css\"/.css?$(DATE_TS)\"/" static/index.html
+	sed -i -e "s/\.js\"/.js?$(DATE_TS)\"/" static/index.html
