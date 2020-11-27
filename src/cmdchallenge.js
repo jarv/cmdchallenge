@@ -534,7 +534,7 @@ jQuery(function($) {
       document.title = "Oops, I deleted my bin/ dir :("
       $('#header-img').html(OOPS_IMG);
       $('#header-text').html('Oops I deleted my bin/ dir :(');
-      // $('#links ul').prepend('<li class="link">' + SITE_LINKS.XMAS + '</li>');
+      $('#links ul').prepend('<li class="link">' + SITE_LINKS.XMAS + '</li>');
       $('#links ul').prepend('<li class="link">' + SITE_LINKS.CMD + '</li>');
       break;
     case SITES.XMAS:
@@ -557,7 +557,7 @@ jQuery(function($) {
       document.title = "Command Challenge!"
       $('#header-text').html('Command Challenge');
       $('#header-img').html(CMD_IMG);
-      // $('#links ul').prepend(SITE_LINKS.XMAS);
+      $('#links ul').prepend(SITE_LINKS.XMAS);
       $('#links ul').prepend(SITE_LINKS.OOPS);
       break;
   }
