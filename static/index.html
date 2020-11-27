@@ -100,9 +100,12 @@
       <script src="vendor.js?2020222715"></script>
       <script src="app.js?2020222715"></script>
       <script>
-          window.goatcounter = {
-              path: function(p) { return location.host + p + location.hash }
-          }
+          window.goatcounter = {no_onload: true}
+          window.addEventListener('hashchange', function(e) {
+              window.goatcounter.count({
+                  path: location.host + location.pathname + location.search + location.hash,
+              })
+          })
       </script>
       <script data-goatcounter="https://cmdchallenge.goatcounter.com/count"
         async src="//gc.zgo.at/count.js?2020222715"></script>
