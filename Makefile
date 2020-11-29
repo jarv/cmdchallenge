@@ -128,3 +128,15 @@ ifneq ($(IS_INDEX_CLEAN),yes)
 endif
 	sed -i -e "s/\.css\"/.css?$(DATE_TS)\"/" static/index.html
 	sed -i -e "s/\.js\"/.js?$(DATE_TS)\"/" static/index.html
+
+sentry_release_javascript:
+	curl $(SENTRY_WEBHOOK_JAVASCRIPT) \
+		-X POST \
+	    -H 'Content-Type: application/json' \
+	    -d '{"version": "$(REF)"}'
+
+sentry_release_python:
+	curl $(SENTRY_WEBHOOK_PYTHON) \
+	  -X POST \
+	  -H 'Content-Type: application/json' \
+	  -d '{"version": "$(REF)"}'

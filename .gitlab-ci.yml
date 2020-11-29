@@ -110,10 +110,12 @@ deploy:prod:tf:
   when: manual
   script:
     - terraform apply -auto-approve
+    - make sentry_release_python
 
 deploy:prod:static:
   stage: deploy
   script:
     - make publish_prod
+    - make sentry_release_javascript
   resource_group: prod:static
   when: manual
