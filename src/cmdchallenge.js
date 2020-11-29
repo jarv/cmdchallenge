@@ -1,6 +1,19 @@
 /* eslint strict: ["error", "global"] */
 
 'use strict';
+
+import * as Sentry from "@sentry/browser";
+import { Integrations } from "@sentry/tracing";
+
+Sentry.init({
+  dsn: 'https://e08d19e3657243b1b8191cb18a651e3b@o484121.ingest.sentry.io/5536934',
+  integrations: [
+    new Integrations.BrowserTracing(),
+  ],
+
+  tracesSampleRate: 1.0,
+});
+
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import hljs from 'highlight.js/lib/core';
