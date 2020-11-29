@@ -1,7 +1,9 @@
 import sentry_sdk
+from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 sentry_sdk.init(
-    "https://64fce3067b92496891b7eec662513f66@o484121.ingest.sentry.io/5536941",
-    traces_sample_rate=1.0
+    dsn="https://64fce3067b92496891b7eec662513f66@o484121.ingest.sentry.io/5536941",
+    integrations=[AwsLambdaIntegration()],
+    traces_sample_rate=1.0, # adjust the sample rate in production as needed
 )
 
 import logging
