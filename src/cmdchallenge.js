@@ -298,7 +298,7 @@ jQuery(function($) {
     });
   };
 
-  const countEvent = function(path, flavor) {
+  const countEvent = function(path, title) {
       if (typeof window.goatcounter.count === 'function') {
         window.goatcounter.count({
             path:  path,
