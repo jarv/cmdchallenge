@@ -286,11 +286,7 @@ jQuery(function($) {
       },
       error: function(resp) {
         if (typeof callback === 'function') {
-          window.goatcounter.count({
-              path:  "❗ " + HOSTNAME_EVENT + " / " + resp.responseText,
-              title: FLAVOR,
-              event: true,
-          })
+          countEvent("❗ " + HOSTNAME_EVENT + " / " + resp.responseText, FLAVOR);
           const output = resp.responseText || 'Unknown Error :(';
           callback({
             output: output,
@@ -300,6 +296,16 @@ jQuery(function($) {
         }
       },
     });
+  };
+
+  const countEvent = function(path, flavor) {
+      if (typeof window.goatcounter.count === 'function') {
+        window.goatcounter.count({
+            path:  path,
+            title: title,
+            event: true,
+        });
+      }
   };
 
   const clearChallengeOutput = function() {
@@ -467,13 +473,7 @@ jQuery(function($) {
     } else {
       updateChallengeOutput(resp.output);
       if (resp.correct) {
-
-        window.goatcounter.count({
-            path:  "✅ " + HOSTNAME_EVENT + location.hash,
-            title: FLAVOR,
-            event: true,
-        })
-
+        countEvent("✅ " + HOSTNAME_EVENT + location.hash, FLAVOR);
         addItemToStorage(
             resp.challenge_slug,
             STORAGE_CORRECT,
@@ -496,11 +496,7 @@ jQuery(function($) {
             }
         );
       } else {
-        window.goatcounter.count({
-            path:  "❌ " + HOSTNAME_EVENT + location.hash,
-            title: FLAVOR,
-            event: true,
-        })
+        countEvent("❌ " + HOSTNAME_EVENT + location.hash, FLAVOR);
         updateInfoText(
             'Incorrect answer, try again',
             INFO_STATUS.incorrect
