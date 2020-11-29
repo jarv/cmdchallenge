@@ -102,10 +102,12 @@
       <script>
           window.goatcounter = {no_onload: true}
           window.addEventListener('hashchange', function(e) {
+            if (typeof window.goatcounter.count === 'function') {
               window.goatcounter.count({
                   path: location.host.replace('.cmdchallenge.com', '').replace('.com', '') + location.pathname + location.search + location.hash,
                   title: location.host.replace('.cmdchallenge.com', '').replace('.com', ''),
               })
+            }
           })
       </script>
       <script data-goatcounter="https://cmdchallenge.goatcounter.com/count"
