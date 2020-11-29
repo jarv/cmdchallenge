@@ -27,6 +27,7 @@ RUN apk add --no-cache --update \
     libc6-compat \
     make \
     alpine-sdk \
+    npm \
     && git clone --depth 1 https://github.com/pyenv/pyenv.git $PYENV_HOME \
     && rm -rfv $PYENV_HOME/.git \
     && pyenv install $PYTHON_VERSION \
@@ -39,4 +40,5 @@ RUN apk add --no-cache --update \
     && pip install -r dev-requirements.txt \
     && curl -o /tmp/tf.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
     && cd /usr/local/bin && unzip /tmp/tf.zip \
-    && rm -f /tmp/tf.zip
+    && rm -f /tmp/tf.zip \
+    && npm install

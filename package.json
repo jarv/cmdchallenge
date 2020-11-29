@@ -16,6 +16,7 @@
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",
+    "@sentry/webpack-plugin": "^1.14.0",
     "babel-loader": "^8.2.1",
     "babel-preset-modern-browsers": "^15.0.2",
     "core-js": "^3.8.0",

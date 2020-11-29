@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
 module.exports = {
   entry: {
@@ -14,9 +15,11 @@ module.exports = {
       './src/cmdchallenge.js',
     ],
   },
+  devtool: "source-map",
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'static'),
+    sourceMapFilename: "[name].js.map",
   },
   performance: {
     hints: false
@@ -66,6 +69,16 @@ module.exports = {
       $: 'jquery',
       jQuery: 'jquery',
       hljs: 'hljs',
+    }),
+    new SentryWebpackPlugin({
+      // sentry-cli configuration
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      org: "sideproject-inc",
+      project: "javascript",
+
+      // webpack specific configuration
+      include: ".",
+      ignore: ["node_modules", "webpack.config.js"],
     }),
   ]
 };
