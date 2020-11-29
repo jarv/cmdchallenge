@@ -110,7 +110,7 @@ deploy:prod:tf:
   when: manual
   script:
     - terraform apply -auto-approve
-    - make sentry_release_python
+    - cd "$CI_PROJECT_DIR"; make sentry_release_python
 
 deploy:prod:static:
   stage: deploy
