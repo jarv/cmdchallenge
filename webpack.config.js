@@ -15,7 +15,7 @@ module.exports = {
       './src/cmdchallenge.js',
     ],
   },
-  devtool: "source-map",
+  // devtool: true,
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'static'),
