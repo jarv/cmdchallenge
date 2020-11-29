@@ -132,7 +132,6 @@ def check_use_cache(cached_response, challenge):
 
 
 def handler(event, context):
-    division_by_zero = 1 / 0
     if "queryStringParameters" not in event:
         return default_resp(err="Missing params.")
     body = event["queryStringParameters"]
