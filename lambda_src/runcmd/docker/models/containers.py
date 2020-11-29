@@ -225,7 +225,8 @@ class Container(Model):
         """
         return self.client.api.export(self.id, chunk_size)
 
-    def get_archive(self, path, chunk_size=DEFAULT_DATA_CHUNK_SIZE):
+    def get_archive(self, path, chunk_size=DEFAULT_DATA_CHUNK_SIZE,
+                    encode_stream=False):
         """
         Retrieve a file or folder from the container in the form of a tar
         archive.
@@ -235,6 +236,8 @@ class Container(Model):
             chunk_size (int): The number of bytes returned by each iteration
                 of the generator. If ``None``, data will be streamed as it is
                 received. Default: 2 MB
+            encode_stream (bool): Determines if data should be encoded
+                (gzip-compressed) during transmission. Default: False
 
         Returns:
             (tuple): First element is a raw tar data stream. Second element is
@@ -255,7 +258,8 @@ class Container(Model):
             ...    f.write(chunk)
             >>> f.close()
         """
-        return self.client.api.get_archive(self.id, path, chunk_size)
+        return self.client.api.get_archive(self.id, path,
+                                           chunk_size, encode_stream)
 
     def kill(self, signal=None):
         """
@@ -579,6 +583,9 @@ class ContainerCollection(Collection):
                 For example, ``/dev/sda:/dev/xvda:rwm`` allows the container
                 to have read-write access to the host's ``/dev/sda`` via a
                 node named ``/dev/xvda`` inside the container.
+            device_requests (:py:class:`list`): Expose host resources such as
+                GPUs to the container, as a list of
+                :py:class:`docker.types.DeviceRequest` instances.
             dns (:py:class:`list`): Set custom DNS servers.
             dns_opt (:py:class:`list`): Additional options to be added to the
                 container's ``resolv.conf`` file.
@@ -642,6 +649,7 @@ class ContainerCollection(Collection):
                 - ``container:<name|id>`` Reuse another container's network
                   stack.
                 - ``host`` Use the host network stack.
+                  This mode is incompatible with ``ports``.
 
                 Incompatible with ``network``.
             oom_kill_disable (bool): Whether to disable OOM killer.
@@ -675,6 +683,7 @@ class ContainerCollection(Collection):
                   to a single container port. For example,
                   ``{'1111/tcp': [1234, 4567]}``.
 
+                Incompatible with ``host`` network mode.
             privileged (bool): Give extended privileges to this container.
             publish_all_ports (bool): Publish all ports to the host.
             read_only (bool): Mount the container's root filesystem as read
@@ -998,6 +1007,7 @@ RUN_HOST_CONFIG_KWARGS = [
     'device_write_bps',
     'device_write_iops',
     'devices',
+    'device_requests',
     'dns_opt',
     'dns_search',
     'dns',

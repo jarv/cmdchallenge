@@ -7,6 +7,19 @@ import requests.exceptions
 import six
 import websocket
 
+from .. import auth
+from ..constants import (DEFAULT_NUM_POOLS, DEFAULT_NUM_POOLS_SSH,
+                         DEFAULT_MAX_POOL_SIZE, DEFAULT_TIMEOUT_SECONDS,
+                         DEFAULT_USER_AGENT, IS_WINDOWS_PLATFORM,
+                         MINIMUM_DOCKER_API_VERSION, STREAM_HEADER_SIZE_BYTES)
+from ..errors import (DockerException, InvalidVersion, TLSParameterError,
+                      create_api_error_from_http_exception)
+from ..tls import TLSConfig
+from ..transport import SSLHTTPAdapter, UnixHTTPAdapter
+from ..utils import check_resource, config, update_headers, utils
+from ..utils.json_stream import json_stream
+from ..utils.proxy import ProxyConfig
+from ..utils.socket import consume_socket_output, demux_adaptor, frames_iter
 from .build import BuildApiMixin
 from .config import ConfigApiMixin
 from .container import ContainerApiMixin
@@ -19,22 +32,7 @@ from .secret import SecretApiMixin
 from .service import ServiceApiMixin
 from .swarm import SwarmApiMixin
 from .volume import VolumeApiMixin
-from .. import auth
-from ..constants import (
-    DEFAULT_TIMEOUT_SECONDS, DEFAULT_USER_AGENT, IS_WINDOWS_PLATFORM,
-    DEFAULT_DOCKER_API_VERSION, MINIMUM_DOCKER_API_VERSION,
-    STREAM_HEADER_SIZE_BYTES, DEFAULT_NUM_POOLS_SSH, DEFAULT_NUM_POOLS
-)
-from ..errors import (
-    DockerException, InvalidVersion, TLSParameterError,
-    create_api_error_from_http_exception
-)
-from ..tls import TLSConfig
-from ..transport import SSLHTTPAdapter, UnixHTTPAdapter
-from ..utils import utils, check_resource, update_headers, config
-from ..utils.socket import frames_iter, consume_socket_output, demux_adaptor
-from ..utils.json_stream import json_stream
-from ..utils.proxy import ProxyConfig
+
 try:
     from ..transport import NpipeHTTPAdapter
 except ImportError:
@@ -91,6 +89,11 @@ class APIClient(
         user_agent (str): Set a custom user agent for requests to the server.
         credstore_env (dict): Override environment variables when calling the
             credential store process.
+        use_ssh_client (bool): If set to `True`, an ssh connection is made
+            via shelling out to the ssh client. Ensure the ssh client is
+            installed and configured on the host.
+        max_pool_size (int): The maximum number of connections
+            to save in the pool.
     """
 
     __attrs__ = requests.Session.__attrs__ + ['_auth_configs',
@@ -102,7 +105,8 @@ class APIClient(
     def __init__(self, base_url=None, version=None,
                  timeout=DEFAULT_TIMEOUT_SECONDS, tls=False,
                  user_agent=DEFAULT_USER_AGENT, num_pools=None,
-                 credstore_env=None):
+                 credstore_env=None, use_ssh_client=False,
+                 max_pool_size=DEFAULT_MAX_POOL_SIZE):
         super(APIClient, self).__init__()
 
         if tls and not base_url:
@@ -138,7 +142,8 @@ class APIClient(
 
         if base_url.startswith('http+unix://'):
             self._custom_adapter = UnixHTTPAdapter(
-                base_url, timeout, pool_connections=num_pools
+                base_url, timeout, pool_connections=num_pools,
+                max_pool_size=max_pool_size
             )
             self.mount('http+docker://', self._custom_adapter)
             self._unmount('http://', 'https://')
@@ -152,7 +157,8 @@ class APIClient(
                 )
             try:
                 self._custom_adapter = NpipeHTTPAdapter(
-                    base_url, timeout, pool_connections=num_pools
+                    base_url, timeout, pool_connections=num_pools,
+                    max_pool_size=max_pool_size
                 )
             except NameError:
                 raise DockerException(
@@ -163,7 +169,8 @@ class APIClient(
         elif base_url.startswith('ssh://'):
             try:
                 self._custom_adapter = SSHHTTPAdapter(
-                    base_url, timeout, pool_connections=num_pools
+                    base_url, timeout, pool_connections=num_pools,
+                    max_pool_size=max_pool_size, shell_out=use_ssh_client
                 )
             except NameError:
                 raise DockerException(
@@ -183,14 +190,14 @@ class APIClient(
             self.base_url = base_url
 
         # version detection needs to be after unix adapter mounting
-        if version is None:
-            self._version = DEFAULT_DOCKER_API_VERSION
-        elif isinstance(version, six.string_types):
-            if version.lower() == 'auto':
-                self._version = self._retrieve_server_version()
-            else:
-                self._version = version
+        if version is None or (isinstance(
+                                version,
+                                six.string_types
+                                ) and version.lower() == 'auto'):
+            self._version = self._retrieve_server_version()
         else:
+            self._version = version
+        if not isinstance(self._version, six.string_types):
             raise DockerException(
                 'Version parameter must be a string or None. Found {0}'.format(
                     type(version).__name__

@@ -1,4 +1,4 @@
-#!/Users/jarv/.local/share/virtualenvs/cmdchallenge-6V__TZ5b/bin/python3
+#!/Users/jarv/.local/share/virtualenvs/cmdchallenge-6V__TZ5b/bin/python
 
 import argparse
 import code
