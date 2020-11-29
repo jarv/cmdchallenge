@@ -1,3 +1,9 @@
+import sentry_sdk
+sentry_sdk.init(
+    "https://64fce3067b92496891b7eec662513f66@o484121.ingest.sentry.io/5536941",
+    traces_sample_rate=1.0
+)
+
 import logging
 import hashlib
 import json
@@ -17,7 +23,6 @@ from challenge import bool_to_int_dyn
 from docker_cmd import output_from_cmd, DockerValidationError
 from dynamo import COMMANDS_TABLE_NAME, SUBMISSIONS_TABLE_NAME
 from dynamo import raise_on_rate_limit, DynamoValidationError
-
 
 LOG = logging.getLogger()
 LOG.setLevel(logging.WARN)
@@ -125,6 +130,7 @@ def check_use_cache(cached_response, challenge):
 
 
 def handler(event, context):
+    division_by_zero = 1 / 0
     if "queryStringParameters" not in event:
         return default_resp(err="Missing params.")
     body = event["queryStringParameters"]
