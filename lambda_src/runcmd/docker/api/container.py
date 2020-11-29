@@ -480,6 +480,9 @@ class ContainerApiMixin(object):
                 For example, ``/dev/sda:/dev/xvda:rwm`` allows the container
                 to have read-write access to the host's ``/dev/sda`` via a
                 node named ``/dev/xvda`` inside the container.
+            device_requests (:py:class:`list`): Expose host resources such as
+                GPUs to the container, as a list of
+                :py:class:`docker.types.DeviceRequest` instances.
             dns (:py:class:`list`): Set custom DNS servers.
             dns_opt (:py:class:`list`): Additional options to be added to the
                 container's ``resolv.conf`` file
@@ -503,7 +506,7 @@ class ContainerApiMixin(object):
                 bytes) or a string with a units identification char
                 (``100000b``, ``1000k``, ``128m``, ``1g``). If a string is
                 specified without a units character, bytes are assumed as an
-            mem_reservation (int or str): Memory soft limit.
+            mem_reservation (float or str): Memory soft limit.
             mem_swappiness (int): Tune a container's memory swappiness
                 behavior. Accepts number between 0 and 100.
             memswap_limit (str or int): Maximum amount of memory + swap a
@@ -520,6 +523,8 @@ class ContainerApiMixin(object):
                 - ``container:<name|id>`` Reuse another container's network
                   stack.
                 - ``host`` Use the host network stack.
+                  This mode is incompatible with ``port_bindings``.
+
             oom_kill_disable (bool): Whether to disable OOM killer.
             oom_score_adj (int): An integer value containing the score given
                 to the container in order to tune OOM killer preferences.
@@ -528,7 +533,8 @@ class ContainerApiMixin(object):
             pids_limit (int): Tune a container's pids limit. Set ``-1`` for
                 unlimited.
             port_bindings (dict): See :py:meth:`create_container`
-                    for more information.
+                for more information.
+                Imcompatible with ``host`` in ``network_mode``.
             privileged (bool): Give extended privileges to this container.
             publish_all_ports (bool): Publish all ports to the host.
             read_only (bool): Mount the container's root filesystem as read
@@ -636,6 +642,8 @@ class ContainerApiMixin(object):
                 network, using the IPv6 protocol. Defaults to ``None``.
             link_local_ips (:py:class:`list`): A list of link-local (IPv4/IPv6)
                 addresses.
+            driver_opt (dict): A dictionary of options to provide to the
+                network driver. Defaults to ``None``.
 
         Returns:
             (dict) An endpoint config.
@@ -694,7 +702,8 @@ class ContainerApiMixin(object):
         return self._stream_raw_result(res, chunk_size, False)
 
     @utils.check_resource('container')
-    def get_archive(self, container, path, chunk_size=DEFAULT_DATA_CHUNK_SIZE):
+    def get_archive(self, container, path, chunk_size=DEFAULT_DATA_CHUNK_SIZE,
+                    encode_stream=False):
         """
         Retrieve a file or folder from a container in the form of a tar
         archive.
@@ -705,6 +714,8 @@ class ContainerApiMixin(object):
             chunk_size (int): The number of bytes returned by each iteration
                 of the generator. If ``None``, data will be streamed as it is
                 received. Default: 2 MB
+            encode_stream (bool): Determines if data should be encoded
+                (gzip-compressed) during transmission. Default: False
 
         Returns:
             (tuple): First element is a raw tar data stream. Second element is
@@ -729,8 +740,13 @@ class ContainerApiMixin(object):
         params = {
             'path': path
         }
+        headers = {
+            "Accept-Encoding": "gzip, deflate"
+        } if encode_stream else {
+            "Accept-Encoding": "identity"
+        }
         url = self._url('/containers/{0}/archive', container)
-        res = self._get(url, params=params, stream=True)
+        res = self._get(url, params=params, stream=True, headers=headers)
         self._raise_for_status(res)
         encoded_stat = res.headers.get('x-docker-container-path-stat')
         return (
@@ -1120,7 +1136,7 @@ class ContainerApiMixin(object):
         else:
             if decode:
                 raise errors.InvalidArgument(
-                    "decode is only available in conjuction with stream=True"
+                    "decode is only available in conjunction with stream=True"
                 )
             return self._result(self._get(url, params={'stream': False}),
                                 json=True)
@@ -1206,8 +1222,8 @@ class ContainerApiMixin(object):
             cpu_shares (int): CPU shares (relative weight)
             cpuset_cpus (str): CPUs in which to allow execution
             cpuset_mems (str): MEMs in which to allow execution
-            mem_limit (int or str): Memory limit
-            mem_reservation (int or str): Memory soft limit
+            mem_limit (float or str): Memory limit
+            mem_reservation (float or str): Memory soft limit
             memswap_limit (int or str): Total memory (memory + swap), -1 to
                 disable swap
             kernel_memory (int or str): Kernel memory limit
