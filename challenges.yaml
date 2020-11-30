@@ -197,8 +197,9 @@
     On the sixth day of Shell my true love gave to me<br />
     Six lines that are exciting! ...
     </div>
+
     ---
-    _Hint: Exciting lines end with `!`_
+    _Hint: Exciting lines end with "!"_
   learn: |
     To find "exciting" lines we want to only print lines that end with a `!` character.<br />
     Just like how previously we learned that regular expression syntax can match strings with an anchor at the beginning of the line we can use `$` to anchor the match at the end.
