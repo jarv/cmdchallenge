@@ -3,7 +3,7 @@
     "@babel/polyfill": "^7.12.1",
     "@sentry/browser": "^5.28.0",
     "@sentry/tracing": "^5.28.0",
-    "commonmark": "^0.29.2",
+    "commonmark": "0.29.1",
     "fg-loadcss": "^3.1.0",
     "highlight.js": "^10.4.0",
     "html-webpack-plugin": "^4.5.0",
