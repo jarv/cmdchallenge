@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/webpack-contrib/expose-loader/compare/v1.0.2...v1.0.3) (2020-11-26)
+
+
+### Bug Fixes
+
+* set side effects to false ([#122](https://github.com/webpack-contrib/expose-loader/issues/122)) ([ee2631d](https://github.com/webpack-contrib/expose-loader/commit/ee2631df243e4fa13f107189be5dc469108495b3))
+
 ### [1.0.2](https://github.com/webpack-contrib/expose-loader/compare/v1.0.1...v1.0.2) (2020-11-25)
 
 

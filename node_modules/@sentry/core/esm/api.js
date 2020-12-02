@@ -68,6 +68,9 @@ var API = /** @class */ (function () {
         var encodedOptions = [];
         encodedOptions.push("dsn=" + dsn.toString());
         for (var key in dialogOptions) {
+            if (key === 'dsn') {
+                continue;
+            }
             if (key === 'user') {
                 if (!dialogOptions.user) {
                     continue;

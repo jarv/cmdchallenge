@@ -1,7 +1,7 @@
 commonmark.js
 =============
 
-[![Build Status](https://img.shields.io/travis/commonmark/commonmark.js/master.svg?style=flat)](https://travis-ci.org/commonmark/commonmark.js)
+[![Build Status](https://github.com/commonmark/commonmark.js/workflows/CI%20tests/badge.svg)](https://github.com/commonmark/commonmark.js/actions)
 [![NPM version](https://img.shields.io/npm/v/commonmark.svg?style=flat)](https://www.npmjs.org/package/commonmark)
 
 
@@ -33,7 +33,7 @@ This package includes the commonmark library and a
 command-line executable, `commonmark`.
 
 For client-side use, fetch the latest from
-<https://raw.githubusercontent.com/jgm/commonmark.js/master/dist/commonmark.js>,
+<https://raw.githubusercontent.com/commonmark/commonmark.js/master/dist/commonmark.js>,
 or `bower install commonmark`.
 
 Building

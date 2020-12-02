@@ -644,6 +644,10 @@ class RuleTester {
             assert.ok(item.errors || item.errors === 0,
                 `Did not specify errors for an invalid test of ${ruleName}`);
 
+            if (Array.isArray(item.errors) && item.errors.length === 0) {
+                assert.fail("Invalid cases must have at least one error");
+            }
+
             const ruleHasMetaMessages = hasOwnProperty(rule, "meta") && hasOwnProperty(rule.meta, "messages");
             const friendlyIDList = ruleHasMetaMessages ? `[${Object.keys(rule.meta.messages).map(key => `'${key}'`).join(", ")}]` : null;
 
@@ -651,6 +655,11 @@ class RuleTester {
             const messages = result.messages;
 
             if (typeof item.errors === "number") {
+
+                if (item.errors === 0) {
+                    assert.fail("Invalid cases must have 'error' value greater than 0");
+                }
+
                 assert.strictEqual(messages.length, item.errors, util.format("Should have %d error%s but had %d: %s",
                     item.errors, item.errors === 1 ? "" : "s", messages.length, util.inspect(messages)));
             } else {
@@ -850,6 +859,16 @@ class RuleTester {
                     item.code,
                     "The rule fixed the code. Please add 'output' property."
                 );
+            }
+
+            // Rules that produce fixes must have `meta.fixable` property.
+            if (result.output !== item.code) {
+                assert.ok(
+                    hasOwnProperty(rule, "meta"),
+                    "Fixable rules should export a `meta.fixable` property."
+                );
+
+                // Linter throws if a rule that produced a fix has `meta` but doesn't have `meta.fixable`.
             }
 
             assertASTDidntChange(result.beforeAST, result.afterAST);
