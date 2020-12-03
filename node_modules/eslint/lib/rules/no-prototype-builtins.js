@@ -5,6 +5,12 @@
 "use strict";
 
 //------------------------------------------------------------------------------
+// Requirements
+//------------------------------------------------------------------------------
+
+const astUtils = require("./utils/ast-utils");
+
+//------------------------------------------------------------------------------
 // Rule Definition
 //------------------------------------------------------------------------------
 
@@ -39,15 +45,19 @@ module.exports = {
          * @returns {void}
          */
         function disallowBuiltIns(node) {
-            if (node.callee.type !== "MemberExpression" || node.callee.computed) {
+
+            const callee = astUtils.skipChainExpression(node.callee);
+
+            if (callee.type !== "MemberExpression") {
                 return;
             }
-            const propName = node.callee.property.name;
 
-            if (DISALLOWED_PROPS.indexOf(propName) > -1) {
+            const propName = astUtils.getStaticPropertyName(callee);
+
+            if (propName !== null && DISALLOWED_PROPS.indexOf(propName) > -1) {
                 context.report({
                     messageId: "prototypeBuildIn",
-                    loc: node.callee.property.loc,
+                    loc: callee.property.loc,
                     data: { prop: propName },
                     node
                 });
