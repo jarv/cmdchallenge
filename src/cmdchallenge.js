@@ -604,7 +604,7 @@ jQuery(function($) {
     }, {
       greetings: '',
       name: 'cmdchallenge',
-      height: 40,
+      height: 44,
       outputLimit: 1,
       convertLinks: true,
       linksNoReferrer: true,

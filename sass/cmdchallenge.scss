@@ -221,7 +221,10 @@ div#info-wrapper {
 
 div#term-challenge {
   padding: 0;
-
+  height: 44px;
+  .cmd {
+    margin-bottom: 0;
+  }
 }
 
 body {
