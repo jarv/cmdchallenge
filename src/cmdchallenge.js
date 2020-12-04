@@ -2,17 +2,17 @@
 
 'use strict';
 
-import * as Sentry from "@sentry/browser";
-import { Integrations } from "@sentry/tracing";
+// import * as Sentry from "@sentry/browser";
+// import { Integrations } from "@sentry/tracing";
 
-Sentry.init({
-  dsn: 'https://e08d19e3657243b1b8191cb18a651e3b@o484121.ingest.sentry.io/5536934',
-  integrations: [
-    new Integrations.BrowserTracing(),
-  ],
+// Sentry.init({
+//   dsn: 'https://e08d19e3657243b1b8191cb18a651e3b@o484121.ingest.sentry.io/5536934',
+//   integrations: [
+//     new Integrations.BrowserTracing(),
+//   ],
 
-  tracesSampleRate: 1.0,
-});
+//   tracesSampleRate: 1.0,
+// });
 
 import "core-js/stable";
 import "regenerator-runtime/runtime";
@@ -102,7 +102,7 @@ jQuery(function($) {
   };
 
   const termClear = function() {
-    if (currentChallenge && !less) {
+    if (currentChallenge) {
       retCode = colorize('0', 'green');
     }
   };

@@ -15,7 +15,7 @@ module.exports = {
       './src/cmdchallenge.js',
     ],
   },
-  // devtool: true,
+  devtool: "source-map",
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'static'),
@@ -70,15 +70,15 @@ module.exports = {
       jQuery: 'jquery',
       hljs: 'hljs',
     }),
-    new SentryWebpackPlugin({
-      // sentry-cli configuration
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-      org: "sideproject-inc",
-      project: "javascript",
+    // new SentryWebpackPlugin({
+    //   // sentry-cli configuration
+    //   authToken: process.env.SENTRY_AUTH_TOKEN,
+    //   org: "sideproject-inc",
+    //   project: "javascript",
 
-      // webpack specific configuration
-      include: ".",
-      ignore: ["node_modules", "webpack.config.js"],
-    }),
+    //   // webpack specific configuration
+    //   include: ".",
+    //   ignore: ["node_modules", "webpack.config.js"],
+    // }),
   ]
 };
