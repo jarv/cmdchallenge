@@ -735,7 +735,7 @@
     - rm -rf /var/challenges/delete_files
 - slug: remove_files_with_extension
   emoji: emojis/1F43A
-  version: 5
+  version: 6
   author: cmdchallenge
   disp_title: remove files with extension
   description: |
@@ -744,6 +744,7 @@
   example: rm **/*.doc
   expected_failures:
     - echo
+    - 'rm -R .* *'
 - slug: find_string_in_a_file
   emoji: emojis/1F41D
   disp_title: find string
