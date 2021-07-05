@@ -5,7 +5,7 @@ from os.path import dirname, join, realpath
 from shutil import copyfile
 
 dir_path = dirname(realpath(__file__))
-dir_cmdchallenge = join(dir_path, "../cmdchallenge")
+dir_cmdchallenge = join(dir_path, "../cmdrunner")
 
 challenges = yaml.safe_load(open(join(dir_path, "../challenges.yaml")).read())
 

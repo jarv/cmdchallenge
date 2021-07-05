@@ -60,7 +60,7 @@ resource "aws_instance" "runcmd" {
   }
 
   provisioner "file" {
-    source      = "${path.root}/../cmdchallenge/ro_volume"
+    source      = "${path.root}/../cmdrunner/ro_volume"
     destination = "runcmd"
   }
 
@@ -144,4 +144,3 @@ output "public_ip" {
 output "public_dns" {
   value = aws_instance.runcmd.public_dns
 }
-

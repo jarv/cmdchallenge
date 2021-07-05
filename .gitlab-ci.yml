@@ -43,7 +43,7 @@ python-black:
   stage: test
   script:
     - apk add file
-    - 'find bin cmdchallenge -print -exec file {} \; | grep "Python" | grep -v ".nim" | cut -d: -f1 | xargs black --check'
+    - 'find bin -print -exec file {} \; | grep "Python" | grep -v ".nim" | cut -d: -f1 | xargs black --check'
   rules:
     - if: $CI_COMMIT_BRANCH != 'master'
 
