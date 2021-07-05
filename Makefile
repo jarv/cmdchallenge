@@ -4,7 +4,7 @@ PWD=$(shell pwd)
 DATE_TS=$(shell date -u +%Y%m%d%H%M%S)
 IS_INDEX_CLEAN=$(shell git diff-index HEAD -- | grep -q static/index.html && echo "no" || echo "yes")
 BASEDIR=$(CURDIR)
-DIR_CMDCHALLENGE=$(CURDIR)/cmdchallenge
+DIR_CMDRUNNER=$(CURDIR)/cmdrunner
 CI_REGISTRY_IMAGE?=registry.gitlab.com/jarv/cmdchallenge
 CI_COMMIT_TAG?=$(shell git rev-parse --short HEAD)
 STATIC_OUTPUTDIR=$(BASEDIR)/static
@@ -70,7 +70,7 @@ publish_prod_profile: update-challenges cache-bust-index
 ###################
 
 test-runcmd:
-	cd $(DIR_CMDCHALLENGE)/runcmd; go test
+	cd $(DIR_CMDRUNNER)/runcmd; go test
 
 test-challenges:
 	./bin/test_challenges
@@ -86,9 +86,9 @@ push-image-ci: build-image-ci
 	docker push $(CI_REGISTRY_IMAGE)/ci:latest
 
 build-image-cmd: build-runcmd update-challenges tar-var
-	cd $(DIR_CMDCHALLENGE); docker build -t $(CI_REGISTRY_IMAGE)/cmd:latest \
+	cd $(DIR_CMDRUNNER); docker build -t $(CI_REGISTRY_IMAGE)/cmd:latest \
 		--tag $(CI_REGISTRY_IMAGE)/cmd:$(REF) .
-	cd $(DIR_CMDCHALLENGE); docker build -t $(CI_REGISTRY_IMAGE)/cmd-no-bin:latest \
+	cd $(DIR_CMDRUNNER); docker build -t $(CI_REGISTRY_IMAGE)/cmd-no-bin:latest \
 		--tag $(CI_REGISTRY_IMAGE)/cmd-no-bin:$(REF) -f Dockerfile-no-bin .
 	rm -f var.tar.gz
 
@@ -97,29 +97,29 @@ build-image-ci:
 		--tag $(CI_REGISTRY_IMAGE)/ci:$(CI_COMMIT_TAG) -f Dockerfile-ci .
 
 build-runcmd:
-	docker run --rm -v $(DIR_CMDCHALLENGE)/runcmd:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
-	docker run --rm -v $(DIR_CMDCHALLENGE)/oops:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
+	docker run --rm -v $(DIR_CMDRUNNER)/runcmd:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
+	docker run --rm -v $(DIR_CMDRUNNER)/oops:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
 
 build-test:
-	docker run --rm -v $(DIR_CMDCHALLENGE)/test:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
+	docker run --rm -v $(DIR_CMDRUNNER)/test:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
 
 update-challenges:
 	./bin/update-challenges
 
 tar-var:
-	cd $(DIR_CMDCHALLENGE); tar --exclude='.gitignore' --exclude='.gitkeep' -czf var.tar.gz var/
+	cd $(DIR_CMDRUNNER); tar --exclude='.gitignore' --exclude='.gitkeep' -czf var.tar.gz var/
 
 cmdshell:
-	docker run -it --privileged --mount type=bind,source="$(PWD)/cmdchallenge/ro_volume",target=/ro_volume  registry.gitlab.com/jarv/cmdchallenge/cmd:latest bash
+	docker run -it --privileged --mount type=bind,source="$(DIR_CMDRUNNER)/ro_volume",target=/ro_volume  $(CI_REGISTRY_IMAGE)/cmd:latest bash
 
 oopsshell:
-	docker run -it --privileged --mount type=bind,source="$(PWD)/cmdchallenge/ro_volume",target=/ro_volume  registry.gitlab.com/jarv/cmdchallenge/cmd-no-bin:latest bash
+	docker run -it --privileged --mount type=bind,source="$(DIR_CMDRUNNER)/ro_volume",target=/ro_volume $(CI_REGISTRY_IMAGE)/cmd-no-bin:latest bash
 
 testshell:
-	docker run -it --privileged --mount type=bind,source="$(PWD)/cmdchallenge/test",target=/tmp registry.gitlab.com/jarv/cmdchallenge/cmd:latest bash
+	docker run -it --privileged --mount type=bind,source="$(DIR_CMDRUNNER)/test",target=/tmp $(CI_REGISTRY_IMAGE)/cmd:latest bash
 
 clean:
-	rm -f $(PWD)/cmdchallenge/ro_volume/ch/*
+	rm -f $(DIR_CMDRUNNER)/ro_volume/ch/*
 	rm -f $(PWD)/static/challenges/*
 
 cache-bust-index:

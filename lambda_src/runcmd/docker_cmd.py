@@ -16,7 +16,7 @@ BASE_WORKING_DIR = "/var/challenges"
 IMAGE_TAG = environ.get("SHORT_SHA", "latest")
 
 dir_path = dirname(realpath(__file__))
-dir_cmdchallenge = join(dir_path, "../../cmdchallenge")
+dir_cmdchallenge = join(dir_path, "../../cmdrunner")
 
 if environ.get("LAMBDA_RUNTIME_DIR"):
     volume_dir = "/var/ro_volume"

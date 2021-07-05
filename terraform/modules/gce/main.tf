@@ -127,7 +127,7 @@ resource "google_compute_instance" "default" {
   }
 
   provisioner "file" {
-    source      = "${path.root}/../cmdchallenge/ro_volume"
+    source      = "${path.root}/../cmdrunner/ro_volume"
     destination = "/var/tmp/"
   }
 
