@@ -5,14 +5,14 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="css/cmdchallenge.css"/>
+    <link rel="stylesheet" href="css/cmdchallenge.css?20210924081735"/>
     <title></title>
 
-    <link rel="preload" href="css/highlight-js-10.0.0-railscasts.min.css" as="style">
-    <link rel="stylesheet" href="css/highlight-js-10.0.0-railscasts.min.css" media="print" onload="this.media='all'">
+    <link rel="preload" href="css/highlight-js-10.0.0-railscasts.min.css?20210924081735" as="style">
+    <link rel="stylesheet" href="css/highlight-js-10.0.0-railscasts.min.css?20210924081735" media="print" onload="this.media='all'">
 
-    <link rel="preload" href="css/jquery.terminal.min.css" as="style">
-    <link rel="stylesheet" href="css/jquery.terminal.min.css" media="print" onload="this.media='all'">
+    <link rel="preload" href="css/jquery.terminal.min.css?20210924081735" as="style">
+    <link rel="stylesheet" href="css/jquery.terminal.min.css?20210924081735" media="print" onload="this.media='all'">
 
 
     <meta name="description" content="One-line shell challenges, to help improve your skill on the commandline."/>
@@ -47,7 +47,7 @@
                 <label class="tab-label" for="chck1">View Solutions</label>
                 <div class="tab-content">
                   <div id="solutions-wrapper">
-                    <div class="last-updated"></div>
+                    <div class="solutions-status"></div>
                   <pre><code id="solutions" class="language-bash bash hljs"></code></pre>
                   </div>
                 </div>
@@ -93,24 +93,11 @@
       <div class="footer">
         <p>
         Site built with ♡ using <a href="https://terminal.jcubic.pl/">jquery.terminal</a> / <a href="https://openmoji.org/">openmoji</a> / <a href="https://nim-lang.org/">nim</a> / <a href="https://www.python.org">python</a><br />
-        <a href="https://jarv.org/tags/cmdchallenge/">Read more about cmdchallenge</a> | <a href="https://cmdchallenge.goatcounter.com">View site stats</a>
+        <a href="https://jarv.org/tags/cmdchallenge/">Read more about cmdchallenge</a>
         </p>
       </div>
 
-      <script src="vendor.js"></script>
-      <script src="app.js"></script>
-      <script>
-          window.goatcounter = {no_onload: true}
-          window.addEventListener('hashchange', function(e) {
-            if (typeof window.goatcounter.count === 'function') {
-              window.goatcounter.count({
-                  path: location.host.replace('.cmdchallenge.com', '').replace('.com', '') + location.pathname + location.search + location.hash,
-                  title: location.host.replace('.cmdchallenge.com', '').replace('.com', ''),
-              })
-            }
-          })
-      </script>
-      <script data-goatcounter="https://cmdchallenge.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+      <script src="vendor.js?20210924081735"></script>
+      <script src="app.js?20210924081735"></script>
   </body>
 </html>

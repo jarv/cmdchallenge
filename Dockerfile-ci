@@ -1,44 +1,22 @@
 FROM docker:19.03.8
-COPY Pipfile /Pipfile
-COPY Pipfile.lock /Pipfile.lock
+RUN apk add --virtual .asdf-deps --no-cache jq bash openssh curl git gnupg grep libc6-compat python3 py-pip make build-base
+SHELL ["/bin/bash", "-l", "-c"]
+RUN adduser -s /bin/bash -h /asdf -D asdf && \
+    pip install awscli yamllint
+ENV PATH="${PATH}:/asdf/.asdf/shims:/asdf/.asdf/bin"
 
-## Versions ##
-ARG TERRAFORM_VERSION=0.13.5
-ARG PYTHON_VERSION='3.7.0'
-ARG PYENV_HOME=/root/.pyenv
-ENV PATH $PYENV_HOME/shims:$PYENV_HOME/bin:$PATH
+USER asdf
+WORKDIR /asdf
 
-RUN apk add --no-cache --update \
-    jq \
-    git \
-    bash \
-    libffi-dev \
-    openssl \
-    gettext \
-    openssl-dev \
-    bzip2-dev \
-    zlib-dev \
-    readline-dev \
-    sqlite-dev \
-    build-base \
-    linux-headers \
-    curl \
-    openssh-client \
-    libc6-compat \
-    make \
-    alpine-sdk \
-    npm \
-    && git clone --depth 1 https://github.com/pyenv/pyenv.git $PYENV_HOME \
-    && rm -rfv $PYENV_HOME/.git \
-    && pyenv install $PYTHON_VERSION \
-    && pyenv global $PYTHON_VERSION \
-    && pip install --upgrade pip && pyenv rehash \
-    && pip install --no-cache-dir 'pipenv==2018.11.26' \
-    && pipenv lock -r > requirements.txt \
-    && pipenv lock -r -d > dev-requirements.txt \
-    && pip install -r requirements.txt \
-    && pip install -r dev-requirements.txt \
-    && curl -o /tmp/tf.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
-    && cd /usr/local/bin && unzip /tmp/tf.zip \
-    && rm -f /tmp/tf.zip \
-    && npm install
+COPY .tool-versions /asdf/.tool-versions
+COPY .asdf-plugins /asdf/.asdf-plugins
+COPY cmdchallenge/go.mod /asdf/go.mod
+COPY cmdchallenge/go.sum /asdf/go.sum
+
+RUN git clone --depth 1 https://github.com/asdf-vm/asdf.git $HOME/.asdf && \
+    echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.bashrc && \
+    echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.profile && \
+    source ~/.bashrc && \
+    for p in $(cat $HOME/.asdf-plugins); do asdf plugin add $p; done && \
+    asdf install && \
+    go mod download

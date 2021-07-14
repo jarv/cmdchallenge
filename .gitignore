@@ -1,8 +1,6 @@
 cmdchallenge/var.tar.gz
 cmdchallenge/img.tar
 cmdchallenge/var/challenges/*/README
-*.pyc
-cmdchallenge/venv2.7/
 tags
 *.zip
 private/

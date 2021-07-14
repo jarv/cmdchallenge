@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -eu -o pipefail
+
+shopt -s failglob
+
+dir=$(dirname "$0")
+solutions="${dir}/../static/s/solutions/*.json"
+# host="https://testing.cmdchallenge.com/r"
+host="http://localhost:8181/c/r"
+
+for c in $solutions; do
+  chFname=$(basename "$c")
+  ch=${chFname%.*}
+
+  for b64Cmd in $(jq -cr '.cmds[] | @base64' "$c"); do
+    result=$(curl -s "$host" -X POST -F challenge_slug="$ch" -F cmd="$b64Cmd")
+    if echo "$result" | jq -e >/dev/null 2>&1; then
+      result=$(echo "$result" | jq '.Correct')
+    fi
+    echo "$ch: Sent $(echo "$b64Cmd" | base64 -d) : $result"
+  done
+done

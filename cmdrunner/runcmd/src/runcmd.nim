@@ -15,65 +15,137 @@ import oops
 proc errorExit(message: string): void =
   var j = %*
     {
-      "Error":  message
+      "Error": message
     }
   echo j
   quit(0)
 
 proc runCombinedOutput(command: string, timeout: int): (string, int) =
   let args = ["-O", "globstar", "-c", &"export MANPAGER=cat;{command}"]
-  let process = startProcess(command="bash", args=args, options={poStdErrToStdOut, poUsePath})
-  let ret = waitForExit(p=process, timeout=timeout)
-  let strm = outputStream(p=process)
+  let process = startProcess(command = "bash", args = args, options = {
+      poStdErrToStdOut, poUsePath})
+  let ret = waitForExit(p = process, timeout = timeout)
+  let strm = outputStream(p = process)
   var outp = strm.readAll
   outp.stripLineEnd
-  close(p=process)
+  close(p = process)
   return (outp, ret)
 
 
-proc matchesOutput(cmdOut: string, jsonChallenge: JsonNode, expectedLines: seq[string] = @[]): bool =
+proc hasExpectedLines(jsonChallenge: JsonNode): bool =
   if not jsonChallenge.hasKey("expected_output"):
-    return true
+    return false
 
-  let expectedOutput = jsonChallenge["expected_output"]
+  return jsonChallenge["expected_output"].hasKey("lines")
 
-  if not expectedOutput.hasKey("lines"):
-    return true
+proc matchesOutput(output: string, jsonChallenge: JsonNode, expectedLines: seq[
+    string] = @[]): bool =
+  if not hasExpectedLines(jsonChallenge):
+    raise newException(ValueError, "Getting expected lines on challenge with nothing expected!")
 
-
-  var cmdLines = cmdOut.splitLines
+  var cmdLines = output.splitLines
 
   # If expectedLines is not passed then default to the values
   # provided by the challenge
-  var expectedLines = if expectedLines.len > 0:
-                        expectedLines
-                      else:
-                        expectedOutput["lines"].getElems.mapIt(it.getStr)
+  var expected = if expectedLines.len == 0:
+                   jsonChallenge["expected_output"]["lines"].getElems.mapIt(it.getStr)
+                 else:
+                   expectedLines
 
-  if cmdLines.len != expectedLines.len:
+  if cmdLines.len != expected.len:
     return false
 
-  if expectedOutput.hasKey("re_sub"):
-    let reSub = expectedOutput["re_sub"].getElems
+  if jsonChallenge["expected_output"].hasKey("re_sub"):
+    let reSub = jsonChallenge["expected_output"]["re_sub"].getElems
     apply(cmdLines, proc (line: var string) =
-      line = line.replace(re(reSub[0].getStr), by=reSub[1].getStr))
+      line = line.replace(re(reSub[0].getStr), by = reSub[1].getStr))
 
-  let orderMatters = expectedOutput{"order"}.getBool(true)
+  if not jsonChallenge["expected_output"]{"order"}.getBool(true):
+    return expected.sorted == cmdLines.sorted
 
-  if not orderMatters:
-    expectedLines.sort
-    cmdLines.sort
+  return expected == cmdLines
 
-  return expectedLines == cmdLines
+proc run(command: string, jsonChallenge: JsonNode): JsonNode =
+  # For all commands, set a default timeout of 5 seconds
+  let challengeTimeout = jsonChallenge{"timeout"}.getInt(5000)
+
+  var resp = %* {}
+
+  # For some challenges, start the oops process
+  var oopsProc = OopsProc()
+  if jsonChallenge["slug"].getStr.startsWith("oops"):
+    oopsProc.start()
+
+  let (output, exitCode) = runCombinedOutput(command, challengeTimeout)
+  resp["Output"] = %* output
+  resp["ExitCode"] = %* exitCode
+
+  # By default, set pass to true
+  resp["Correct"] = %* true
+
+  # Check if the output matches expected lines
+  if hasExpectedLines(jsonChallenge):
+    let matchesOutput = matchesOutput(output, jsonChallenge)
+    if matchesOutput:
+      resp["OutputPass"] = %* true
+    else:
+      resp["OutputPass"] = %* false
+      resp["Correct"] = %* false
+      return resp
+
+  # Run tests if tests are specified
+  if hasTest(jsonChallenge):
+    let testError = runCmdTest(jsonChallenge, oopsProc)
+    if testError == "":
+      resp["TestPass"] = %* true
+    else:
+      resp["TestPass"] = %* false
+      resp["Error"] = %* testError
+      resp["Correct"] = %* false
+      return resp
+
+  # Oops proc is not currently needed
+  # for any of the randomizers
+  if jsonChallenge["slug"].getStr.startsWith("oops"):
+    oopsProc.stop()
+
+  # If randomizers are defined, them
+  if hasRandomizer(jsonChallenge):
+    let expectedAfterRandomizer = runRandomizer(jsonChallenge)
+    # Discard the exit code of the command when we run randomizer
+    let (afterRandOutput, _) = runCombinedOutput(command, challengeTimeout)
+
+    # Check for expected lines after randomizer
+    if hasExpectedLines(jsonChallenge):
+      let matchesAfterRandOutput = matchesOutput(afterRandOutput,jsonChallenge, expectedAfterRandomizer)
+      if matchesAfterRandOutput:
+        resp["AfterRandOutputPass"] = %* true
+      else:
+        resp["AfterRandOutputPass"] = %* false
+        resp["Correct"] = %* false
+        return resp
+
+    # Run tests after randomizer
+    if hasTest(jsonChallenge):
+      let afterRandTestError = runCmdTest(jsonChallenge, oopsProc)
+      if afterRandTestError == "":
+        resp["AfterRandTestPass"] = %* true
+      else:
+        resp["AfterRandTestPass"] = %* false
+        resp["Error"] = %* afterRandTestError
+        resp["Correct"] = %* false
+        return resp
+
+  resp
 
 ## MAIN
 
-var command,challenge :string
-var jsonChallenge :JsonNode
+var command, challenge: string
+var jsonChallenge: JsonNode
 
 let p = newParser("runcmd"):
-  option("-s", "--slug", help="slug", default="hello_world")
-  arg("cmd", default="""echo -e "./access.log\naccess.log.2\naccess.log.1"""")
+  option("-s", "--slug", help = "slug", default = "hello_world")
+  arg("cmd", default = """echo -e "./access.log\naccess.log.2\naccess.log.1"""")
 
 var opts = p.parse
 
@@ -81,7 +153,7 @@ var opts = p.parse
 # without encoding
 try:
   command = decode(opts.cmd)
-except ValueError as e:
+except ValueError:
   command = opts.cmd
 
 let progDir = getAppDir()
@@ -102,45 +174,7 @@ try:
 except AssertionDefect:
   errorExit(&"'{challengeFname}' has an incorrect slug")
 
-# For all commands, set a default timeout of 5 seconds
-let challengeTimeout = jsonChallenge{"timeout"}.getInt(5000)
-
-
-var
-  outputPass, testsPass, afterRandOutputPass, afterRandTestsPass: bool = true
-  cmdExitCode, afterRandExitCode: int = 0
-  cmdOut, testsOut, afterRandExpectedOutput, afterRandOutput, afterRandTestsOut: string
-
-# For some challenges, start the oops process
-var oopsProc = OopsProc(slug: opts.slug)
-oopsProc.start()
- 
-(cmdOut, cmdExitCode) = runCombinedOutput(command, challengeTimeout)
-outputPass = matchesOutput(cmdOut, jsonChallenge)
-
-(testsOut, testsPass) = runCmdTest(jsonChallenge, oopsProc)
-
-oopsProc.stop()
-
-let expectedAfterRandomizer = runRandomizer(jsonChallenge)
-
-if expectedAfterRandomizer.len > 0:
-  (afterRandOutput, afterRandExitCode) = runCombinedOutput(command, challengeTimeout)
-  afterRandOutputPass = matchesOutput(afterRandOutput, jsonChallenge, expectedAfterRandomizer)
-  (afterRandTestsOut, afterRandTestsPass) = runCmdTest(jsonChallenge, oopsProc)
-
-var j = %*
-  {
-    "CmdOut":  cmdOut,
-    "CmdExitCode": cmdExitCode,
-    "OutputPass": outputPass,
-    "TestsPass": testsPass,
-    "TestsOut": testsOut,
-    "AfterRandOutputPass": afterRandOutputPass,
-    "AfterRandExpectedOutput": join(expectedAfterRandomizer, "\n"),
-    "AfterRandOutput": afterRandOutput,
-    "AfterRandTestsPass": afterRandTestsPass,
-    "AfterRandTestsOut": afterRandTestsOut
-  }
-
-echo j
+try:
+  echo run(command, jsonChallenge)
+except:
+  errorExit(getCurrentExceptionMsg())

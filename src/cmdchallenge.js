@@ -2,18 +2,6 @@
 
 'use strict';
 
-// import * as Sentry from "@sentry/browser";
-// import { Integrations } from "@sentry/tracing";
-
-// Sentry.init({
-//   dsn: 'https://e08d19e3657243b1b8191cb18a651e3b@o484121.ingest.sentry.io/5536934',
-//   integrations: [
-//     new Integrations.BrowserTracing(),
-//   ],
-
-//   tracesSampleRate: 1.0,
-// });
-
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import hljs from 'highlight.js/lib/core';
@@ -44,7 +32,9 @@ const SITES = {
 
 const FLAVOR = ["oops", "12days"].includes(HOSTNAME[0]) ? HOSTNAME[0] : "cmdchallenge";
 
-const CMD_URL = window.location.hostname.match(/local/) ? 'https://testing.cmdchallenge.com/r' : '/r';
+const CMD_URL = window.location.hostname.match(/local/) ? 'http://localhost:8181/c/r' : '/c/r';
+const SOLUTIONS_URL = window.location.hostname.match(/local/) ? 'http://localhost:8181/c/s' : '/c/s';
+
 const TAB_COMPLETION = FLAVOR === SITES.OOPS ? ['echo', 'read'] : ['find', 'echo', 'awk', 'sed', 'perl', 'wc', 'grep', 'cat', 'sort', 'cut', 'ls', 'tac', 'jq', 'paste', 'tr', 'rm', 'tail', 'comm', 'egrep'];
 
 const STORAGE_CORRECT = 'correct_answers';
@@ -278,47 +268,33 @@ jQuery(function($) {
     });
   };
 
-  const sendCommand = function(command, callback) {
+  const sendCommand = function(command) {
     const data = {
-      'cmd': command,
-      'challenge_slug': currentChallenge.slug,
+      'cmd': btoa(command),
+      'slug': currentChallenge.slug,
       'version': currentChallenge.version,
       'img': currentChallenge.img || 'cmd',
     };
     $.ajax({
-      type: 'GET',
+      type: 'POST',
       url: CMD_URL,
       // dataType: 'json',
       async: true,
       // contentType: "application/json; charset=utf-8",
       data: data,
       success: function(resp) {
-        if (typeof callback === 'function') {
-          callback(resp);
-        }
+        processResp($.parseJSON(resp));
       },
       error: function(resp) {
-        if (typeof callback === 'function') {
-          countEvent("❗ " + HOSTNAME_EVENT + " / " + resp.responseText, FLAVOR);
-          const output = resp.responseText || 'Unknown Error :(';
-          callback({
-            output: output,
-            correct: false,
-            return_code: '☠️',
-          });
-        }
+        const output = resp.responseText || 'Unknown Error :(';
+
+        retCode = '☠️',
+        updateInfoText(
+            output,
+            INFO_STATUS.error
+        );
       },
     });
-  };
-
-  const countEvent = function(path, title) {
-      if (typeof window.goatcounter.count === 'function') {
-        window.goatcounter.count({
-            path:  path,
-            title: title,
-            event: true,
-        });
-      }
   };
 
   const clearChallengeOutput = function() {
@@ -377,6 +353,7 @@ jQuery(function($) {
         throw new Error('Invalid status: ' + infoStatus);
     }
     $('#info-box').show();
+    term.resume();
   };
 
   const updateChallengeDesc = function() {
@@ -420,22 +397,25 @@ jQuery(function($) {
   const displaySolution = function() {
     $.ajax({
       dataType: 'json',
-      url: '/s/solutions/' + currentChallenge.slug + '.json',
+      url: SOLUTIONS_URL,
+      data: {
+        'slug': currentChallenge.slug
+      },
       success: function(resp) {
+        if (resp.length == 0) {
+          $('#solutions-status').html('No solutions yet for this challenge');
+          return
+        }
+        $('#solutions-status').html('');
         $('#solutions').html('').show();
         resp.cmds.forEach(function(cmd) {
           $('#solutions').append(escapeHtml(cmd) + '\n');
         });
         hljs.highlightBlock(document.getElementById('solutions'));
-        $('#solutions-wrapper .last-updated').html(
-            'Solutions updated ' + dateDelta(resp.ts) + ' ago'
-        );
       },
       error: function() {
         $('#solutions').html('').hide();
-        $('#solutions-wrapper .last-updated').html(
-            'No solutions for this challenge yet'
-        );
+        $('#solutions-status').html('Unable to fetch solutions');
       },
     });
   };
@@ -472,62 +452,48 @@ jQuery(function($) {
   };
 
   const processResp = function(resp) {
-    if (resp.return_code === 0) {
-      retCode = colorize(resp.return_code, 'green');
+    if (resp.ExitCode === 0) {
+      retCode = colorize(resp.ExitCode, 'green');
     } else {
-      retCode = colorize(resp.return_code, 'red');
+      retCode = colorize(resp.ExitCode, 'red');
     }
 
-    if (isNaN(resp.return_code)) {
-      updateInfoText(
-          'Unable to process command - got response: ' + resp.output,
-          INFO_STATUS.error
+    updateChallengeOutput(resp.Output);
+    if (resp.Correct) {
+      addItemToStorage(
+          currentChallenge.slug,
+          STORAGE_CORRECT,
+          function() {
+            updateChallenges();
+            currentChallenge = uncompletedChallenges()[0] ||
+              challenges[0];
+            if (checkForWin()) {
+              updateInfoText(
+                  'Correct! You have completed all of the challenges, ' +
+                  'but feel free to keep on going!', INFO_STATUS.correct
+              );
+            } else {
+              updateInfoText(
+                  'Correct! You have a new challenge!',
+                  INFO_STATUS.correct
+              );
+            }
+            routie('/' + currentChallenge.slug);
+          }
       );
     } else {
-      updateChallengeOutput(resp.output);
-      if (resp.correct) {
-        countEvent("✅ " + HOSTNAME_EVENT + location.hash, FLAVOR);
-        addItemToStorage(
-            resp.challenge_slug,
-            STORAGE_CORRECT,
-            function() {
-              updateChallenges();
-              currentChallenge = uncompletedChallenges()[0] ||
-                challenges[0];
-              if (checkForWin()) {
-                updateInfoText(
-                    'Correct! You have completed all of the challenges, ' +
-                    'but feel free to keep on going!', INFO_STATUS.correct
-                );
-              } else {
-                updateInfoText(
-                    'Correct! You have a new challenge!',
-                    INFO_STATUS.correct
-                );
-              }
-              routie('/' + currentChallenge.slug);
-            }
+      if (resp.Error) {
+        updateInfoText(
+            resp.Error + ' - try again',
+            INFO_STATUS.incorrect
         );
       } else {
-        countEvent("❌ " + HOSTNAME_EVENT + location.hash, FLAVOR);
         updateInfoText(
             'Incorrect answer, try again',
             INFO_STATUS.incorrect
         );
-        if (resp.test_errors && resp.test_errors.length > 0) {
-          updateInfoText(
-              resp.test_errors[0] + ' - try again',
-              INFO_STATUS.incorrect
-          );
-        } else if (resp.rand_error) {
-          updateInfoText(
-              'Test against random data failed - try again',
-              INFO_STATUS.incorrect
-          );
-        }
       }
     }
-    term.resume();
   };
 
   // main
@@ -596,7 +562,7 @@ jQuery(function($) {
           );
         } else {
           term.pause();
-          sendCommand(command, processResp);
+          sendCommand(command);
         }
       } else {
         term.clear();

@@ -2,7 +2,7 @@
 # slug: name of the challenge (required)
 # description: describe teh challenge (required)
 # example: solution for the challenge (required)
-# expect_fail: A command that expects a failure because of randomizers
+# expected_failures: A command that expects a failure because of randomizers
 # expected_output:
 #   lines: lines returned from the command, as an array.
 #          Values *must* be strings, not integers! (required)

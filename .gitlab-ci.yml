@@ -8,13 +8,13 @@ workflow:
     - if: $CI_COMMIT_BRANCH == 'master'      # Execute jobs when a new commit is pushed to master branch
 
 stages:
-  - test
+  - image
+  - build
   - deploy
 
 #### IMAGE
 
 .image:
-  stage: test
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_HOST: tcp://docker:2375
@@ -26,43 +26,41 @@ stages:
 
 image:ci:manual:
   image: docker:19.03.8
+  stage: image
   extends: .image
   when: manual
   script:
     - 'apk add make git'
     - make push-image-ci
 
-image:cmd:
-  extends: .image
-  script:
-    - make push-image-cmd
-
 #### TEST
 
-python-black:
-  stage: test
-  script:
-    - apk add file
-    - 'find bin -print -exec file {} \; | grep "Python" | grep -v ".nim" | cut -d: -f1 | xargs black --check'
-  rules:
-    - if: $CI_COMMIT_BRANCH != 'master'
-
 lint:
-  stage: test
+  stage: build
   script:
     - yamllint --strict *.yaml
-    # - flake8
   rules:
     - if: $CI_COMMIT_BRANCH != 'master'
 
-test:image:
-  stage: test
-  variables:
-    DOCKER_DRIVER: overlay2
-  services:
-    - docker:19.03.5-dind
+test:cmd:
+  extends: .image
+  stage: build
   script:
-    - make
+    - make test
+
+######################
+# Build
+######################
+
+upload:cmd:testing:
+  stage: build
+  script:
+    - make upload-testing
+
+upload:cmd:prod:
+  stage: build
+  script:
+    - make upload-prod
 
 ######################
 # DEPLOY
@@ -90,7 +88,7 @@ deploy:testing:tf:
 deploy:testing:static:
   stage: deploy
   script:
-    - make publish_testing
+    - make publish-testing
   resource_group: testing:static
 
 deploy:prod:plan:
@@ -98,6 +96,7 @@ deploy:prod:plan:
   stage: deploy
   variables:
     TF_WORKSPACE: prod
+  when: manual
   script:
     - terraform plan
 
@@ -110,12 +109,10 @@ deploy:prod:tf:
   when: manual
   script:
     - terraform apply -auto-approve
-    - cd "$CI_PROJECT_DIR"; make sentry_release_python
 
 deploy:prod:static:
   stage: deploy
   script:
-    - make publish_prod
-    - make sentry_release_javascript
+    - make publish-prod
   resource_group: prod:static
   when: manual

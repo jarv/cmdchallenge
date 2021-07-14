@@ -31,4 +31,3 @@ while existsDir(&"/proc/41"):
 let p = startProcess(
   command=OOPS_PROG, options={poUsePath}
 )
-

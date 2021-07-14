@@ -1,5 +1,9 @@
-python 3.7.6
-terraform 0.13.5
-ruby 2.6.5
+terraform 1.0.6
 nodejs 12.7.0
 nim 1.4.0
+sqlite 3.36.0
+golang 1.17
+yq v4.11.2
+awscli 2.2.35
+shfmt 3.0.2
+shellcheck 0.7.0

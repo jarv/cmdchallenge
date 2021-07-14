@@ -1,6 +1,0 @@
-[Unit]
-Description=Cleans up docker images
-
-[Service]
-Type=oneshot
-ExecStart=/bin/sh -c 'docker container prune -f; docker ps -f status=exited -q | xargs -r docker rm; docker ps --filter status=dead --filter status=exited -aq | xargs -r docker rm -v; docker ps | grep  " hour" | awk "{print \$1}" | xargs -r docker rm -f'

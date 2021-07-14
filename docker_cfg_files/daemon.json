@@ -1,7 +1,0 @@
-{
-        "live-restore": true,
-        "storage-driver": "overlay2",
-        "mtu": 1460,
-        "metrics-addr" : "127.0.0.1:9323",
-        "experimental" : true
-}

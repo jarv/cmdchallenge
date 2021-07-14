@@ -1,8 +1,0 @@
-[Unit]
-Description=Run docker-clenaup.service every 10 minutes
-
-[Timer]
-OnCalendar=*:0/10
-
-[Install]
-WantedBy=multi-user.target
