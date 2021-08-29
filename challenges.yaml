@@ -923,7 +923,7 @@
 - slug: replace_text_in_files
   emoji: emojis/1F98A
   disp_title: replace text in files
-  version: 5
+  version: 6
   author: cmdchallenge
   example: sed -i 's/challenges are difficult//g' **/*.txt
   expected_failures:
