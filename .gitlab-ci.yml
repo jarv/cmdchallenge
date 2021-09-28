@@ -2,6 +2,9 @@
 
 image: "${CI_REGISTRY_IMAGE}/ci:latest"
 
+variables:
+  FF_NETWORK_PER_BUILD: 1
+
 workflow:
   rules:
     - if: $CI_MERGE_REQUEST_ID               # Execute jobs in merge request context
