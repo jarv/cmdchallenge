@@ -1,25 +1,18 @@
-#!/usr/bin/env python
-import yaml
-import json
-from os.path import dirname, join, realpath
-from shutil import copyfile
+#!/usr/bin/env bash
 
-dir_path = dirname(realpath(__file__))
-dir_cmdchallenge = join(dir_path, "../cmdrunner")
+set -euf -o pipefail
 
-challenges = yaml.safe_load(open(join(dir_path, "../challenges.yaml")).read())
+dir=$(dirname "$0")
+ch_dir="${dir}/../cmdchallenge/ro_volume/ch"
+ch_static_dir="${dir}/../static/challenges"
+rm -f "$ch_dir/*"
 
-for challenge in challenges:
-    with open(
-        join(dir_cmdchallenge, f'ro_volume/ch/{challenge["slug"]}.json'), "w"
-    ) as f:
-        f.write(json.dumps(challenge))
+rm -f "$ch_static_dir/challenges.json"
+yq e -I0 -j challenges.yaml > "$ch_static_dir/challenges.json"
 
-with open(join(dir_cmdchallenge, "ro_volume/ch/all-challenges.json"), "w") as f:
-    f.write(json.dumps([challenge["slug"] for challenge in challenges]))
+IFS=$'\n'
 
-with open(join(dir_cmdchallenge, "ro_volume/ch/challenges.json"), "w") as f:
-    f.write(json.dumps(challenges))
-
-with open(join(dir_path, "../static/challenges/challenges.json"), "w") as f:
-    f.write(json.dumps(challenges))
+for c in $(yq e -j challenges.yaml  | jq -cr '.[]' -); do
+  fname="$ch_dir/$(echo "$c" | jq -r '.slug').json"
+  echo "$c" | jq -c . > "$fname"
+done

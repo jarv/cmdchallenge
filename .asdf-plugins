@@ -1,0 +1,6 @@
+terraform
+shellcheck
+shfmt
+golang
+nim
+yq

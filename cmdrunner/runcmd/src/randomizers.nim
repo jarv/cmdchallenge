@@ -10,7 +10,7 @@ proc oops_list_files(jsonChallenge: JsonNode): seq[string] =
   let expectedFiles = jsonChallenge["expected_output"]["lines"].getElems[0].getStr
   let randFile = &"zzz-{rand(100)}"
   writeFile(randFile, "")
-  
+
   return @[&"{expectedFiles} {randFile}"]
 
 proc count_files(jsonChallenge: JsonNode): seq[string] =
@@ -46,7 +46,7 @@ proc dirs_containing_files_with_extension(jsonChallenge: JsonNode): seq[string] 
 
   var randFnames = toSeq(1 .. rand(10 .. 20)).mapIt(&"some/random/dir/{it}-{rand(1000)}/some-file.tf")
   var randDirs: seq[string]
-  
+
   for fname in randFnames:
     let (dir, _, _) = splitFile(fname)
     createDir(dir)
@@ -61,7 +61,9 @@ proc find_primes(jsonChallenge: JsonNode): seq[string] =
   )
 
   # these prime numbers do not appear in random-numbers.txt
-  let primes = @[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199]
+  let primes = @[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
+      61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137,
+      139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199]
 
   let randNum = rand(primes.len)
   for prime in primes[0 ..< randNum]:
@@ -133,8 +135,14 @@ let randomizers = {
   "oops_list_files": oops_list_files
 }.toTable
 
+proc hasRandomizer*(jsonChallenge: JsonNode): bool =
+  let slug = jsonChallenge["slug"].getStr
+  return randomizers.hasKey(slug)
+
 proc runRandomizer*(jsonChallenge: JsonNode): seq[string] =
   randomize()
   let slug = jsonChallenge["slug"].getStr
-  if randomizers.hasKey(slug):
-    return randomizers[slug](jsonChallenge)
+  if not hasRandomizer(jsonChallenge):
+    raise newException(ValueError, &"Invalid randomizer! challenge: {slug}")
+
+  return randomizers[slug](jsonChallenge)
