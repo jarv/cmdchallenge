@@ -48,7 +48,7 @@ serve_prod:
 
 .PHONY: wsass
 wsass:
-	bundle exec sass --watch sass:static/css --style compressed
+	sass --watch sass:static/css --style compressed
 
 .PHONY: publish-testing
 publish-testing: update-challenges cache-bust-index

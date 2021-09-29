@@ -83,7 +83,7 @@ li {
 .terminal {
   // --color: rgb(156, 204, 156);
   --color: rgb(3, 242, 0);
-    
+
   //--color: rgb(0,128,0);
   --background: black;
 }
@@ -93,7 +93,7 @@ li {
     line-height: 44px;
 }
 .terminal {
-  --size: 2;
+  --size: 1.2;
 }
 
 // --------------------
@@ -159,7 +159,7 @@ div.navbar {
         text-decoration: none;
         color: white;
       }
-      .snowburst { 
+      .snowburst {
         font-family: $snowburst;
       }
     }
@@ -367,7 +367,7 @@ ul.challenges {
     cursor:pointer;
   }
 
-  li a { 
+  li a {
     margin: 0px;
     display: block;
     width: 100%;
@@ -460,7 +460,7 @@ div#badges {
 /* Accordion styles */
 .tabs-learn {
   border: 2px solid darken($cmdblue, 25%); // lighten($gray, 10%);
-  border-bottom: 0; 
+  border-bottom: 0;
   border-top: 1px dotted darken($cmdblue, 25%);
   border-radius: 0px 0px 0px 0px;
   overflow: hidden;
@@ -483,7 +483,7 @@ input {
 /* Accordion styles */
 .tabs {
   border: 2px solid darken($cmdblue, 25%); // lighten($gray, 10%);
-  border-bottom: 0; 
+  border-bottom: 0;
   border-radius: 10px 10px 0px 0px;
   overflow: hidden;
   // text-align: right;
@@ -571,6 +571,6 @@ input:checked {
 div.tree {
   position: absolute;
   height: 600px;
-  background-image: url("../img/xmas_tree_color.png"); 
+  background-image: url("../img/xmas_tree_color.png");
   background-repeat: no-repeat;
 }
