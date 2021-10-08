@@ -25,10 +25,10 @@ data "template_file" "userdata" {
 data "template_file" "bootstrap" {
   template = file("${path.module}/bootstrap.tpl")
   vars = {
-    serve_artifact     = local.is_prod ? "${local.serve_artifact}.${var.short_sha}" : local.serve_artifact
-    ro_volume_artifact = local.is_prod ? "${local.ro_volume_artifact}.${var.short_sha}" : local.ro_volume_artifact
+    serve_artifact     = local.serve_artifact
+    ro_volume_artifact = local.ro_volume_artifact
     backup_artifact    = local.backup_artifact
-    cmd_image_tag      = local.is_prod ? var.short_sha : "latest"
+    cmd_image_tag      = local.is_prod ? "prod" : "testing"
     cmd_extra_opts     = local.is_prod ? "-rateLimit" : ""
   }
 }

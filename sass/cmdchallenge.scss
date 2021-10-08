@@ -81,16 +81,18 @@ li {
 }
 
 .terminal {
+  border-radius: 8px;
+  padding-left: 5px;
   // --color: rgb(156, 204, 156);
   --color: rgb(3, 242, 0);
 
   //--color: rgb(0,128,0);
-  --background: black;
+  --background: #1a1a1a;
 }
 
 .terminal, .cmd, .terminal .terminal-output div div, .cmd .prompt {
-    font-size: 40px;
-    line-height: 44px;
+    font-size: 20px;
+    line-height: 30px;
 }
 .terminal {
   --size: 1.2;
@@ -220,8 +222,7 @@ div#info-wrapper {
 }
 
 div#term-challenge {
-  padding: 0;
-  height: 44px;
+  height: 80px;
   .cmd {
     margin-bottom: 0;
   }

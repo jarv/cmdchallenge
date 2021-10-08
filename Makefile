@@ -28,9 +28,9 @@ upload-testing: build update-challenges
 
 .PHONY: upload-prod
 upload-prod: build update-challenges
-	aws $(AWS_EXTRA_ARGS) s3 cp cmdchallenge/serve s3://$(S3_RELEASE_BUCKET_PROD)/serve.$(CI_COMMIT_SHORT_SHA)
+	aws $(AWS_EXTRA_ARGS) s3 cp cmdchallenge/serve s3://$(S3_RELEASE_BUCKET_PROD)/serve
 	tar zcf /tmp/ro_volume.tar.gz -C cmdchallenge ro_volume/
-	aws $(AWS_EXTRA_ARGS) s3 cp /tmp/ro_volume.tar.gz s3://$(S3_RELEASE_BUCKET_PROD)/ro_volume.tar.gz.$(CI_COMMIT_SHORT_SHA)
+	aws $(AWS_EXTRA_ARGS) s3 cp /tmp/ro_volume.tar.gz s3://$(S3_RELEASE_BUCKET_PROD)/ro_volume.tar.gz
 	rm -f /tmp/ro_volume.tar.gz
 
 .PHONY: build
@@ -74,27 +74,21 @@ publish-prod: update-challenges cache-bust-index
 ###################
 
 .PHONY: test
-test: push-image-cmd
-	cd $(DIR_CMDCHALLENGE); CMD_IMAGE_TAG=$(CI_COMMIT_SHORT_SHA) go test ./...
-
-.PHONY: push-image-cmd
-push-image-cmd: build-image-cmd
-	docker push $(CI_REGISTRY_IMAGE)/cmd:$(CI_COMMIT_SHORT_SHA)
-	docker push $(CI_REGISTRY_IMAGE)/cmd:latest
-	docker push $(CI_REGISTRY_IMAGE)/cmd-no-bin:$(CI_COMMIT_SHORT_SHA)
-	docker push $(CI_REGISTRY_IMAGE)/cmd-no-bin:latest
+test: push-image-cmd-testing
+	cd $(DIR_CMDCHALLENGE); CMD_IMAGE_TAG=testing go test ./...
 
 .PHONY: push-image-ci
 push-image-ci: build-image-ci
 	docker push $(CI_REGISTRY_IMAGE)/ci:$(CI_COMMIT_SHORT_SHA)
 	docker push $(CI_REGISTRY_IMAGE)/ci:latest
 
-.PHONY: build-image-cmd
-build-image-cmd: build-runcmd update-challenges tar-var
-	cd $(DIR_CMDRUNNER); docker build -t $(CI_REGISTRY_IMAGE)/cmd:latest \
-		--tag $(CI_REGISTRY_IMAGE)/cmd:$(CI_COMMIT_SHORT_SHA) .
-	cd $(DIR_CMDRUNNER); docker build -t $(CI_REGISTRY_IMAGE)/cmd-no-bin:latest \
-		--tag $(CI_REGISTRY_IMAGE)/cmd-no-bin:$(CI_COMMIT_SHORT_SHA) -f Dockerfile-no-bin .
+.PHONY: push-image-cmd-prod
+push-image-cmd-prod: build-runcmd update-challenges tar-var
+	bin/build-image-cmd prod
+	rm -f var.tar.gz
+.PHONY: push-image-cmd-testing
+push-image-cmd-testing: build-runcmd update-challenges tar-var
+	bin/build-image-cmd testing
 	rm -f var.tar.gz
 
 .PHONY: build-image-ci

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -euf -o pipefail
+
+tag="$1"
+
+dir=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
+cmdrunner_dir="$dir/../cmdrunner"
+CI_REGISTRY_IMAGE="${CI_REGISTRY_IMAGE:-registry.gitlab.com/jarv/cmdchallenge}"
+
+
+pushd "$cmdrunner_dir"
+
+docker build --tag "$CI_REGISTRY_IMAGE/cmd:latest" \
+  --tag "$CI_REGISTRY_IMAGE/cmd:$tag" .
+docker build --tag "$CI_REGISTRY_IMAGE/cmd-no-bin:latest" \
+  --tag "$CI_REGISTRY_IMAGE/cmd-no-bin:$tag" -f Dockerfile-no-bin .
+popd
+
+docker push "$CI_REGISTRY_IMAGE/cmd:$tag"
+docker push "$CI_REGISTRY_IMAGE/cmd:latest"
+docker push "$CI_REGISTRY_IMAGE/cmd-no-bin:$tag"
+docker push "$CI_REGISTRY_IMAGE/cmd-no-bin:latest"
+
+
+rm -f var.tar.gz

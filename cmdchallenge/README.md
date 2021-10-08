@@ -53,7 +53,9 @@ This re-write will move all cloud components to a single VM
 - [x] Create cleanup service
 - [x] Update README.md
 - [x] Update dashboard
-- [ ] Deploy to Production
+- [x] Deploy to Production
+- [ ] Create testing/prod images instead of sha
+- [ ] Always use the latest for testing/prod
 
 ## References
 
