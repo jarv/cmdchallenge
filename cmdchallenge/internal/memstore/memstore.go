@@ -41,6 +41,10 @@ func (m *MemStore) CreateResult(fingerprint, cmd, slug string, version int, resu
 	return nil
 }
 
+func (m *MemStore) IncrementResult(fingerprint string) error {
+	return nil
+}
+
 func (m *MemStore) hasResult(fingerprint string) bool {
 	if _, found := m.results[fingerprint]; found {
 		return true

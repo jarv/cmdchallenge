@@ -53,6 +53,11 @@ func (c *StubResultStor) CreateResult(fingerprint, cmd, slug string, version int
 	return nil
 }
 
+func (c *StubResultStor) IncrementResult(fingerprint string) error {
+	c.Called(fingerprint)
+	return nil
+}
+
 func (c *StubResultStor) TopCmdsForSlug(slug string) ([]string, error) {
 	return make([]string, 0), nil
 }
@@ -91,6 +96,11 @@ func TestRequest(t *testing.T) {
 		&correctResult,
 	).Once()
 
+	stubResultStor.On(
+		"IncrementResult",
+		"370ebb46424ce444b722acd2783b03475f99a0c3e2bde5ad8e6d6b619df81c35",
+	).Once()
+
 	// Expectation for Runner Executor
 	stubRunnerExecutor := &StubRunnerExecutor{}
 
@@ -126,6 +136,11 @@ func TestRequestCached(t *testing.T) {
 		"GetResult",
 		"370ebb46424ce444b722acd2783b03475f99a0c3e2bde5ad8e6d6b619df81c35",
 	).Return(&correctResult, nil).Once()
+
+	stubResultStor.On(
+		"IncrementResult",
+		"370ebb46424ce444b722acd2783b03475f99a0c3e2bde5ad8e6d6b619df81c35",
+	).Once()
 
 	// Expectation for Runner Executor
 	stubRunnerExecutor := &StubRunnerExecutor{}

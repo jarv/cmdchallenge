@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	insertSQL = `
+	insertQuery = `
 INSERT INTO challenges (
 	create_time,
 	fingerprint,
@@ -47,13 +47,15 @@ CREATE TABLE IF NOT EXISTS challenges (
 	test_pass            		BOOLEAN DEFAULT NULL,
 	after_rand_output_pass 		BOOLEAN DEFAULT NULL,
 	after_rand_test_pass   		BOOLEAN DEFAULT NULL,
-	error               		TEXT DEFAULT NULL
+	error               		TEXT DEFAULT NULL,
+	count                       INTEGER
 );
 CREATE INDEX IF NOT EXISTS challenges_correct ON challenges(correct);
 CREATE INDEX IF NOT EXISTS challenges_slug ON challenges(slug);
+ALTER TABLE challenges ADD COLUMN count INTEGER DEFAULT 0;
 `
 
-	querySQL = `
+	resultQuery = `
 SELECT
 	output,
 	exit_code,
@@ -66,20 +68,26 @@ SELECT
 		WHERE fingerprint=$1;
 `
 
-	queryCmds = `
+	cmdsQuery = `
 SELECT
 	cmd
 	FROM challenges
 		WHERE slug=$1 and correct=1
 		ORDER BY LENGTH(cmd) LIMIT 50;
+`
 
+	incrementQuery = `
+ UPDATE challenges
+ 	SET count = count + 1
+		WHERE fingerprint=$1;
 `
 )
 
 type DB struct {
 	sync.Mutex
-	sql  *sql.DB
-	stmt *sql.Stmt
+	sql           *sql.DB
+	insertStmt    *sql.Stmt
+	incrementStmt *sql.Stmt
 }
 
 func New(dbFile string) (runner.RunnerResultStorer, error) {
@@ -89,17 +97,25 @@ func New(dbFile string) (runner.RunnerResultStorer, error) {
 	}
 
 	if _, err = sqlDB.Exec(schemaSQL); err != nil {
+		if err.Error() != "duplicate column name: count" {
+			return nil, err
+		}
+	}
+
+	insertStmt, err := sqlDB.Prepare(insertQuery)
+	if err != nil {
 		return nil, err
 	}
 
-	stmt, err := sqlDB.Prepare(insertSQL)
+	incrementStmt, err := sqlDB.Prepare(incrementQuery)
 	if err != nil {
 		return nil, err
 	}
 
 	db := DB{
-		sql:  sqlDB,
-		stmt: stmt,
+		sql:           sqlDB,
+		insertStmt:    insertStmt,
+		incrementStmt: incrementStmt,
 	}
 	return &db, nil
 }
@@ -108,7 +124,7 @@ func (d *DB) TopCmdsForSlug(slug string) ([]string, error) {
 	var cmd string
 	cmds := make([]string, 0)
 
-	rows, err := d.sql.Query(queryCmds, slug)
+	rows, err := d.sql.Query(cmdsQuery, slug)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +155,7 @@ func (d *DB) GetResult(fingerprint string) (*runner.RunnerResult, error) {
 		afterRandTestPass sql.NullBool
 	}
 
-	row := d.sql.QueryRow(querySQL, fingerprint)
+	row := d.sql.QueryRow(resultQuery, fingerprint)
 	switch err := row.Scan(
 		&s.output,
 		&s.exitCode,
@@ -178,6 +194,23 @@ func (d *DB) GetResult(fingerprint string) (*runner.RunnerResult, error) {
 	}
 }
 
+func (d *DB) IncrementResult(fingerprint string) error {
+	d.Lock()
+	defer d.Unlock()
+
+	tx, err := d.sql.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Stmt(d.incrementStmt).Exec(fingerprint)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+	return tx.Commit()
+}
+
 func (d *DB) CreateResult(fingerprint, cmd, slug string, version int, result *runner.RunnerResult) error {
 	d.Lock()
 	defer d.Unlock()
@@ -188,7 +221,7 @@ func (d *DB) CreateResult(fingerprint, cmd, slug string, version int, result *ru
 	}
 
 	createTime := time.Now().Unix()
-	_, err = tx.Stmt(d.stmt).Exec(
+	_, err = tx.Stmt(d.insertStmt).Exec(
 		createTime,
 		fingerprint,
 		cmd,

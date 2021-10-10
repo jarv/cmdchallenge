@@ -38,7 +38,6 @@ This re-write will move all cloud components to a single VM
   - [x] Make userdate more idempotent
   - [x] Cron for SQLite DB backup
   - [x] Cut AMI
-  - [ ] Create AMI script that removes the db and uninstalls
 - [x] Validate on testing
 - [x] Implement rate limiting https://github.com/didip/tollbooth
 - [x] Validate test failure response on testing
@@ -54,8 +53,7 @@ This re-write will move all cloud components to a single VM
 - [x] Update README.md
 - [x] Update dashboard
 - [x] Deploy to Production
-- [ ] Create testing/prod images instead of sha
-- [ ] Always use the latest for testing/prod
+- [x] Create testing/prod images instead of sha
 
 ## References
 

@@ -41,6 +41,7 @@ type RunnerExecutor interface {
 type RunnerResultStorer interface {
 	GetResult(fingerprint string) (*RunnerResult, error)
 	CreateResult(fingerprint, cmd, slug string, version int, result *RunnerResult) error
+	IncrementResult(fingerprint string) error
 	TopCmdsForSlug(slug string) ([]string, error)
 }
 

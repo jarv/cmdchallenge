@@ -17,7 +17,8 @@ S3_RELEASE_BUCKET_TESTING := testing-cmd-release
 
 DISTID_PROD := E2UJHVXTJLOPCD
 
-all: upload-testing
+all: upload-testing publish-testing push-image-cmd-testing
+prod: upload-prod publish-prod push-image-cmd-prod
 
 .PHONY: upload-testing
 upload-testing: build update-challenges
@@ -42,7 +43,7 @@ build:
 serve:
 	cd static; python -m http.server 8000 --bind 127.0.0.1
 
-.PHONY: server_prod
+.PHONY: serve_prod
 serve_prod:
 	./bin/simple-server prod
 

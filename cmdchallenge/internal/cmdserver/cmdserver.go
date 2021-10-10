@@ -201,6 +201,11 @@ func (c *CmdServer) runCmd(cmd, fingerprint, host string, ch *challenge.Challeng
 		return "", ErrStore
 	}
 
+	if err = c.store.IncrementResult(fingerprint); err != nil {
+		c.log.Errorf("Unable to increment result counter: %s", err.Error())
+		return "", ErrStore
+	}
+
 	if result.Correct == nil || result.ExitCode == nil {
 		c.log.Error("Invalid response, both `Correct` and `ExitCode` expected from runner!")
 		return "", ErrUnknown
