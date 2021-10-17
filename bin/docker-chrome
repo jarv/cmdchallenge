@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# docker run --network cmd-network --rm --name chrome -p 9222:9222 --security-opt seccomp=/var/tmp/chrome.json justinribeiro/chrome-headless
+# docker run -it --entrypoint=/bin/bash --network cmd-network --rm --name chrome -p 9222:9222 --security-opt seccomp=/var/tmp/chrome.json -v /var/tmp:/app -w /app justinribeiro/chrome-headless
+# docker run -it --entrypoint=/bin/sh --network cmd-network --rm --name chrome -p 9222:9222 --security-opt seccomp=/var/tmp/chrome.json -v /var/tmp:/app -w /app justinribeiro/chrome-headless -c '/opt/google/chrome/chrome --headless --disable-gpu --run-all-compositor-stages-before-draw --virtual-time-budget=10000 --window-size=1280,1696 --screenshot http://grafana:3000/d/9dMXL2N7z/cmd-application?kiosk'
+
+
+docker run -it --entrypoint=/bin/sh --cap-add=SYS_ADMIN --network cmd-network --rm --name chrome -p 9222:9222  -v /var/tmp:/app -w /app justinribeiro/chrome-headless -c '/opt/google/chrome/chrome --headless --disable-gpu --run-all-compositor-stages-before-draw --virtual-time-budget=10000 --window-size=1280,1696 --dump-html http://grafana:3000/d/9dMXL2N7z/cmd-application?kiosk'
+# /opt/google/chrome/chrome --headless --disable-gpu --run-all-compositor-stages-before-draw --virtual-time-budget=10000 --window-size=1280,1696 --screenshot http://grafana:3000/d/9dMXL2N7z/cmd-application?kiosk

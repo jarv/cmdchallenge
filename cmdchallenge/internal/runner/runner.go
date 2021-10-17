@@ -80,7 +80,7 @@ func (r *Runner) PullImages() error {
 		// RegistryAuth: r.cfg.RegistryAuth,
 	}
 
-	for _, imgName := range r.cfg.CMDImageNames {
+	for _, imgName := range r.cfg.CMDImgNames {
 		imgURI := r.cfg.RegistryImgURI(imgName)
 		r.log.Infof("Pulling %s", imgURI)
 		reader, err := r.cli.ImagePull(ctx, imgURI, *opts)

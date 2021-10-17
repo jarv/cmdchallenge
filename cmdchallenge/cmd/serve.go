@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -10,6 +11,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gitlab.com/jarv/cmdchallenge/internal/cmdserver"
 	"gitlab.com/jarv/cmdchallenge/internal/config"
+	"gitlab.com/jarv/cmdchallenge/internal/dashboard"
 	"gitlab.com/jarv/cmdchallenge/internal/logger"
 	"gitlab.com/jarv/cmdchallenge/internal/memstore"
 	"gitlab.com/jarv/cmdchallenge/internal/metrics"
@@ -21,15 +23,27 @@ import (
 func main() {
 	devMode := flag.Bool("dev", false, "run in development mode")
 	rateLimit := flag.Bool("rateLimit", false, "set rate limits")
+	genDashboard := flag.Bool("genDashboard", false, "create a dashboard snapshot")
 	addr := flag.String("addr", "localhost:8181", "bind address")
 
 	flag.Parse()
 
 	log := logger.NewLogger()
+	cfg := config.New()
+
+	if *genDashboard {
+		log.Info("Generating image for dashboard")
+		// /d/9dMXL2N7z/cmd-application?kiosk&orgId=1
+		err := dashboard.New(log).Capture()
+
+		if err != nil {
+			log.Panic(err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
 
 	router := mux.NewRouter()
-
-	cfg := config.New()
 	run := runner.New(log, cfg)
 	cmdMetrics := metrics.New()
 

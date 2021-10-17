@@ -54,6 +54,7 @@ This re-write will move all cloud components to a single VM
 - [x] Update dashboard
 - [x] Deploy to Production
 - [x] Create testing/prod images instead of sha
+- [x] Add counter
 
 ## References
 

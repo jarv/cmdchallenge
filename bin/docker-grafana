@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+docker run --network cmd-network --rm -p 3000:3000 --name grafana registry.gitlab.com/jarv/cmdchallenge/cmd-dashboard
+# docker run --rm -p 3000:3000 --name grafana registry.gitlab.com/jarv/cmdchallenge/cmd-dashboard

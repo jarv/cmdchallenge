@@ -16,7 +16,7 @@ type Config struct {
 	PullImageTimeout     time.Duration
 	ROVolumeDir          string
 	SQLiteDBFile         string
-	CMDImageNames        []string
+	CMDImgNames          []string
 	SolutionsKeyPrefix   string
 }
 
@@ -42,7 +42,7 @@ func New() *Config {
 		RemoveImageTimeout:   60 * time.Second,
 		ROVolumeDir:          getEnv("RO_VOLUME_DIR", roVolumeDir),
 		SQLiteDBFile:         getEnv("SQLITE_DB_FILE", sqliteDBFile),
-		CMDImageNames:        []string{"cmd", "cmd-no-bin"},
+		CMDImgNames:          []string{"cmd", "cmd-no-bin"},
 		SolutionsKeyPrefix:   "s/solutions",
 	}
 }

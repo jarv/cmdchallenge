@@ -5,3 +5,4 @@ tags
 *.zip
 private/
 *.html-e
+db.sqlite3
