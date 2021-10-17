@@ -45,25 +45,20 @@ lint:
   rules:
     - if: $CI_COMMIT_BRANCH != 'master'
 
-test:cmd:
-  extends: .image
-  stage: build
-  script:
-    - make test
-
 ######################
 # Build
 ######################
 
-upload:cmd:testing:
+build:cmd:testing:
   stage: build
   script:
-    - make upload-testing
+    - make
 
-upload:cmd:prod:
+build:cmd:prod:
   stage: build
+  when: manual
   script:
-    - make upload-prod
+    - make prod
 
 ######################
 # DEPLOY
@@ -85,6 +80,7 @@ deploy:testing:tf:
   variables:
     TF_WORKSPACE: testing
   resource_group: testing:tf
+  when: manual
   script:
     - terraform apply -auto-approve
 
@@ -99,7 +95,6 @@ deploy:prod:plan:
   stage: deploy
   variables:
     TF_WORKSPACE: prod
-  when: manual
   script:
     - terraform plan
 
