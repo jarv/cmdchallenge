@@ -683,6 +683,8 @@
   author: cmdchallenge
   description: |
     Create a directory named `tmp/files` in the current working directory
+    ---
+    _Hint: The directory "`tmp/`" doesn't exist, with one command you need to create both "`tmp/`" and "`tmp/files`"_
   completions: ["take-the-command-challenge", "tmp/files"]
   example: mkdir -p tmp/files
   expected_failures:
@@ -731,6 +733,8 @@
   author: cmdchallenge
   description: |
     Delete all of the files in this challenge directory including all subdirectories and their contents.
+    ---
+    _Hint: There are files and directories that start with a dot "`.`", "`rm -rf *`" won't work here!_
   example: find . -delete
   expected_failures:
     - rm -rf /var/challenges/delete_files
