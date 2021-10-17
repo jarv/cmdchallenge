@@ -76,7 +76,7 @@ proc chDeleteFiles(jsonChallenge: JsonNode, oopsProc: OopsProc): (string) =
 
   let files = toSeq(walkDirRec("."))
   if files.len > 0:
-    return "Test failed, {files.len} files or directories remain"
+    return &"Test failed, {files.len} files or directories remain"
 
   ""
 
@@ -104,7 +104,7 @@ proc chRemoveFilesWithExtension(jsonChallenge: JsonNode, oopsProc: OopsProc): (s
   for f in walkDirRec("."):
     let (_, _, ext) = splitFile(f)
     if ext == ".doc":
-      return "Test failed, found file '{f}' with a .doc extension"
+      return &"Test failed, found file '{f}' with a .doc extension"
 
   ""
 
@@ -117,7 +117,7 @@ proc chRemoveFilesWithoutExtension(jsonChallenge: JsonNode, oopsProc: OopsProc):
       continue
     let (_, _, ext) = splitFile(f)
     if not (ext in [".txt", ".exe"]):
-      return "Test failed, found file '{f}' without a .txt or .exe extension"
+      return &"Test failed, found file '{f}' without a .txt or .exe extension"
 
   ""
 
