@@ -57,6 +57,7 @@
     </div>
 
     ---
+    _Hint: look for lines that contain the string "laugh"_<br /><br />
     _If you aren't sure what to do, expand the "learn" section above._<br />
     _You can also view user solutions by expanding "View Solutions" above_
   learn: |
@@ -281,7 +282,7 @@
     </div>
 
     ---
-    _Hint: Try finding files named after Elves and moving them to a new location_
+    _Hint: Try finding files named after Elves and moving them to the Workshop/ directory._
   learn: |
     The elves are lost and only you can help them get back into Santa's workshop!
 
