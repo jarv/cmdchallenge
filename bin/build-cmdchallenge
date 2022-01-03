@@ -6,7 +6,7 @@ dir=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
 cmdchallenge_dir="$dir/../cmdchallenge"
 
 if [[ -z ${CI:-} ]]; then
-  docker run --rm -v $cmdchallenge_dir:/app -w /app registry.gitlab.com/jarv/cmdchallenge/ci go build cmd/serve.go
+  docker run --rm -v $cmdchallenge_dir:/app -w /app registry.gitlab.com/jarv/cmdchallenge/ci go build -a -ldflags "-linkmode external -extldflags '-static' -s -w" cmd/serve.go
 else
   pushd $cmdchallenge_dir
   go build cmd/serve.go

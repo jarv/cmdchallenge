@@ -20,24 +20,6 @@ prep() {
   usermod -a -G docker ec2-user
 }
 
-configMusl() {
-  [[ -d /usr/local/musl ]] && return
-
-  fname="musl-1.2.2.tar.gz"
-  sudo yum -y groupinstall "Development Tools"
-  tmpdir=$(mktemp -d)
-  pushd "$tmpdir"
-  curl https://musl.libc.org/releases/$fname -o $fname
-  tar -xvf $fname
-  cd musl-1.2.2
-  ./configure
-  make
-  make install
-  popd
-  rm -rf "$tmpdir"
-  yum -y group remove "Development Tools"
-}
-
 configSwap() {
   [[ -f /var/swapfile ]] && return
 
@@ -315,7 +297,6 @@ configBackup() {
 
 prep
 configSwap
-configMusl
 configDocker
 pullImages
 configJanitor
