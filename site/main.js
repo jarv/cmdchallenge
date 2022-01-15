@@ -13,6 +13,7 @@ import './src/jquery.mousewheel-min.js'
 import './src/keyboard-polyfill-0.1.42.js'
 import './src/jquery.terminal.min.js'
 
+const $ = window.$
 hljs.registerLanguage('bash', bash)
 const HOSTNAME = window.location.hostname.split('.')
 const BASEURL = HOSTNAME.filter((i) => !['oops', '12days'].includes(i)).join('.')
