@@ -21,12 +21,15 @@ prep() {
 }
 
 configSwap() {
-  [[ -f /var/swapfile ]] && return
+  if ! [[ -f /var/swapfile ]]; then
+    fallocate -l 1G /var/swapfile
+    chmod 600 /var/swapfile
+    mkswap /var/swapfile
+  fi
 
-  sudo fallocate -l 1G /var/swapfile
-  sudo chmod 600 /var/swapfile
-  sudo mkswap /var/swapfile
-  sudo swapon /var/swapfile
+  if ! grep -q '/var/swapfile' /proc/swaps; then
+    swapon /var/swapfile
+  fi
 }
 
 configNodeExporter() {
