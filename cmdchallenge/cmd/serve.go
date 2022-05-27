@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -61,10 +62,9 @@ func main() {
 	sol := solutions.New(log, cfg, cmdMetrics, store, *rateLimit)
 	server := cmdserver.New(log, cfg, cmdMetrics, run, store, *rateLimit)
 
-	router.Use(cmdMetrics.PrometheusMiddleware)
-	router.PathPrefix("/c/s").Handler(sol.Handler())
-	router.PathPrefix("/c/r").Handler(server.Handler())
-	router.Path("/metrics").Handler(promhttp.Handler())
+	router.PathPrefix("/c/s").Handler(handlers.ProxyHeaders(sol.Handler()))
+	router.PathPrefix("/c/r").Handler(handlers.ProxyHeaders(server.Handler()))
+	router.Path("/metrics").Handler(handlers.ProxyHeaders(promhttp.Handler()))
 
 	log.Info("Listening on " + *addr)
 

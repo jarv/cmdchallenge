@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
 	"path"
 	"regexp"
@@ -83,7 +82,7 @@ func (c *CmdServer) Handler() http.Handler {
 	if c.rateLimit {
 		lmt := tollbooth.NewLimiter(float64(maxRequestsSec), nil)
 		c.log.Info(fmt.Sprintf("Setting rate limit req/sec: %f burst: %d", maxRequestsSec, burst))
-		lmt.SetIPLookups([]string{"RemoteAddr", "X-Forwarded-For", "X-Real-IP"})
+		lmt.SetIPLookups([]string{"RemoteAddr"})
 		lmt.SetBurst(burst)
 		lmt.SetMessage("Your are sending command too fast, slow down!")
 		lmt.SetOnLimitReached(func(w http.ResponseWriter, r *http.Request) {
@@ -123,13 +122,6 @@ func (c *CmdServer) runHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	host, _, err := net.SplitHostPort(req.RemoteAddr)
-	if err != nil {
-		c.log.Error(fmt.Sprintf("Unable to determine source IP for `%s` : %s", req.RemoteAddr, err.Error()))
-		c.httpError(w, ErrInvalidSourceIP, http.StatusInternalServerError)
-		return
-	}
-
 	chFile := path.Join(c.config.ROVolumeDir, "ch", slug+".json")
 	ch, err := challenge.New(chFile)
 	if err != nil {
@@ -151,7 +143,7 @@ func (c *CmdServer) runHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	jsonResp, err := c.runCmd(cmd, fingerprint, host, ch)
+	jsonResp, err := c.runCmd(cmd, fingerprint, req.RemoteAddr, ch)
 	if err != nil {
 		c.log.Error(err.Error())
 		c.httpError(w, err, http.StatusInternalServerError)
@@ -161,11 +153,11 @@ func (c *CmdServer) runHandler(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprint(w, jsonResp)
 }
 
-func (c *CmdServer) runCmd(cmd, fingerprint, host string, ch *challenge.Challenge) (string, error) {
+func (c *CmdServer) runCmd(cmd, fingerprint, remoteAddr string, ch *challenge.Challenge) (string, error) {
 	c.log.WithFields(logrus.Fields{
 		"cmd":         cmd,
 		"fingerprint": fingerprint,
-		"host":        host,
+		"remoteAddr":  remoteAddr,
 		"chDir":       ch.Dir(),
 		"slug":        ch.Slug(),
 	}).Info("Initiating command")

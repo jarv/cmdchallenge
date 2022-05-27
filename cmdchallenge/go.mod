@@ -8,6 +8,7 @@ require (
 	github.com/docker/docker v20.10.7+incompatible
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
+	github.com/gorilla/handlers v0.0.0-20150720190736-60c7bfde3e33
 	github.com/gorilla/mux v1.7.2
 	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect

@@ -14,7 +14,7 @@ CMD_USER="cmd"
 
 prep() {
   yum update -y
-  amazon-linux-extras install docker vim -y
+  amazon-linux-extras install docker vim nginx1 -y
   yum install htop -y
   yum erase amazon-ssm-agent -y
   usermod -a -G docker ec2-user
@@ -189,6 +189,47 @@ pullImages() {
   docker pull "registry.gitlab.com/jarv/cmdchallenge/cmd-no-bin${cmd_img_suffix}:latest"
 }
 
+configNGINX() {
+  if ! [[ -r /etc/ssl/private ]]; then
+    mkdir /etc/ssl/private
+    chmod 700 /etc/ssl/private
+    openssl req  -x509 -nodes -new  -keyout /etc/ssl/private/nginx-selfsigned.key  -out /etc/ssl/certs/nginx-selfsigned.crt  -days 3650 -subj "/C=/ST=/L=/O=/OU=web/CN=example.com"
+  fi
+
+  aws s3 cp ${dist_artifact} /tmp/dist.tar.gz
+  tar xzf /tmp/dist.tar.gz -C /var/opt/cmd
+  rm -f /tmp/dist.tar.gz
+
+  cat <<-'NGINX' >/etc/nginx/conf.d/cmd.conf
+		server {
+		  listen 80 default_server;
+		  server_name _;
+		  return 301 https://$host$request_uri;
+		}
+
+		server {
+		  listen 443 ssl;
+      listen [::]:443 ssl;
+
+		  server_name _;
+
+	    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+      ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+		  root /var/opt/cmd/dist;
+
+		  location /c {
+		    proxy_pass http://localhost:8181;
+		    proxy_set_header Host            $host;
+		    proxy_set_header X-Real-IP       $http_cf_connecting_ip;
+		    proxy_set_header X-Forwarded-For $http_cf_connecting_ip;
+		  }
+		}
+	NGINX
+
+  systemctl enable nginx.service
+  systemctl restart nginx
+}
+
 configDocker() {
   [[ -r /etc/docker/daemon.json ]] && return
 
@@ -307,6 +348,7 @@ configPrometheus
 configNodeExporter
 configCmd
 configBackup
+configNGINX
 yum clean all
 rm -rf /var/cache/yum/*
 
