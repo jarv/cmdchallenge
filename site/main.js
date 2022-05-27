@@ -1,6 +1,4 @@
-import './css/jquery.terminal.min.css'
 import './css/highlight-js-10.0.0-railscasts.min.css'
-import './style.css'
 import './sass/cmdchallenge.scss'
 
 import hljs from 'highlight.js/lib/core'
@@ -8,12 +6,10 @@ import bash from 'highlight.js/lib/languages/bash'
 import routie from 'routie'
 import Webfont from 'webfontloader'
 import commonmark from 'commonmark'
-import './src/jquery'
-import './src/jquery.mousewheel-min.js'
-import './src/keyboard-polyfill-0.1.42.js'
-import './src/jquery.terminal.min.js'
+import challengesJson from './challenges.json'
 
-const $ = window.$
+const $ = window.jQuery = window.$
+
 hljs.registerLanguage('bash', bash)
 const HOSTNAME = window.location.hostname.split('.')
 const BASEURL = HOSTNAME.filter((i) => !['oops', '12days'].includes(i)).join('.')
@@ -48,7 +44,7 @@ const INFO_STATUS = {
 
 let term
 let currentChallenge = null
-let challenges = []
+let challenges = challengesJson
 let retCode
 
 const stepGen = function * (steps) {
@@ -242,30 +238,18 @@ const updateChallenges = function (callback) {
   }
 }
 
-const getChallenges = function (callback) {
-  $.ajax({
-    dataType: 'json',
-    url: '/challenges/challenges.json',
-    success: function (resp) {
-      if (typeof callback === 'function') {
-        switch (FLAVOR) {
-          case SITES.OOPS:
-            callback(resp.filter((o) => (o.tags || []).includes('oops')))
-            break
-          case SITES.XMAS:
-            callback(resp.filter((o) => (o.tags || []).includes('12days')))
-            break
-          case SITES.CMD:
-            callback(resp.filter((o) => !(o.tags)))
-            break
-        }
-      }
-    },
-    error: function () {
-      retCode = '☠️'
-      updateInfoText('Unable to retrieve challenges :(', INFO_STATUS.error)
-    }
-  })
+const filterChallenges = function (callback) {
+  switch (FLAVOR) {
+    case SITES.OOPS:
+      callback(challenges.filter((o) => (o.tags || []).includes('oops')))
+      break
+    case SITES.XMAS:
+      callback(challenges.filter((o) => (o.tags || []).includes('12days')))
+      break
+    case SITES.CMD:
+      callback(challenges.filter((o) => !(o.tags)))
+      break
+  }
 }
 
 const sendCommand = function (command) {
@@ -351,7 +335,9 @@ const updateInfoText = function (msg, infoStatus) {
       throw new Error('Invalid status: ' + infoStatus)
   }
   $('#info-box').show()
-  term.resume()
+  if (term) {
+    term.resume()
+  }
 }
 
 const updateChallengeDesc = function () {
@@ -409,7 +395,7 @@ const displaySolution = function () {
       resp.cmds.forEach(function (cmd) {
         $('#solutions').append(escapeHtml(cmd) + '\n')
       })
-      hljs.highlightBlock(document.getElementById('solutions'))
+      hljs.highlightElement(document.getElementById('solutions'))
     },
     error: function () {
       $('#solutions').html('').hide()
@@ -520,7 +506,7 @@ $(document).keydown(function (e) {
   }
 })
 
-getChallenges(function (c) {
+filterChallenges(function (c) {
   challenges = c
 
   $('#term-challenge').terminal(function (command, term) {

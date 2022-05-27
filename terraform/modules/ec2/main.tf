@@ -28,7 +28,7 @@ data "template_file" "bootstrap" {
     serve_artifact     = local.serve_artifact
     ro_volume_artifact = local.ro_volume_artifact
     backup_artifact    = local.backup_artifact
-    cmd_image_tag      = local.is_prod ? "prod" : "testing"
+    cmd_img_suffix     = local.is_prod ? "" : "-testing"
     cmd_extra_opts     = local.is_prod ? "-rateLimit" : ""
   }
 }

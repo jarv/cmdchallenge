@@ -4,7 +4,7 @@ set -euf -o pipefail
 
 dir=$(dirname "$0")
 ch_dir="${dir}/../cmdchallenge/ro_volume/ch"
-ch_static_dir="${dir}/../static/challenges"
+ch_static_dir="${dir}/../site"
 rm -f "$ch_dir/*"
 
 rm -f "$ch_static_dir/challenges.json"
