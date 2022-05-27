@@ -43,16 +43,9 @@ curl http://localhost:8181/c/s?slug=hello_world
 
 ### Frontend
 
-Most of the logic is coded in `src/cmdchallenge.js`, to compile run:
-
 ```
-npx webpack
-```
-
-To start the development webserver:
-
-```
-make serve
+cd site
+npx vite
 ```
 
 ## CI vars

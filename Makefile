@@ -1,12 +1,11 @@
-CI_COMMIT_SHORT_SHA?=$(shell git rev-parse --short HEAD)
 CI_REGISTRY_IMAGE?=registry.gitlab.com/jarv/cmdchallenge
 PWD=$(shell pwd)
 DATE_TS=$(shell date -u +%Y%m%d%H%M%S)
 AWS_EXTRA_ARGS=$(shell [ -z $$CI ] && echo "--profile cmdchallenge" || echo "")
-BASEDIR=$(CURDIR)
 DIR_CMDRUNNER=$(CURDIR)/cmdrunner
 DIR_CMDCHALLENGE=$(CURDIR)/cmdchallenge
-STATIC_OUTPUTDIR=$(BASEDIR)/static
+DIR_SITE=$(CURDIR)/site
+DIR_DIST=$(DIR_SITE)/dist
 AWS_PROFILE := cmdchallenge
 DISTID_TESTING := E19XPJRE5YLRKA
 S3_BUCKET_TESTING := testing.cmdchallenge.com
@@ -39,35 +38,19 @@ build:
 	@echo "Building cmdchallenge ..."
 	./bin/build-cmdchallenge
 
-.PHONY: serve
-serve:
-	cd static; python -m http.server 8000 --bind 127.0.0.1
-
-.PHONY: serve_prod
-serve_prod:
-	./bin/simple-server prod
-
-.PHONY: wsass
-wsass:
-	sass --watch sass:static/css --style compressed
-
 .PHONY: publish-testing
-publish-testing: update-challenges cache-bust-index
-	cp static/robots.txt.disable static/robots.txt
-	aws $(AWS_EXTRA_ARGS) s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_TESTING) --acl public-read --delete --cache-control max-age=604800
+publish-testing: build-static update-challenges
+	cp site/public/robots.txt.disable site/public/robots.txt
+	aws $(AWS_EXTRA_ARGS) s3 sync $(DIR_DIST)/ s3://$(S3_BUCKET_TESTING) --acl public-read --delete --cache-control max-age=604800
 	aws $(AWS_EXTRA_ARGS) s3 cp s3://$(S3_BUCKET_TESTING)/index.html s3://$(S3_BUCKET_TESTING)/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read
-	aws $(AWS_EXTRA_ARGS) s3 cp s3://$(S3_BUCKET_TESTING)/challenges/challenges.json s3://$(S3_BUCKET_TESTING)/challenges/challenges.json --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type application/json --acl public-read
 	aws $(AWS_EXTRA_ARGS) --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
-	rm -f static/robots.txt
-	git checkout static/index.html
+	rm -f site/public/robots.txt
 
 .PHONY: publish-prod
-publish-prod: update-challenges cache-bust-index
-	aws $(AWS_EXTRA_ARGS) s3 sync $(STATIC_OUTPUTDIR)/ s3://$(S3_BUCKET_PROD) --acl public-read --delete --cache-control max-age=604800
+publish-prod: build-static update-challenges
+	aws $(AWS_EXTRA_ARGS) s3 sync $(DIR_DIST)/ s3://$(S3_BUCKET_PROD) --acl public-read --delete --cache-control max-age=604800
 	aws $(AWS_EXTRA_ARGS) s3 cp s3://$(S3_BUCKET_PROD)/index.html s3://$(S3_BUCKET_PROD)/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read
-	aws $(AWS_EXTRA_ARGS) s3 cp s3://$(S3_BUCKET_PROD)/challenges/challenges.json s3://$(S3_BUCKET_PROD)/challenges/challenges.json --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type application/json --acl public-read
 	aws $(AWS_EXTRA_ARGS) --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
-	git checkout static/index.html
 
 
 ###################
@@ -80,27 +63,25 @@ test: push-image-cmd-testing
 
 .PHONY: push-image-ci
 push-image-ci: build-image-ci
-	docker push $(CI_REGISTRY_IMAGE)/ci:$(CI_COMMIT_SHORT_SHA)
 	docker push $(CI_REGISTRY_IMAGE)/ci:latest
 
 .PHONY: push-image-cmd-prod
 push-image-cmd-prod: build-runcmd update-challenges tar-var
-	bin/build-image-cmd prod
+	bin/build-cmd-img prod
 	rm -f var.tar.gz
 .PHONY: push-image-cmd-testing
 push-image-cmd-testing: build-runcmd update-challenges tar-var
-	bin/build-image-cmd testing
+	bin/build-cmd-img testing
 	rm -f var.tar.gz
 
 .PHONY: build-image-ci
 build-image-ci:
-	docker build -t $(CI_REGISTRY_IMAGE)/ci:latest \
-		--tag $(CI_REGISTRY_IMAGE)/ci:$(CI_COMMIT_SHORT_SHA) -f Dockerfile-ci .
+	docker build -t $(CI_REGISTRY_IMAGE)/ci:latest -f Dockerfile-ci .
 
 .PHONY: build-runcmd
 build-runcmd:
-	docker run --rm -v $(DIR_CMDRUNNER)/runcmd:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
-	docker run --rm -v $(DIR_CMDRUNNER)/oops:/usr/src/app -w /usr/src/app nimlang/nim nimble install -y
+	docker run --rm -v $(DIR_CMDRUNNER)/runcmd:/usr/src/app -w /usr/src/app nimlang/nim:1.4.0 nimble install -y
+	docker run --rm -v $(DIR_CMDRUNNER)/oops:/usr/src/app -w /usr/src/app nimlang/nim:1.4.0 nimble install -y
 
 .PHONY: build-test
 build-test:
@@ -110,11 +91,15 @@ build-test:
 update-challenges:
 	./bin/update-challenges
 
+.PHONY: build-static
+build-static:
+	cd $(DIR_SITE); npx vite build
+
 .PHONY: tar-var
 tar-var:
 	cd $(DIR_CMDRUNNER); tar --exclude='.gitignore' --exclude='.gitkeep' -czf var.tar.gz var/
 
-.PHONY: cmdcshell
+.PHONY: cmdshell
 cmdshell:
 	docker run -it --privileged --mount type=bind,source="$(DIR_CMDRUNNER)/ro_volume",target=/ro_volume  $(CI_REGISTRY_IMAGE)/cmd:latest bash
 
@@ -126,8 +111,3 @@ oopsshell:
 clean:
 	rm -f $(DIR_CMDRUNNER)/ro_volume/ch/*
 	rm -f $(PWD)/static/challenges/*
-
-.PHONY: cache-bust-index
-cache-bust-index:
-	sed -i -e "s/\.css\"/.css?$(DATE_TS)\"/" static/index.html
-	sed -i -e "s/\.js\"/.js?$(DATE_TS)\"/" static/index.html

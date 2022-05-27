@@ -1,4 +1,4 @@
-terraform 1.0.6
+terraform 1.2.0
 nodejs 12.7.0
 nim 1.4.0
 sqlite 3.36.0

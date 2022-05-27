@@ -20,31 +20,16 @@ prep() {
   usermod -a -G docker ec2-user
 }
 
-configMusl() {
-  [[ -d /usr/local/musl ]] && return
-
-  fname="musl-1.2.2.tar.gz"
-  sudo yum -y groupinstall "Development Tools"
-  tmpdir=$(mktemp -d)
-  pushd "$tmpdir"
-  curl https://musl.libc.org/releases/$fname -o $fname
-  tar -xvf $fname
-  cd musl-1.2.2
-  ./configure
-  make
-  make install
-  popd
-  rm -rf "$tmpdir"
-  yum -y group remove "Development Tools"
-}
-
 configSwap() {
-  [[ -f /var/swapfile ]] && return
+  if ! [[ -f /var/swapfile ]]; then
+    fallocate -l 1G /var/swapfile
+    chmod 600 /var/swapfile
+    mkswap /var/swapfile
+  fi
 
-  sudo fallocate -l 1G /var/swapfile
-  sudo chmod 600 /var/swapfile
-  sudo mkswap /var/swapfile
-  sudo swapon /var/swapfile
+  if ! grep -q '/var/swapfile' /proc/swaps; then
+    swapon /var/swapfile
+  fi
 }
 
 configNodeExporter() {
@@ -183,8 +168,8 @@ configCmd() {
 		[Service]
 		Environment="SQLITE_DB_FILE=$SQLITE_DB_FILE"
 		Environment="RO_VOLUME_DIR=$RO_VOLUME_DIR"
-		Environment="CMD_IMAGE_TAG=${cmd_image_tag}"
-		PassEnvironment=SQLITE_DB_FILE RO_VOLUME_DIR SERVERPORT CMD_IMAGE_TAG
+		Environment="CMD_IMG_SUFFIX=${cmd_img_suffix}"
+		PassEnvironment=SQLITE_DB_FILE RO_VOLUME_DIR SERVERPORT CMD_IMG_SUFFIX
 		User=$CMD_USER
 		Restart=on-failure
 
@@ -200,8 +185,8 @@ configCmd() {
 }
 
 pullImages() {
-  docker pull "registry.gitlab.com/jarv/cmdchallenge/cmd:${cmd_image_tag}"
-  docker pull "registry.gitlab.com/jarv/cmdchallenge/cmd-no-bin:${cmd_image_tag}"
+  docker pull "registry.gitlab.com/jarv/cmdchallenge/cmd${cmd_img_suffix}:latest"
+  docker pull "registry.gitlab.com/jarv/cmdchallenge/cmd-no-bin${cmd_img_suffix}:latest"
 }
 
 configDocker() {
@@ -315,7 +300,6 @@ configBackup() {
 
 prep
 configSwap
-configMusl
 configDocker
 pullImages
 configJanitor
