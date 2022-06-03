@@ -55,7 +55,7 @@ func (s *Solutions) Handler() http.Handler {
 	if s.rateLimit {
 		lmt := tollbooth.NewLimiter(float64(maxRequestsSec), nil)
 		s.log.Infof("Setting rate limit for solutions req/sec: %d", maxRequestsSec)
-		lmt.SetIPLookups([]string{"RemoteAddr", "X-Forwarded-For", "X-Real-IP"})
+		lmt.SetIPLookups([]string{"RemoteAddr"})
 		lmt.SetMessage("Your are sending requests too fast, slow down!")
 		lmt.SetOnLimitReached(func(w http.ResponseWriter, r *http.Request) {
 			s.log.Warn(fmt.Sprintf("Rate limit reached for `%s` on %s", r.RemoteAddr, r.RequestURI))

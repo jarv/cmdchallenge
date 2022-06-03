@@ -7,51 +7,38 @@ DIR_CMDCHALLENGE=$(CURDIR)/cmdchallenge
 DIR_SITE=$(CURDIR)/site
 DIR_DIST=$(DIR_SITE)/dist
 AWS_PROFILE := cmdchallenge
-DISTID_TESTING := E19XPJRE5YLRKA
-S3_BUCKET_TESTING := testing.cmdchallenge.com
-S3_BUCKET_PROD:= cmdchallenge.com
 
 S3_RELEASE_BUCKET_PROD := prod-cmd-release
 S3_RELEASE_BUCKET_TESTING := testing-cmd-release
 
-DISTID_PROD := E2UJHVXTJLOPCD
-
-all: upload-testing publish-testing push-image-cmd-testing
-prod: upload-prod publish-prod push-image-cmd-prod
+all: upload-testing push-image-cmd-testing
+prod: upload-prod push-image-cmd-prod
 
 .PHONY: upload-testing
-upload-testing: build update-challenges
+upload-testing: update-challenges build build-static
 	aws $(AWS_EXTRA_ARGS) s3 cp cmdchallenge/serve s3://$(S3_RELEASE_BUCKET_TESTING)/serve
 	tar zcf /tmp/ro_volume.tar.gz -C cmdchallenge ro_volume/
 	aws $(AWS_EXTRA_ARGS) s3 cp /tmp/ro_volume.tar.gz s3://$(S3_RELEASE_BUCKET_TESTING)/ro_volume.tar.gz
 	rm -f /tmp/ro_volume.tar.gz
+	cp site/public/robots.txt.disable site/public/robots.txt
+	tar zcf /tmp/dist.tar.gz -C site dist
+	aws $(AWS_EXTRA_ARGS) s3 cp /tmp/dist.tar.gz s3://$(S3_RELEASE_BUCKET_TESTING)/dist.tar.gz
+	rm -f /tmp/dist.tar.gz site/public/robots.txt
 
 .PHONY: upload-prod
-upload-prod: build update-challenges
+upload-prod: update-challenges build build-static
 	aws $(AWS_EXTRA_ARGS) s3 cp cmdchallenge/serve s3://$(S3_RELEASE_BUCKET_PROD)/serve
 	tar zcf /tmp/ro_volume.tar.gz -C cmdchallenge ro_volume/
 	aws $(AWS_EXTRA_ARGS) s3 cp /tmp/ro_volume.tar.gz s3://$(S3_RELEASE_BUCKET_PROD)/ro_volume.tar.gz
 	rm -f /tmp/ro_volume.tar.gz
+	tar zcf /tmp/dist.tar.gz -C site dist
+	aws $(AWS_EXTRA_ARGS) s3 cp /tmp/dist.tar.gz s3://$(S3_RELEASE_BUCKET_PROD)/dist.tar.gz
+	rm -f /tmp/dist.tar.gz
 
 .PHONY: build
 build:
 	@echo "Building cmdchallenge ..."
 	./bin/build-cmdchallenge
-
-.PHONY: publish-testing
-publish-testing: build-static update-challenges
-	cp site/public/robots.txt.disable site/public/robots.txt
-	aws $(AWS_EXTRA_ARGS) s3 sync $(DIR_DIST)/ s3://$(S3_BUCKET_TESTING) --acl public-read --delete --cache-control max-age=604800
-	aws $(AWS_EXTRA_ARGS) s3 cp s3://$(S3_BUCKET_TESTING)/index.html s3://$(S3_BUCKET_TESTING)/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read
-	aws $(AWS_EXTRA_ARGS) --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_TESTING) --paths '/*'
-	rm -f site/public/robots.txt
-
-.PHONY: publish-prod
-publish-prod: build-static update-challenges
-	aws $(AWS_EXTRA_ARGS) s3 sync $(DIR_DIST)/ s3://$(S3_BUCKET_PROD) --acl public-read --delete --cache-control max-age=604800
-	aws $(AWS_EXTRA_ARGS) s3 cp s3://$(S3_BUCKET_PROD)/index.html s3://$(S3_BUCKET_PROD)/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read
-	aws $(AWS_EXTRA_ARGS) --region us-east-1 cloudfront create-invalidation --distribution-id $(DISTID_PROD) --paths '/*'
-
 
 ###################
 # CMD Challenge

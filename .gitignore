@@ -6,3 +6,4 @@ tags
 private/
 *.html-e
 db.sqlite3
+.envrc

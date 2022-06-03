@@ -1,5 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      version = "~> 2.59"
+    }
+  }
+}
+
 variable "ssh_public_key" {}
-variable "short_sha" {}
 
 locals {
   is_prod            = terraform.workspace == "prod" ? true : false
@@ -9,6 +16,7 @@ locals {
   serve_artifact     = "s3://${local.release_bucket}/serve"
   ro_volume_artifact = "s3://${local.release_bucket}/ro_volume.tar.gz"
   bootstrap_artifact = "s3://${local.release_bucket}/${local.bootstrap_fname}"
+  dist_artifact      = "s3://${local.release_bucket}/dist.tar.gz"
   backup_artifact    = "s3://${local.backup_bucket}/db.sqlite3.bak.gz"
 }
 
@@ -30,6 +38,7 @@ data "template_file" "bootstrap" {
     backup_artifact    = local.backup_artifact
     cmd_img_suffix     = local.is_prod ? "" : "-testing"
     cmd_extra_opts     = local.is_prod ? "-rateLimit" : ""
+    dist_artifact      = local.dist_artifact
   }
 }
 
@@ -67,25 +76,14 @@ resource "aws_security_group" "default" {
   name        = "${terraform.workspace}-cmd"
   description = "Security group that allows ssh"
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8181
-    to_port     = 8181
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 9090
-    to_port     = 9090
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    for_each = toset([22, 443, 80, 9090, 8181])
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 
   egress {
@@ -164,18 +162,6 @@ resource "aws_instance" "default" {
 
 resource "aws_eip" "default" {
   instance = aws_instance.default.id
-}
-
-resource "aws_route53_record" "default" {
-  zone_id = "Z3TFJ1MMW7EJ7R"
-  name    = "${terraform.workspace}.ec2.cmdchallenge.com"
-  type    = "A"
-  ttl     = "60"
-  records = [aws_eip.default.public_ip]
-}
-
-output "public_dns" {
-  value = aws_route53_record.default.fqdn
 }
 
 output "public_ip" {
