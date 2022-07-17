@@ -77,7 +77,7 @@ resource "aws_security_group" "default" {
   description = "Security group that allows ssh"
 
   dynamic "ingress" {
-    for_each = toset([22, 443, 80, 9090, 8181])
+    for_each = toset([22, 443, 80, 9090])
     content {
       from_port   = ingress.value
       to_port     = ingress.value

@@ -11,106 +11,13 @@ workflow:
     - if: $CI_COMMIT_BRANCH == 'master'      # Execute jobs when a new commit is pushed to master branch
 
 stages:
-  - image
-  - build
-  - deploy
-
-#### IMAGE
-
-.image:
-  variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_HOST: tcp://docker:2375
-  services:
-    - docker:19.03.5-dind
-  before_script:
-    - 'echo Running: docker login --password-stdin -u $CI_REGISTRY_USER $CI_REGISTRY'
-    - 'echo ${CI_JOB_TOKEN} | docker login --password-stdin -u $CI_REGISTRY_USER $CI_REGISTRY'
-
-image:ci:manual:
-  image: docker:19.03.8
-  stage: image
-  extends: .image
-  when: manual
-  script:
-    - 'apk add make git'
-    - make push-image-ci
+  - test
 
 #### TEST
 
 lint:
-  stage: build
+  stage: test
   script:
     - yamllint --strict *.yaml
   rules:
     - if: $CI_COMMIT_BRANCH != 'master'
-
-######################
-# Build
-######################
-
-build:cmd:testing:
-  stage: build
-  script:
-    - make
-
-build:cmd:prod:
-  stage: build
-  when: manual
-  script:
-    - make prod
-
-######################
-# DEPLOY
-######################
-
-.deploy:tf:
-  before_script:
-    - export TF_VAR_GCP_CRED_JSON_FNAME="$GCP_CRED_JSON_FNAME"
-    - export TF_VAR_CA_PEM_FNAME="$CA_PEM_FNAME"
-    - export TF_VAR_SSH_PUBLIC_KEY="$SSH_PUBLIC_KEY"
-    - export TF_VAR_SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY"
-    - pushd terraform
-    - terraform init
-    - terraform workspace list
-
-deploy:testing:tf:
-  extends: .deploy:tf
-  stage: deploy
-  variables:
-    TF_WORKSPACE: testing
-  resource_group: testing:tf
-  when: manual
-  script:
-    - terraform apply -auto-approve
-
-deploy:testing:static:
-  stage: deploy
-  script:
-    - make publish-testing
-  resource_group: testing:static
-
-deploy:prod:plan:
-  extends: .deploy:tf
-  stage: deploy
-  variables:
-    TF_WORKSPACE: prod
-  script:
-    - terraform plan
-
-deploy:prod:tf:
-  extends: .deploy:tf
-  stage: deploy
-  variables:
-    TF_WORKSPACE: prod
-  resource_group: prod:tf
-  when: manual
-  script:
-    - terraform apply -auto-approve
-
-deploy:prod:static:
-  stage: deploy
-  script:
-    - make publish-prod
-  resource_group: prod:static
-  when: manual

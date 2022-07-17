@@ -15,7 +15,7 @@ CMD_USER="cmd"
 prep() {
   yum update -y
   amazon-linux-extras install docker vim nginx1 -y
-  yum install htop -y
+  yum install htop httpd -y
   yum erase amazon-ssm-agent -y
   usermod -a -G docker ec2-user
 }
@@ -223,9 +223,19 @@ configNGINX() {
 		    proxy_set_header X-Real-IP       $http_cf_connecting_ip;
 		    proxy_set_header X-Forwarded-For $http_cf_connecting_ip;
 		  }
+
+      location /debug/pprof {
+		    proxy_pass http://localhost:8181;
+		    proxy_set_header Host            $host;
+		    proxy_set_header X-Real-IP       $http_cf_connecting_ip;
+		    proxy_set_header X-Forwarded-For $http_cf_connecting_ip;
+        auth_basic "Restricted Content";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+      }
 		}
 	NGINX
 
+  echo cmd | htpasswd -i -c /etc/nginx/.htpasswd cmd
   systemctl enable nginx.service
   systemctl restart nginx
 }
