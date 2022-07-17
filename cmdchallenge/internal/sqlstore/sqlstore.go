@@ -122,9 +122,7 @@ func New(log *logrus.Logger, cmdMetrics *metrics.Metrics, dbFile string) (runner
 		incrementStmt: incrementStmt,
 	}
 
-	if err := cmdMetrics.DBStatsRegister(sqlDB, "command"); err != nil {
-		return nil, err
-	}
+	cmdMetrics.DBStatsRegister(sqlDB, "command")
 
 	return &db, nil
 }

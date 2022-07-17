@@ -9,6 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/sirupsen/logrus"
 )
 
 type CmdProcessedLabels struct {
@@ -18,6 +19,7 @@ type CmdProcessedLabels struct {
 }
 
 type Metrics struct {
+	log            *logrus.Logger
 	CmdProcessed   *prometheus.CounterVec
 	CmdErrors      *prometheus.CounterVec
 	TotalRequests  *prometheus.CounterVec
@@ -39,8 +41,10 @@ func (rw *responseWriter) WriteHeader(code int) {
 	rw.ResponseWriter.WriteHeader(code)
 }
 
-func New() *Metrics {
+func New(log *logrus.Logger) *Metrics {
+	log.Info("Registering base metrics")
 	m := Metrics{
+		log: log,
 		CmdProcessed: promauto.NewCounterVec(
 			prometheus.CounterOpts{
 				Name: "cmd_processed_total",
@@ -53,13 +57,13 @@ func New() *Metrics {
 				Help: "The total number errors",
 			},
 			[]string{"error"}),
-		TotalRequests: prometheus.NewCounterVec(
+		TotalRequests: promauto.NewCounterVec(
 			prometheus.CounterOpts{
 				Name: "http_requests_total",
 				Help: "Number of get requests.",
 			},
 			[]string{"path"}),
-		ResponseStatus: prometheus.NewCounterVec(
+		ResponseStatus: promauto.NewCounterVec(
 			prometheus.CounterOpts{
 				Name: "response_status_total",
 				Help: "Status of HTTP response",
@@ -73,20 +77,12 @@ func New() *Metrics {
 			[]string{"status", "path"}),
 	}
 
-	_ = prometheus.Register(m.TotalRequests)
-	_ = prometheus.Register(m.ResponseStatus)
-	_ = prometheus.Register(m.HTTPDuration)
-	_ = prometheus.Register(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
-
 	return &m
 }
 
-func (m *Metrics) DBStatsRegister(db *sql.DB, dbName string) error {
-	if err := prometheus.Register(collectors.NewDBStatsCollector(db, dbName)); err != nil {
-		return err
-	}
-
-	return nil
+func (m *Metrics) DBStatsRegister(db *sql.DB, dbName string) {
+	m.log.Info("Registering DB stats")
+	prometheus.MustRegister(collectors.NewDBStatsCollector(db, dbName))
 }
 
 func (m *Metrics) PrometheusMiddleware(next http.Handler) http.Handler {

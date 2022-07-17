@@ -49,7 +49,7 @@ func main() {
 
 	router := mux.NewRouter()
 	run := runner.New(log, cfg)
-	cmdMetrics := metrics.New()
+	cmdMetrics := metrics.New(log)
 
 	var store runner.RunnerResultStorer
 	var err error
@@ -65,6 +65,7 @@ func main() {
 	sol := solutions.New(log, cfg, cmdMetrics, store, *rateLimit)
 	server := cmdserver.New(log, cfg, cmdMetrics, run, store, *rateLimit)
 
+	router.Use(cmdMetrics.PrometheusMiddleware)
 	router.PathPrefix("/c/s").Handler(handlers.ProxyHeaders(sol.Handler()))
 	router.PathPrefix("/c/r").Handler(handlers.ProxyHeaders(server.Handler()))
 	router.Path("/metrics").Handler(handlers.ProxyHeaders(promhttp.Handler()))
