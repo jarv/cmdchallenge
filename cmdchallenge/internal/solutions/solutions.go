@@ -72,6 +72,11 @@ func (s *Solutions) runHandler(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Cache-Control", "no-store, max-age=0")
 
+	s.log.WithFields(logrus.Fields{
+		"URI":  req.RequestURI,
+		"Addr": req.RemoteAddr,
+	}).Info("Solution request received")
+
 	if req.Method != http.MethodGet {
 		s.log.Errorf("expect GET, got %v", req.Method)
 		s.httpError(w, ErrInvalidMethod, http.StatusMethodNotAllowed)

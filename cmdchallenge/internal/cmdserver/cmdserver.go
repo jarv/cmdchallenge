@@ -100,6 +100,11 @@ func (c *CmdServer) runHandler(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Cache-Control", "no-store, max-age=0")
 
+	c.log.WithFields(logrus.Fields{
+		"URI":  req.RequestURI,
+		"Addr": req.RemoteAddr,
+	}).Info("Command request received")
+
 	if req.Method != http.MethodPost {
 		c.log.Errorf("expect POST, got %v", req.Method)
 		c.httpError(w, ErrInvalidMethod, http.StatusMethodNotAllowed)
@@ -110,6 +115,7 @@ func (c *CmdServer) runHandler(w http.ResponseWriter, req *http.Request) {
 	cmd := req.PostFormValue("cmd")
 
 	if err := isValidRequest(slug, cmd); err != nil {
+		c.log.Errorf("Invalid request for slug: %v, cmd: %v", slug, cmd)
 		c.httpError(w, err, http.StatusInternalServerError)
 		return
 	}

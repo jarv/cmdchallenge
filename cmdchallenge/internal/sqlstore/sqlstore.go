@@ -10,6 +10,7 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/sirupsen/logrus"
 	"gitlab.com/jarv/cmdchallenge/internal/runner"
 )
 
@@ -84,13 +85,14 @@ SELECT
 )
 
 type DB struct {
-	sync.Mutex
+	log           *logrus.Logger
+	mu            sync.Mutex
 	sql           *sql.DB
 	insertStmt    *sql.Stmt
 	incrementStmt *sql.Stmt
 }
 
-func New(dbFile string) (runner.RunnerResultStorer, error) {
+func New(log *logrus.Logger, dbFile string) (runner.RunnerResultStorer, error) {
 	sqlDB, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
 		return nil, err
@@ -113,6 +115,7 @@ func New(dbFile string) (runner.RunnerResultStorer, error) {
 	}
 
 	db := DB{
+		log:           log,
 		sql:           sqlDB,
 		insertStmt:    insertStmt,
 		incrementStmt: incrementStmt,
@@ -123,6 +126,11 @@ func New(dbFile string) (runner.RunnerResultStorer, error) {
 func (d *DB) TopCmdsForSlug(slug string) ([]string, error) {
 	var cmd string
 	cmds := make([]string, 0)
+
+	d.log.WithFields(logrus.Fields{
+		"slug":      slug,
+		"openConns": d.sql.Stats().OpenConnections,
+	}).Info("Running TopCmds Query")
 
 	rows, err := d.sql.Query(cmdsQuery, slug)
 	if err != nil {
@@ -156,6 +164,7 @@ func (d *DB) GetResult(fingerprint string) (*runner.RunnerResult, error) {
 	}
 
 	row := d.sql.QueryRow(resultQuery, fingerprint)
+
 	switch err := row.Scan(
 		&s.output,
 		&s.exitCode,
@@ -195,8 +204,8 @@ func (d *DB) GetResult(fingerprint string) (*runner.RunnerResult, error) {
 }
 
 func (d *DB) IncrementResult(fingerprint string) error {
-	d.Lock()
-	defer d.Unlock()
+	d.mu.Lock()
+	defer d.mu.Unlock()
 
 	tx, err := d.sql.Begin()
 	if err != nil {
@@ -212,8 +221,14 @@ func (d *DB) IncrementResult(fingerprint string) error {
 }
 
 func (d *DB) CreateResult(fingerprint, cmd, slug string, version int, result *runner.RunnerResult) error {
-	d.Lock()
-	defer d.Unlock()
+	d.log.WithFields(logrus.Fields{
+		"slug":      slug,
+		"openConns": d.sql.Stats().OpenConnections,
+		"cmd":       cmd,
+	}).Info("Writing result to DB")
+
+	d.mu.Lock()
+	defer d.mu.Unlock()
 
 	tx, err := d.sql.Begin()
 	if err != nil {

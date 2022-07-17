@@ -3,6 +3,9 @@ package main
 import (
 	"flag"
 	"net/http"
+
+	// nolint:gosec,G108
+	_ "net/http/pprof"
 	"os"
 	"time"
 
@@ -53,7 +56,7 @@ func main() {
 	if *devMode {
 		store, err = memstore.New()
 	} else {
-		store, err = sqlstore.New(cfg.SQLiteDBFile)
+		store, err = sqlstore.New(log, cfg.SQLiteDBFile)
 	}
 	if err != nil {
 		log.Panic(err)
@@ -65,6 +68,7 @@ func main() {
 	router.PathPrefix("/c/s").Handler(handlers.ProxyHeaders(sol.Handler()))
 	router.PathPrefix("/c/r").Handler(handlers.ProxyHeaders(server.Handler()))
 	router.Path("/metrics").Handler(handlers.ProxyHeaders(promhttp.Handler()))
+	router.PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
 
 	log.Info("Listening on " + *addr)
 
