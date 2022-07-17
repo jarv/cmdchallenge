@@ -1,11 +1,13 @@
 package metrics
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
@@ -74,8 +76,17 @@ func New() *Metrics {
 	_ = prometheus.Register(m.TotalRequests)
 	_ = prometheus.Register(m.ResponseStatus)
 	_ = prometheus.Register(m.HTTPDuration)
+	_ = prometheus.Register(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
 
 	return &m
+}
+
+func (m *Metrics) DBStatsRegister(db *sql.DB, dbName string) error {
+	if err := prometheus.Register(collectors.NewDBStatsCollector(db, dbName)); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *Metrics) PrometheusMiddleware(next http.Handler) http.Handler {

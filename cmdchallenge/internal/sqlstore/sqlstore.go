@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
+	"gitlab.com/jarv/cmdchallenge/internal/metrics"
 	"gitlab.com/jarv/cmdchallenge/internal/runner"
 )
 
@@ -92,7 +93,7 @@ type DB struct {
 	incrementStmt *sql.Stmt
 }
 
-func New(log *logrus.Logger, dbFile string) (runner.RunnerResultStorer, error) {
+func New(log *logrus.Logger, cmdMetrics *metrics.Metrics, dbFile string) (runner.RunnerResultStorer, error) {
 	sqlDB, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
 		return nil, err
@@ -120,6 +121,11 @@ func New(log *logrus.Logger, dbFile string) (runner.RunnerResultStorer, error) {
 		insertStmt:    insertStmt,
 		incrementStmt: incrementStmt,
 	}
+
+	if err := cmdMetrics.DBStatsRegister(sqlDB, "command"); err != nil {
+		return nil, err
+	}
+
 	return &db, nil
 }
 

@@ -56,7 +56,7 @@ func main() {
 	if *devMode {
 		store, err = memstore.New()
 	} else {
-		store, err = sqlstore.New(log, cfg.SQLiteDBFile)
+		store, err = sqlstore.New(log, cmdMetrics, cfg.SQLiteDBFile)
 	}
 	if err != nil {
 		log.Panic(err)
