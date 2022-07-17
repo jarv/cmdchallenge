@@ -209,11 +209,11 @@ configNGINX() {
 
 		server {
 		  listen 443 ssl;
-      listen [::]:443 ssl;
+		  listen [::]:443 ssl;
 
 		  server_name _;
 
-	    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+		  ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
       ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
 		  root /var/opt/cmd/dist;
 
@@ -224,14 +224,14 @@ configNGINX() {
 		    proxy_set_header X-Forwarded-For $http_cf_connecting_ip;
 		  }
 
-      location /debug/pprof {
+		  location /debug/pprof {
 		    proxy_pass http://localhost:8181;
 		    proxy_set_header Host            $host;
 		    proxy_set_header X-Real-IP       $http_cf_connecting_ip;
 		    proxy_set_header X-Forwarded-For $http_cf_connecting_ip;
-        auth_basic "Restricted Content";
-        auth_basic_user_file /etc/nginx/.htpasswd;
-      }
+		    auth_basic "Restricted Content";
+		    auth_basic_user_file /etc/nginx/.htpasswd;
+		  }
 		}
 	NGINX
 
