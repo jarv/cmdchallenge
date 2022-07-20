@@ -70,7 +70,7 @@ func (s *Solutions) Handler() http.Handler {
 func (s *Solutions) runHandler(w http.ResponseWriter, req *http.Request) {
 	// For local development allow alternate port for POST requests
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Cache-Control", "no-store, max-age=0")
+	w.Header().Set("Cache-Control", "public, max-age=1800, s-maxage=1800")
 
 	s.log.WithFields(logrus.Fields{
 		"URI":  req.RequestURI,
