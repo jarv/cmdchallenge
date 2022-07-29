@@ -1,4 +1,4 @@
-FROM docker:19.03.8
+FROM docker:19.03.15
 RUN apk add --virtual .asdf-deps --no-cache jq bash openssh curl git gnupg grep libc6-compat python3 py-pip make build-base
 SHELL ["/bin/bash", "-l", "-c"]
 RUN adduser -s /bin/bash -h /asdf -D asdf && \
