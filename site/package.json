@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "commonmark": "0.30.0",
-    "jquery.terminal": "2.31.1",
+    "jquery.terminal": "2.34.0",
     "lodash": "4.17.21",
     "routie": "https://github.com/jgallen23/routie.git",
     "highlight.js": "10.7.3",
