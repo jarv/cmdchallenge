@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 COPY runcmd/runcmd /usr/local/bin/runcmd
 COPY oops/oops /usr/local/bin/oops-this-will-delete-bin-dirs
 RUN apt-get update && \
