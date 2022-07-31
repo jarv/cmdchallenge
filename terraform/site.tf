@@ -14,7 +14,7 @@ terraform {
       version = "~> 1.2"
     }
     null = {
-      version = "~> 2.1"
+      version = "~> 3.0"
     }
     archive = {
       version = "~> 1.3"
