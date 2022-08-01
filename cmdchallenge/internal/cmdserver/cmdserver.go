@@ -2,6 +2,7 @@ package cmdserver
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -16,7 +17,6 @@ import (
 	"gitlab.com/jarv/cmdchallenge/internal/config"
 	"gitlab.com/jarv/cmdchallenge/internal/metrics"
 	"gitlab.com/jarv/cmdchallenge/internal/runner"
-	"k8s.io/client-go/1.5/pkg/util/json"
 )
 
 const (
