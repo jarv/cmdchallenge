@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
-	github.com/didip/tollbooth v4.0.2+incompatible
+	github.com/didip/tollbooth/v7 v7.0.0
 	github.com/docker/distribution v2.8.1+incompatible // indirect
 	github.com/docker/docker v20.10.17+incompatible
 	github.com/docker/go-connections v0.4.0 // indirect
