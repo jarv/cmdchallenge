@@ -1,6 +1,6 @@
 module gitlab.com/jarv/cmdchallenge
 
-go 1.18
+go 1.19
 
 require (
 	github.com/didip/tollbooth v4.0.2+incompatible
