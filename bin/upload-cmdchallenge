@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -eufx -o pipefail
+
+if [[ ${1:-} == "testing" ]]; then
+  bucket_prefix="testing"
+  img_suffix="-testing"
+else
+  bucket_prefix="prod"
+  img_suffix=""
+fi
+
+dir=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
+"$dir/update-cmdchallenge"
+
+aws="aws --profile cmdchallenge"
+ci_registry_image="${CI_REGISTRY_IMAGE:-registry.gitlab.com/jarv/cmdchallenge}"
+cmdchallenge_dir="$dir/../cmdchallenge"
+s3_release_bucket="$bucket_prefix-cmd-release"
+tool_version="$dir/../.tool-versions"
+version=$(grep 'golang ' "$tool_version" | cut -d' ' -f2)
+
+echo "Building for linux/amd64..."
+docker_args=(
+run --platform "linux/amd64"
+--rm -v
+"$cmdchallenge_dir:/app" -w /app golang:"$version"
+go build -a -ldflags "-linkmode external -extldflags '-static' -s -w"
+)
+
+docker "${docker_args[@]}" cmd/serve/serve.go
+docker "${docker_args[@]}" cmd/oops/oops.go
+
+echo "Uploading release..."
+$aws s3 cp cmdchallenge/serve "s3://$s3_release_bucket/serve"
+tar zcf /tmp/ro_volume.tar.gz -C cmdchallenge ro_volume/
+$aws s3 cp /tmp/ro_volume.tar.gz "s3://$s3_release_bucket/ro_volume.tar.gz"
+rm -f /tmp/ro_volume.tar.gz
+if [[ ${1:-} == "testing" ]]; then
+  cp site/public/robots.txt.disable site/public/robots.txt
+fi
+tar zcf /tmp/dist.tar.gz -C site dist
+$aws s3 cp /tmp/dist.tar.gz "s3://$s3_release_bucket/dist.tar.gz"
+rm -f /tmp/dist.tar.gz site/public/robots.txt
+
+echo "Pushing docker images..."
+docker buildx install
+pushd "$cmdchallenge_dir"
+docker buildx build --platform linux/amd64 --push --tag "$ci_registry_image/cmd${img_suffix}:latest" -f Dockerfile .
+docker buildx build --platform linux/amd64 --push --tag "$ci_registry_image/cmd-no-bin${img_suffix}:latest" -f Dockerfile-no-bin .
+popd
+docker buildx uninstall

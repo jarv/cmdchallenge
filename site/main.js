@@ -5,7 +5,7 @@ import hljs from 'highlight.js/lib/core'
 import bash from 'highlight.js/lib/languages/bash'
 import routie from 'routie'
 import Webfont from 'webfontloader'
-import commonmark from 'commonmark'
+import { Parser, HtmlRenderer } from 'commonmark'
 import challengesJson from './challenges.json'
 
 const $ = window.jQuery = window.$
@@ -30,8 +30,8 @@ const SITES = {
 
 const FLAVOR = ['oops', '12days'].includes(HOSTNAME[0]) ? HOSTNAME[0] : 'cmdchallenge'
 
-const CMD_URL = window.location.hostname.match(/local/) ? 'http://localhost:8181/c/r' : '/c/r'
-const SOLUTIONS_URL = window.location.hostname.match(/local/) ? 'http://localhost:8181/c/s' : '/c/s'
+const CMD_URL = window.location.hostname.match(/local|127.0.0.1/) ? 'http://localhost:8181/c/r' : '/c/r'
+const SOLUTIONS_URL = window.location.hostname.match(/local|127.0.0.1/) ? 'http://localhost:8181/c/s' : '/c/s'
 
 const TAB_COMPLETION = FLAVOR === SITES.OOPS ? ['echo', 'read'] : ['find', 'echo', 'awk', 'sed', 'perl', 'wc', 'grep', 'cat', 'sort', 'cut', 'ls', 'tac', 'jq', 'paste', 'tr', 'rm', 'tail', 'comm', 'egrep']
 
@@ -79,8 +79,8 @@ const correctEmojiXmas = stepGen(
   ['emojis/1F936.png', 'emojis/1F385.png', 'emojis/1F36D.png', 'emojis/2603.png']
 )
 
-const cmReader = new commonmark.Parser()
-const cmWriter = new commonmark.HtmlRenderer()
+const cmReader = new Parser()
+const cmWriter = new HtmlRenderer()
 
 const htmlFromMarkdown = function (markdown) {
   const parsed = cmReader.parse(markdown)
@@ -421,7 +421,10 @@ const processResp = function (resp) {
     retCode = colorize(resp.ExitCode, 'red')
   }
 
-  updateChallengeOutput(resp.Output)
+  if (resp.Output) {
+    updateChallengeOutput(resp.Output)
+  }
+
   if (resp.Correct) {
     addItemToStorage(
       currentChallenge.slug,

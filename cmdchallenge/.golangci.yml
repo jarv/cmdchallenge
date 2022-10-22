@@ -31,6 +31,8 @@ linters-settings:
       mnd:
         # don't include the "operation" and "assign"
         checks: argument,case,condition,return
+        ignored-functions:
+          - 'rnd.*'
   govet:
     check-shadowing: true
     settings:
@@ -56,7 +58,6 @@ linters:
   disable-all: true
   enable:
     - bodyclose
-    - deadcode
     - depguard
     - dogsled
     - dupl
@@ -81,15 +82,12 @@ linters:
     - nakedret
     - noctx
     - nolintlint
-    - rowserrcheck
     - staticcheck
-    - structcheck
     - stylecheck
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
     - whitespace
 
   # don't enable:
@@ -114,6 +112,7 @@ issues:
     - path: _test\.go
       linters:
         - noctx
+        - lll
 
 run:
   skip-dirs:

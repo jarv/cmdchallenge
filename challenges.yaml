@@ -305,7 +305,7 @@
     mv Elves/* Workshop/
     ```
   example: mv Elves/* Workshop/
-  expected_failures: ["cp Elves/* Workshop/"]
+  expected_failures: ["echo", "cp Elves/* Workshop/"]
   tags: ["12days"]
 - slug: 12days_9
   version: 1
@@ -688,6 +688,7 @@
   completions: ["take-the-command-challenge", "tmp/files"]
   example: mkdir -p tmp/files
   expected_failures:
+    - 'mkdir tmp | mkdir tmp/files'
     - echo
 - slug: copy_file
   emoji: emojis/1F42C
@@ -737,6 +738,7 @@
     _Hint: There are files and directories that start with a dot "`.`", "`rm -rf *`" won't work here!_
   example: find . -delete
   expected_failures:
+    - 'find . -exec rm {} \;'
     - rm -rf /var/challenges/delete_files
 - slug: remove_files_with_extension
   emoji: emojis/1F43A

@@ -1,0 +1,14 @@
+FROM ubuntu:16.04
+COPY serve /usr/local/bin/runcmd
+COPY oops /usr/local/bin/oops-this-will-delete-bin-dirs
+
+RUN cp /bin/rm /tmp/rm && \
+      /tmp/rm -f /etc/bash.bashrc && /tmp/rm -rf /etc/bash_completion.d && \
+      /tmp/rm -f /root/.bashrc && \
+      ln -s /ro_volume/ch /usr/local/bin/ch && \
+      mv /bin/bash /usr/local/bin/bash && \
+      /tmp/rm -f /usr/sbin/* && \
+      /tmp/rm -f /bin/* && \
+      /tmp/rm -f /usr/bin/* && \
+      /tmp/rm /tmp/rm
+ADD var/ /var/

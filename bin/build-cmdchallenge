@@ -1,14 +1,35 @@
 #!/usr/bin/env bash
 
-set -euf -o pipefail
+# This is used for local development and assumes
+# an arm64 platform (M1 Mac)
+
+set -eufx -o pipefail
 
 dir=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
-cmdchallenge_dir="$dir/../cmdchallenge"
 
-if [[ -z ${CI:-} ]]; then
-  docker run --rm -v "$cmdchallenge_dir:/app" -w /app registry.gitlab.com/jarv/cmdchallenge/ci go build -a -ldflags "-linkmode external -extldflags '-static' -s -w" cmd/serve.go
+"$dir/update-cmdchallenge"
+
+if [[ ${1:-} == "testing" ]]; then
+  img_suffix="-testing"
 else
-  pushd "$cmdchallenge_dir"
-  go build cmd/serve.go
-  popd
+  img_suffix=""
 fi
+
+ci_registry_image="${CI_REGISTRY_IMAGE:-registry.gitlab.com/jarv/cmdchallenge}"
+cmdchallenge_dir="$dir/../cmdchallenge"
+tool_version="$dir/../.tool-versions"
+version=$(grep 'golang ' "$tool_version" | cut -d' ' -f2)
+docker_args=(
+run --platform linux/arm64/v8
+--rm -v
+"$cmdchallenge_dir:/app" -w /app golang:"$version"
+go build -a -ldflags "-linkmode external -extldflags '-static' -s -w"
+)
+
+docker "${docker_args[@]}" cmd/serve/serve.go
+docker "${docker_args[@]}" cmd/oops/oops.go
+
+pushd "$cmdchallenge_dir"
+docker build --tag "$ci_registry_image/cmd${img_suffix}:latest" -f Dockerfile .
+docker build --tag "$ci_registry_image/cmd-no-bin${img_suffix}:latest" -f Dockerfile-no-bin .
+popd

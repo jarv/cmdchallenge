@@ -18,34 +18,35 @@ This repository contains the code for the site [cmdchallenge.com](https://cmdcha
 
 ## Local development
 
-### Backend
+Start the backend the `-dev` option uses an in-memory db. Without it, an sqlite db will be created `cmdchallenge/db.sql`.
 
-Start the backend which will also initialize a new sqlite database in the `cmdchallenge/` directory.
 
-If you want to use the test in-memory database use the `-dev` flag.
+**Backend:**
 
 ```
-make build-image-cmd # builds the docker images for the runner
-go run cmdchallenge/cmd/serve.go
+make build # builds the docker images for the runner
+go run cmdchallenge/cmd/serve.go -dev
 ```
 
-Test a single command:
+**Frontend:**
+
+```
+cd site
+npx vite
+```
+
+## Misc
+
+**Test a single command:**
 
 ```
 curl  http://localhost:8181/c/r -X POST -F slug=hello_world -F cmd="echo hello world"
 ```
 
-Fetch solutions:
+**Fetch solutions:**
 
 ```
 curl http://localhost:8181/c/s?slug=hello_world
-```
-
-### Frontend
-
-```
-cd site
-npx vite
 ```
 
 ## CI vars

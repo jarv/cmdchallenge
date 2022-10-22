@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-logr/logr"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-	"github.com/sirupsen/logrus"
 )
 
 type CmdProcessedLabels struct {
@@ -19,13 +19,15 @@ type CmdProcessedLabels struct {
 }
 
 type Metrics struct {
-	log            *logrus.Logger
+	log            logr.Logger
 	CmdProcessed   *prometheus.CounterVec
 	CmdErrors      *prometheus.CounterVec
 	TotalRequests  *prometheus.CounterVec
 	ResponseStatus *prometheus.CounterVec
 	HTTPDuration   *prometheus.HistogramVec
 }
+
+var singleMetrics *Metrics
 
 type responseWriter struct {
 	http.ResponseWriter
@@ -41,7 +43,11 @@ func (rw *responseWriter) WriteHeader(code int) {
 	rw.ResponseWriter.WriteHeader(code)
 }
 
-func New(log *logrus.Logger) *Metrics {
+func New(log logr.Logger) *Metrics {
+	if singleMetrics != nil {
+		return singleMetrics
+	}
+
 	log.Info("Registering base metrics")
 	m := Metrics{
 		log: log,
@@ -56,7 +62,7 @@ func New(log *logrus.Logger) *Metrics {
 				Name: "cmd_errors_total",
 				Help: "The total number errors",
 			},
-			[]string{"error"}),
+			[]string{"error", "type"}),
 		TotalRequests: promauto.NewCounterVec(
 			prometheus.CounterOpts{
 				Name: "http_requests_total",
@@ -77,7 +83,8 @@ func New(log *logrus.Logger) *Metrics {
 			[]string{"status", "path"}),
 	}
 
-	return &m
+	singleMetrics = &m
+	return singleMetrics
 }
 
 func (m *Metrics) DBStatsRegister(db *sql.DB, dbName string) {
