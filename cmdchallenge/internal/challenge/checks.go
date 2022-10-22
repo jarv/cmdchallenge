@@ -51,8 +51,9 @@ func NewCheck(log logr.Logger, ch *Challenge, oopsDone chan string) *Check {
 }
 
 func (c *Check) RunCheck() (string, error) {
-	if err := os.Chdir(path.Join("/var/challenges", c.ch.Dir())); err != nil {
-		return "", err
+	challengePath := path.Join("/var/challenges", c.ch.Dir())
+	if err := os.Chdir(challengePath); err != nil {
+		return "Test failed, the challenge directory is missing!", nil
 	}
 
 	checkFn, exists := checkTable[c.ch.Slug()]
