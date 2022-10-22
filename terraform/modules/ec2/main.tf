@@ -18,53 +18,54 @@ locals {
   bootstrap_artifact = "s3://${local.release_bucket}/${local.bootstrap_fname}"
   dist_artifact      = "s3://${local.release_bucket}/dist.tar.gz"
   backup_artifact    = "s3://${local.backup_bucket}/db.sqlite3.bak.gz"
-}
-
-data "template_file" "userdata" {
-  template = file("${path.module}/userdata.tpl")
-  vars = {
-    bootstrap_artifact = local.bootstrap_artifact
-    bootstrap_fname    = local.bootstrap_fname
-    bootstrap_sha      = sha1(data.template_file.bootstrap.rendered)
-    backup_artifact    = local.backup_artifact
-  }
-}
-
-data "template_file" "bootstrap" {
-  template = file("${path.module}/bootstrap.tpl")
-  vars = {
+  bootstrap_content = templatefile("${path.module}/bootstrap.tpl", {
     serve_artifact     = local.serve_artifact
     ro_volume_artifact = local.ro_volume_artifact
     backup_artifact    = local.backup_artifact
     cmd_img_suffix     = local.is_prod ? "" : "-testing"
-    cmd_extra_opts     = local.is_prod ? "-rateLimit" : ""
+    cmd_extra_opts     = local.is_prod ? "-setRateLimit" : ""
     dist_artifact      = local.dist_artifact
-  }
+  })
+  user_data_content = templatefile("${path.module}/userdata.tpl", {
+    bootstrap_artifact = local.bootstrap_artifact
+    bootstrap_fname    = local.bootstrap_fname
+    bootstrap_sha      = sha1(local.bootstrap_content)
+    backup_artifact    = local.backup_artifact
+  })
+
 }
 
 resource "aws_s3_bucket" "release" {
   bucket = local.release_bucket
-  acl    = "private"
   # force_destroy = true
   tags = {
     Env = terraform.workspace
   }
 }
 
-resource "aws_s3_bucket_object" "bootstrap" {
+resource "aws_s3_bucket_acl" "release" {
+  bucket = aws_s3_bucket.release.id
+  acl    = "private"
+}
+
+resource "aws_s3_object" "bootstrap" {
   bucket  = aws_s3_bucket.release.bucket
   key     = local.bootstrap_fname
-  content = data.template_file.bootstrap.rendered
+  content = local.bootstrap_content
 }
 
 resource "aws_s3_bucket" "backups" {
   bucket = local.backup_bucket
-  acl    = "private"
   # force_destroy = true
 
   tags = {
     Env = terraform.workspace
   }
+}
+
+resource "aws_s3_bucket_acl" "backups" {
+  bucket = aws_s3_bucket.backups.id
+  acl    = "private"
 }
 
 resource "aws_key_pair" "default" {
@@ -144,7 +145,7 @@ EOF
 }
 
 resource "aws_instance" "default" {
-  user_data            = data.template_file.userdata.rendered
+  user_data            = local.user_data_content
   iam_instance_profile = aws_iam_instance_profile.default.name
   lifecycle {
     create_before_destroy = true

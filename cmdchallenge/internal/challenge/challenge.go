@@ -1,17 +1,18 @@
 package challenge
 
 import (
-	"crypto/sha256"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"errors"
+	"regexp"
+	"sort"
 	"strings"
 
-	"github.com/google/shlex"
+	"github.com/google/go-cmp/cmp"
 )
 
 const (
-	DefaultImg string = "cmd"
+	DefaultImg    string = "cmd"
+	reSubElements int    = 2 // number of elements expected for reSub in yml config
 )
 
 type ChInfo struct {
@@ -21,22 +22,18 @@ type ChInfo struct {
 	Img            *string `json:"img,omitempty"`
 	Example        *string `json:"example,omitempty"`
 	ExpectedOutput *struct {
+		Order *bool     `json:"order,omitempty"`
+		ReSub *[]string `json:"re_sub,omitempty"`
 		Lines *[]string `json:"lines,omitempty"`
 	} `json:"expected_output,omitempty"`
 	ExpectedFailures *[]string `json:"expected_failures,omitempty"`
 }
 
 type Challenge struct {
-	chJSON []byte
 	chInfo *ChInfo
 }
 
-func New(chFile string) (*Challenge, error) {
-	chJSON, err := ioutil.ReadFile(chFile)
-	if err != nil {
-		return nil, err
-	}
-
+func NewChallenge(chJSON []byte) (*Challenge, error) {
 	var chInfo ChInfo
 
 	if err := json.Unmarshal(chJSON, &chInfo); err != nil {
@@ -44,19 +41,19 @@ func New(chFile string) (*Challenge, error) {
 	}
 
 	return &Challenge{
-		chJSON: chJSON,
+		// chJSON: chJSON,
 		chInfo: &chInfo,
 	}, nil
 }
 
-func (c *Challenge) HasExpectedOutput() bool {
+func (c *Challenge) HasExpectedLines() bool {
 	if c.chInfo.ExpectedOutput == nil || c.chInfo.ExpectedOutput.Lines == nil {
 		return false
 	}
 	return true
 }
 
-func (c *Challenge) ExpectedOutput() []string {
+func (c *Challenge) ExpectedLines() []string {
 	return *c.chInfo.ExpectedOutput.Lines
 }
 
@@ -87,6 +84,14 @@ func (c *Challenge) Dir() string {
 	return *c.chInfo.Dir
 }
 
+func (c *Challenge) HasOrderedExpectedLines() bool {
+	if c.chInfo.ExpectedOutput.Order == nil {
+		return true
+	} else {
+		return *c.chInfo.ExpectedOutput.Order
+	}
+}
+
 func (c *Challenge) Img() string {
 	if c.chInfo.Img == nil {
 		return DefaultImg
@@ -95,12 +100,49 @@ func (c *Challenge) Img() string {
 	return *c.chInfo.Img
 }
 
-func (c *Challenge) Fingerprint(cmd string) (string, error) {
-	cmdShlex, err := shlex.Split(cmd)
-	if err != nil {
-		return "", err
+func (c *Challenge) MatchesLines(cmdOut string, l *[]string) (bool, error) {
+	// Remove leading and trailing spaces from cmdOut
+	lines := strings.Split(strings.TrimSpace(cmdOut), "\n")
+	var expectedLines *[]string
+
+	if l != nil {
+		expectedLines = l
+	} else {
+		expectedLines = c.chInfo.ExpectedOutput.Lines
 	}
 
-	sum := sha256.Sum256([]byte(string(c.chJSON) + strings.Join(cmdShlex, " ")))
-	return fmt.Sprintf("%x", sum), nil
+	if c.chInfo.ExpectedOutput.ReSub != nil {
+		if len(*c.chInfo.ExpectedOutput.ReSub) != reSubElements {
+			return false, errors.New("re_sub should have two elements")
+		}
+		r, err := regexp.Compile((*c.chInfo.ExpectedOutput.ReSub)[0])
+		if err != nil {
+			return false, errors.New("unable to compile re_sub regex")
+		}
+
+		for i := range lines {
+			lines[i] = r.ReplaceAllString(lines[i], (*c.chInfo.ExpectedOutput.ReSub)[1])
+		}
+	}
+
+	if c.HasOrderedExpectedLines() {
+		return cmp.Equal(*expectedLines, lines), nil
+	}
+
+	// Order doesn't matter, sort before comparing
+	sort.Strings(*expectedLines)
+	sort.Strings(lines)
+	return cmp.Equal(lines, *expectedLines), nil
+}
+
+func (c *Challenge) HasCheck() bool {
+	_, exists := checkTable[c.Slug()]
+
+	return exists
+}
+
+func (c *Challenge) HasRandomizer() bool {
+	_, exists := rndTable[c.Slug()]
+
+	return c.HasExpectedLines() && exists
 }

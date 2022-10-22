@@ -29,14 +29,6 @@ terraform {
   }
 }
 
-data "external" "short-sha" {
-  program = ["sh", "short-sha.sh"]
-}
-
-data "external" "index-clean" {
-  program = ["sh", "index-clean.sh"]
-}
-
 locals {
   is_prod             = terraform.workspace == "prod" ? true : false
   timestamp           = timestamp()
@@ -50,9 +42,9 @@ data "assert_test" "workspace" {
 }
 
 provider "aws" {
-  region                  = "us-east-1"
-  shared_credentials_file = pathexpand("~/.aws/credentials")
-  profile                 = "cmdchallenge-cicd"
+  region                   = "us-east-1"
+  shared_credentials_files = [pathexpand("~/.aws/credentials")]
+  profile                  = "cmdchallenge-cicd"
 }
 
 data "aws_caller_identity" "current" {
