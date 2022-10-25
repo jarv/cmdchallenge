@@ -59,7 +59,7 @@ SELECT
 SELECT
 	cmd
 	FROM challenges
-		WHERE slug=$1 AND correct=1 AND version = (SELECT MAX(version) from challenges)
+		WHERE slug=$1 AND correct=1 AND version = (SELECT MAX(version) from challenges where slug=$1)
 		ORDER BY count DESC,LENGTH(cmd) LIMIT 50;
 `
 
