@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/didip/tollbooth v4.0.2+incompatible
-	github.com/docker/docker v20.10.17+incompatible
+	github.com/docker/docker v20.10.21+incompatible
 	github.com/go-logr/logr v1.2.3
 	github.com/go-logr/zerologr v1.2.2
 	github.com/google/go-cmp v0.5.8
