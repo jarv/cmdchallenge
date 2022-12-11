@@ -5,5 +5,5 @@ golangci-lint 1.49.0
 shfmt 3.5.1
 shellcheck 0.8.0
 yq 4.26.1
-awscli 2.8.2
+awscli 2.9.6
 nodejs 16.16.0
