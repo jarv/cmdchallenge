@@ -72,7 +72,7 @@ func New() *Config {
 	cmdImgSuffix := os.Getenv("CMD_IMG_SUFFIX")
 
 	return &Config{
-		CmdTimeout:         2 * time.Second,
+		CmdTimeout:         5 * time.Second,
 		RunCmdRegistryImg:  runCmdRegistryImg,
 		RegistryAuth:       "",
 		RunCmdTimeout:      6 * time.Second,

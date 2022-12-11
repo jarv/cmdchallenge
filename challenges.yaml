@@ -679,7 +679,7 @@
 - slug: create_directory
   emoji: emojis/1F40B
   disp_title: Create a directory
-  version: 1
+  version: 2
   author: cmdchallenge
   description: |
     Create a directory named `tmp/files` in the current working directory
