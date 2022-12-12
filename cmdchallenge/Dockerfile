@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:22.04
 COPY serve /usr/local/bin/runcmd
 COPY oops /usr/local/bin/oops-this-will-delete-bin-dirs
 RUN apt-get update && \
