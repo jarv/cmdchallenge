@@ -21,6 +21,6 @@
     "eslint-plugin-promise": "6.1.1",
     "sass": "1.56.2",
     "typescript": "4.9.4",
-    "vite": "3.2.5"
+    "vite": "4.0.0"
   }
 }
