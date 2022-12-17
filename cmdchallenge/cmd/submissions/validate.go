@@ -35,7 +35,8 @@ func newLogger(color bool) logr.Logger {
 	zerolog.TimestampFunc = func() time.Time {
 		return time.Now().UTC()
 	}
-	zerolog.CallerMarshalFunc = func(file string, line int) string {
+
+	zerolog.CallerMarshalFunc = func(_ uintptr, file string, line int) string {
 		short := file
 		for i := len(file) - 1; i > 0; i-- {
 			if file[i] == '/' {
