@@ -22,9 +22,10 @@ type ChInfo struct {
 	Img            *string `json:"img,omitempty"`
 	Example        *string `json:"example,omitempty"`
 	ExpectedOutput *struct {
-		Order *bool     `json:"order,omitempty"`
-		ReSub *[]string `json:"re_sub,omitempty"`
-		Lines *[]string `json:"lines,omitempty"`
+		Order             *bool     `json:"order,omitempty"`
+		IgnoreNonMatching *bool     `json:"ignore_non_matching,omitempty"`
+		ReSub             *[]string `json:"re_sub,omitempty"`
+		Lines             *[]string `json:"lines,omitempty"`
 	} `json:"expected_output,omitempty"`
 	ExpectedFailures *[]string `json:"expected_failures,omitempty"`
 }
@@ -92,6 +93,14 @@ func (c *Challenge) HasOrderedExpectedLines() bool {
 	}
 }
 
+func (c *Challenge) HasIgnoreNonMatching() bool {
+	if c.chInfo.ExpectedOutput.IgnoreNonMatching == nil {
+		return false
+	} else {
+		return *c.chInfo.ExpectedOutput.IgnoreNonMatching
+	}
+}
+
 func (c *Challenge) Img() string {
 	if c.chInfo.Img == nil {
 		return DefaultImg
@@ -125,13 +134,16 @@ func (c *Challenge) MatchesLines(cmdOut string, l *[]string) (bool, error) {
 		}
 	}
 
-	if c.HasOrderedExpectedLines() {
-		return cmp.Equal(*expectedLines, lines), nil
+	if !c.HasOrderedExpectedLines() {
+		// Order doesn't matter, sort before comparing
+		sort.Strings(*expectedLines)
+		sort.Strings(lines)
 	}
 
-	// Order doesn't matter, sort before comparing
-	sort.Strings(*expectedLines)
-	sort.Strings(lines)
+	if c.HasIgnoreNonMatching() {
+		lines = removeNonMatching(lines, *expectedLines)
+	}
+
 	return cmp.Equal(lines, *expectedLines), nil
 }
 
@@ -145,4 +157,23 @@ func (c *Challenge) HasRandomizer() bool {
 	_, exists := rndTable[c.Slug()]
 
 	return c.HasExpectedLines() && exists
+}
+
+func removeNonMatching(lines, expectedLines []string) []string {
+	matchingLines := []string{}
+
+	for _, l := range lines {
+		match := false
+		for _, e := range expectedLines {
+			if e == l {
+				match = true
+				break
+			}
+		}
+
+		if match {
+			matchingLines = append(matchingLines, l)
+		}
+	}
+	return matchingLines
 }

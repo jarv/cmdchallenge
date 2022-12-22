@@ -7,6 +7,7 @@
 #   lines: lines returned from the command, as an array.
 #          Values *must* be strings, not integers! (required)
 #   order: whether or not order matters (optional, default is true)
+#   ignore_non_matching: ignore non-matching lines (optional, default is false)
 #   re_sub: regex substitution on the output lines (optional)
 #   regex: lines are regular expressions (optional)
 #   version: *REQUIRED* if the challenge is modified this number should be bumped
@@ -549,7 +550,7 @@
   tags: ["oops"]
 - slug: oops_print_process
   disp_title: print process name
-  version: 2
+  version: 4
   emoji: emojis/1F627
   description: |
     You know there is a process on machine that is deleting files, the first thing
@@ -557,8 +558,9 @@
 
     Hint: process information is stored in /proc, maybe there is a something there
     that will help?
-  example: 'read x < /proc/42/cmdline ; echo $x'
+  example: 'echo "$(</proc/42/cmdline)"'
   expected_output:
+    ignore_non_matching: true
     lines:
       - 'oops-this-will-delete-bin-dirs'
   img: cmd-no-bin
