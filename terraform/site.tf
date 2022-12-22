@@ -62,13 +62,6 @@ module "cloudflare" {
   names  = ["@", "oops", "12days"]
 }
 
-module "cloudflare-local" {
-  source = "./modules/cloudflare"
-  zone   = local.is_prod ? "cmdchallenge.com" : "funformentals.com"
-  value  = "127.0.0.1"
-  names  = ["local", "oops.local", "12days.local"]
-}
-
 output "public_ip" {
   value = module.ec2.public_ip
 }

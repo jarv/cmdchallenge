@@ -6,8 +6,12 @@
 set -eufx -o pipefail
 
 dir=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
+site_dir="${dir}/../site"
+cmdchallenge_dir="$dir/../cmdchallenge"
 
 "$dir/update-cmdchallenge"
+
+(cd "$site_dir"; npx vite build)
 
 if [[ ${1:-} == "testing" ]]; then
   img_suffix="-testing"
@@ -16,7 +20,6 @@ else
 fi
 
 ci_registry_image="${CI_REGISTRY_IMAGE:-registry.gitlab.com/jarv/cmdchallenge}"
-cmdchallenge_dir="$dir/../cmdchallenge"
 tool_version="$dir/../.tool-versions"
 version=$(grep 'golang ' "$tool_version" | cut -d' ' -f2)
 docker_args=(

@@ -33,14 +33,6 @@ build:
 test:
 	cd $(DIR_CMDCHALLENGE); go test ./...
 
-.PHONY: update-cmdchallenge
-update-cmdchallenge:
-	./bin/update-cmdchallenge
-
-.PHONY: build-static
-build-static: update-cmdchallenge
-	cd $(DIR_SITE); npx vite build
-
 .PHONY: cmdshell
 cmdshell:
 	docker run -it --privileged --mount type=bind,source="$(DIR_CMDCHALLENGE)/ro_volume",target=/ro_volume $(CI_REGISTRY_IMAGE)/cmd:latest bash

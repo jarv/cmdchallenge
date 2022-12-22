@@ -25,7 +25,8 @@ Start the backend the `-dev` option uses an in-memory db. Without it, an sqlite 
 
 ```
 make build # builds the docker images for the runner
-go run cmdchallenge/cmd/serve.go -dev
+cd cmdchallenge
+go run cmd/serve/serve.go -dev
 ```
 
 **Frontend:**

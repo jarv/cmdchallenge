@@ -11,7 +11,11 @@ else
 fi
 
 dir=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
+site_dir="${dir}/../site"
+
 "$dir/update-cmdchallenge"
+
+(cd "$site_dir"; npx vite build)
 
 aws="aws --profile cmdchallenge"
 ci_registry_image="${CI_REGISTRY_IMAGE:-registry.gitlab.com/jarv/cmdchallenge}"

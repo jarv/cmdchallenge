@@ -58,6 +58,16 @@ const expectedMultiReSub = `
   }
 }`
 
+const expectedRemoveNonMatching = `
+{
+  "expected_output": {
+    "ignore_non_matching": true,
+    "lines": [
+      "single line that matches"
+    ]
+  }
+}`
+
 func TestHasExpectedLines(t *testing.T) {
 	assert.True(t, fakeHelloWorldCh(t).HasExpectedLines())
 }
@@ -114,6 +124,12 @@ func TestMatchesLines(t *testing.T) {
 			want:   false,
 		},
 		{
+			name:   "no match: multi line",
+			chJSON: helloWorldJSON,
+			cmdOut: "no match\nhello world\nno match\n",
+			want:   false,
+		},
+		{
 			name:   "match: multi line, ordered",
 			chJSON: expectedMultiOrdered,
 			cmdOut: "1\n2\n3\n",
@@ -141,6 +157,12 @@ func TestMatchesLines(t *testing.T) {
 			name:   "match: multi line, resub",
 			chJSON: expectedMultiReSub,
 			cmdOut: "file1\nfile2\nfile3\n",
+			want:   true,
+		},
+		{
+			name:   "match: multi line, remove non-matching",
+			chJSON: expectedRemoveNonMatching,
+			cmdOut: "junk\nsingle line that matches\njunk\n\njunk",
 			want:   true,
 		},
 	}

@@ -5,13 +5,13 @@ set -euf -o pipefail
 echo "Updating challenges ..."
 dir=$(dirname "$0")
 ch_dir="${dir}/../cmdchallenge/ro_volume/ch"
-ch_static_dir="${dir}/../site"
+site_dir="${dir}/../site"
 challenges_yaml="${dir}/../challenges.yaml"
-challenges_json="$ch_static_dir/challenges.json"
+challenges_json="$site_dir/challenges.json"
 
 rm -f "$ch_dir/*"
+rm -f "$site_dir/challenges.json"
 
-rm -f "$ch_static_dir/challenges.json"
 yq e -I0 -o=json "$challenges_yaml" > "$challenges_json"
 
 IFS=$'\n'
