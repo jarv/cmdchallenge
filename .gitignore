@@ -1,6 +1,8 @@
 cmdchallenge/var.tar.gz
 cmdchallenge/img.tar
 cmdchallenge/var/challenges/*/README
+cmdchallenge/serve
+cmdchallenge/oops
 tags
 *.zip
 private/
