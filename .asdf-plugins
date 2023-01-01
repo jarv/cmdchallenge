@@ -2,5 +2,8 @@ terraform
 shellcheck
 shfmt
 golang
-nim
 yq
+sqlite
+golangci-lint
+awscli
+nodejs
