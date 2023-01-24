@@ -15,7 +15,7 @@ require (
 	github.com/prometheus/client_golang v1.14.0
 	github.com/rs/zerolog v1.28.0
 	github.com/stretchr/testify v1.8.1
-	golang.org/x/exp v0.0.0-20230118134722-a68e582fa157
+	golang.org/x/exp v0.0.0-20230124142953-7f5a42a36c7e
 )
 
 require (
