@@ -9,8 +9,7 @@ site_dir="${dir}/../site"
 cmdchallenge_dir="$dir/../cmdchallenge"
 
 "$dir/update-cmdchallenge"
-
-(cd "$site_dir"; npx vite build)
+(cd "$site_dir"; npm install && npx vite build)
 
 if [[ ${1:-} == "testing" ]]; then
   img_suffix="-testing"

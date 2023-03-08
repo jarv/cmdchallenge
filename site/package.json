@@ -3,24 +3,25 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "postinstall": "cp node_modules/jquery.terminal/js/jquery.terminal.min.js* public/js/. && cp node_modules/jquery.terminal/js/jquery.mousewheel-min* public/js/. && cp node_modules/jquery/dist/jquery.min.js* public/js/. && cp node_modules/jquery.terminal/css/jquery.terminal.min.css* public/css/."
   },
   "dependencies": {
     "commonmark": "^0.30.0",
     "highlight.js": "11.7.0",
-    "jquery.terminal": "2.35.1",
+    "jquery.terminal": "2.35.3",
     "lodash": "4.17.21",
     "routie": "https://github.com/jgallen23/routie.git",
     "webfontloader": "1.6.28"
   },
   "devDependencies": {
-    "eslint": "8.31.0",
+    "eslint": "8.35.0",
     "eslint-config-standard": "17.0.0",
-    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-import": "2.27.5",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.1.1",
-    "sass": "1.57.1",
-    "typescript": "4.9.4",
-    "vite": "4.0.3"
+    "sass": "1.58.3",
+    "typescript": "4.9.5",
+    "vite": "4.1.4"
   }
 }

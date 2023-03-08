@@ -1,21 +1,21 @@
 module gitlab.com/jarv/cmdchallenge
 
-go 1.19
+go 1.20
 
 require (
 	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/didip/tollbooth/v7 v7.0.1
-	github.com/docker/docker v20.10.22+incompatible
+	github.com/docker/docker v20.10.23+incompatible
 	github.com/go-logr/logr v1.2.3
-	github.com/go-logr/zerologr v1.2.2
+	github.com/go-logr/zerologr v1.2.3
 	github.com/google/go-cmp v0.5.9
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/prometheus/client_golang v1.14.0
-	github.com/rs/zerolog v1.28.0
-	github.com/stretchr/testify v1.8.1
-	golang.org/x/exp v0.0.0-20221230185412-738e83a70c30
+	github.com/rs/zerolog v1.29.0
+	github.com/stretchr/testify v1.8.2
+	golang.org/x/exp v0.0.0-20230307190834-24139beb5833
 )
 
 require (
