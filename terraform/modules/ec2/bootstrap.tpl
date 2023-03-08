@@ -217,7 +217,7 @@ configNGINX() {
       ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
 		  root /var/opt/cmd/dist;
 
-		  location /c {
+		  location /c/ {
 		    proxy_pass http://localhost:8181;
 		    proxy_set_header Host            $host;
 		    proxy_set_header X-Real-IP       $http_cf_connecting_ip;
