@@ -1,3 +1,0 @@
-FROM alpine
-RUN apk add bash
-ADD var.tar.gz /
