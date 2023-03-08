@@ -3,6 +3,8 @@ variable "SSH_PUBLIC_KEY" {
   default = "../private/ssh/cmd_rsa.pub"
 }
 
+variable "cf_account_id" {}
+
 terraform {
   required_providers {
     assert = {
@@ -56,10 +58,11 @@ module "ec2" {
 }
 
 module "cloudflare" {
-  source = "./modules/cloudflare"
-  zone   = local.is_prod ? "cmdchallenge.com" : "funformentals.com"
-  value  = module.ec2.public_ip
-  names  = ["@", "oops", "12days"]
+  source        = "./modules/cloudflare"
+  zone          = local.is_prod ? "cmdchallenge.com" : "funformentals.com"
+  value         = module.ec2.public_ip
+  names         = ["@", "oops", "12days"]
+  cf_account_id = var.cf_account_id
 }
 
 output "public_ip" {

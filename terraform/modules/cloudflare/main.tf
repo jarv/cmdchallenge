@@ -10,6 +10,7 @@ terraform {
 variable "zone" {}
 variable "value" {}
 variable "names" {}
+variable "cf_account_id" {}
 
 locals {
   is_prod = terraform.workspace == "prod" ? true : false
@@ -37,7 +38,8 @@ resource "cloudflare_record" "instance" {
 }
 
 resource "cloudflare_zone" "default" {
-  zone = var.zone
+  zone       = var.zone
+  account_id = var.cf_account_id
 }
 
 resource "cloudflare_zone_settings_override" "default" {
