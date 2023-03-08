@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "postinstall": "cp node_modules/jquery.terminal/js/jquery.terminal.min.js* public/js/. && cp node_modules/jquery.terminal/js/jquery.mousewheel-min* public/js/. && cp node_modules/jquery/dist/jquery.min.js* public/js/. && cp node_modules/jquery.terminal/css/jquery.terminal.min.css* public/css/."
   },
   "dependencies": {
     "commonmark": "^0.30.0",
