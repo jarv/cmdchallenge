@@ -9,7 +9,6 @@ site_dir="${dir}/../site"
 cmdchallenge_dir="$dir/../cmdchallenge"
 
 "$dir/update-cmdchallenge"
-
 (cd "$site_dir"; npm install && npx vite build)
 
 if [[ ${1:-} == "testing" ]]; then
