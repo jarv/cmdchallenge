@@ -9,7 +9,6 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 
@@ -92,14 +91,6 @@ func (r *Runner) RunContainer(cmd string, ch *Challenge) (*CmdResponse, error) {
 	hostConfig := container.HostConfig{
 		NetworkMode: "none",
 		Resources:   container.Resources{Memory: 10e+7},
-		Mounts: []mount.Mount{
-			{
-				Type:     mount.TypeBind,
-				Source:   r.cfg.ROVolumeDir,
-				Target:   "/ro_volume",
-				ReadOnly: true,
-			},
-		},
 	}
 
 	runCmd := []string{

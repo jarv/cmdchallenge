@@ -34,7 +34,7 @@ docker_args+=(
 go build -a -ldflags "-linkmode external -extldflags '-static' -s -w"
 )
 
-docker "${docker_args[@]}" cmd/serve/serve.go
+docker "${docker_args[@]}" cmd/runcmd/runcmd.go
 docker "${docker_args[@]}" cmd/oops/oops.go
 
 pushd "$cmdchallenge_dir"

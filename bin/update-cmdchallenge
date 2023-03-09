@@ -4,19 +4,10 @@ set -euf -o pipefail
 
 echo "Updating challenges ..."
 dir=$(dirname "$0")
-ch_dir="${dir}/../cmdchallenge/ro_volume/ch"
 site_dir="${dir}/../site"
 challenges_yaml="${dir}/../challenges.yaml"
 challenges_json="$site_dir/challenges.json"
 
-rm -f "$ch_dir/*"
 rm -f "$site_dir/challenges.json"
 
 yq e -I0 -o=json "$challenges_yaml" > "$challenges_json"
-
-IFS=$'\n'
-
-for c in $(jq -cr '.[]' "$challenges_json"); do
-  fname="$ch_dir/$(echo "$c" | jq -r '.slug').json"
-  echo "$c" | jq -c . > "$fname"
-done

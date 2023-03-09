@@ -1,13 +1,15 @@
 package challenge
 
 import (
-	"encoding/json"
+	_ "embed"
 	"errors"
+	"fmt"
 	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/google/go-cmp/cmp"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -16,35 +18,51 @@ const (
 )
 
 type ChInfo struct {
-	Slug           *string `json:"slug,omitempty"`
-	Version        *int    `json:"version,omitempty"`
-	Dir            *string `json:"dir,omitempty"`
-	Img            *string `json:"img,omitempty"`
-	Example        *string `json:"example,omitempty"`
+	Slug           *string `yaml:"slug,omitempty"`
+	Version        *int    `yaml:"version,omitempty"`
+	Dir            *string `yaml:"dir,omitempty"`
+	Img            *string `yaml:"img,omitempty"`
+	Example        *string `yaml:"example,omitempty"`
 	ExpectedOutput *struct {
-		Order             *bool     `json:"order,omitempty"`
-		IgnoreNonMatching *bool     `json:"ignore_non_matching,omitempty"`
-		ReSub             *[]string `json:"re_sub,omitempty"`
-		Lines             *[]string `json:"lines,omitempty"`
-	} `json:"expected_output,omitempty"`
-	ExpectedFailures *[]string `json:"expected_failures,omitempty"`
+		Order             *bool     `yaml:"order,omitempty"`
+		IgnoreNonMatching *bool     `yaml:"ignore_non_matching,omitempty"`
+		ReSub             *[]string `yaml:"re_sub,omitempty"`
+		Lines             *[]string `yaml:"lines,omitempty"`
+	} `yaml:"expected_output,omitempty"`
+	ExpectedFailures *[]string `yaml:"expected_failures,omitempty"`
 }
 
 type Challenge struct {
 	chInfo *ChInfo
 }
 
-func NewChallenge(chJSON []byte) (*Challenge, error) {
-	var chInfo ChInfo
+//go:embed challenges.yaml
+var challengesYAML string
 
-	if err := json.Unmarshal(chJSON, &chInfo); err != nil {
-		return nil, err
+type ChallengeOptions struct {
+	Slug           string
+	ChallengesYAML string
+}
+
+func NewChallenge(opt ChallengeOptions) (*Challenge, error) {
+	var challenges []ChInfo
+
+	if opt.ChallengesYAML == "" {
+		opt.ChallengesYAML = challengesYAML
 	}
 
-	return &Challenge{
-		// chJSON: chJSON,
-		chInfo: &chInfo,
-	}, nil
+	if err := yaml.Unmarshal([]byte(opt.ChallengesYAML), &challenges); err != nil {
+		return nil, fmt.Errorf("%s\n%w", opt.ChallengesYAML, err)
+	}
+
+	for _, c := range challenges {
+		if *c.Slug == opt.Slug {
+			return &Challenge{
+				chInfo: &c,
+			}, nil
+		}
+	}
+	return nil, fmt.Errorf("Unable to find challenge for slug %s", opt.Slug)
 }
 
 func (c *Challenge) HasExpectedLines() bool {

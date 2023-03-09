@@ -7,33 +7,38 @@ This repository contains the code for the site [cmdchallenge.com](https://cmdcha
 ## Installation
 
 - [Install Docker](https://docs.docker.com/get-docker/)
-- [Install `asdf`](http://asdf-vm.com/guide/getting-started.html#_1-install-dependencies)
-- `asdf install`
-- `docker pull registry.gitlab.com/jarv/cmdchallenge/cmd`
-- `docker pull registry.gitlab.com/jarv/cmdchallenge/cmd-no-bin`
+- [Install `rtx`](https://github.com/jdxcode/rtx#quickstart)
+- `rtx install`
+- `docker-compose build` (for M1 macs run `BUILD_PLATFORM=linux/arm64 docker-compose build`)
 
 ## Testing
 
-- `make test`
+- `cd cmdchallenge && go test ./...`
 
 ## Local development
 
-Start the backend the `-dev` option uses an in-memory db. Without it, an sqlite db will be created `cmdchallenge/db.sql`.
-
-
-**Backend:**
+### Using Docker Compose
 
 ```
-make build # builds the docker images for the runner
-cd cmdchallenge
-go run cmd/serve/serve.go -dev
+docker-compose up runcmd
 ```
 
-**Frontend:**
+### Running locally
+
+#### Build static assets
 
 ```
 cd site
-npx vite
+npm install
+npx vite build
+```
+
+#### Run the server
+
+```
+cd cmdchallenge
+# Start the backend the `-dev` option uses an in-memory db. Without it, an sqlite db will be created `cmdchallenge/db.sql`.
+go run cmd/runcmd/runcmd.go -dev
 ```
 
 ## Misc
@@ -49,18 +54,6 @@ curl  http://localhost:8181/c/r -X POST -F slug=hello_world -F cmd="echo hello w
 ```
 curl http://localhost:8181/c/s?slug=hello_world
 ```
-
-## CI vars
-
-The following CI vars are necessary to run the full pipeline
-
-- `AWS_ACCESS_KEY_ID`: Access key for AWS
-- `AWS_SECRET_ACCESS_KEY`: Secret key for AWS
-- `STATE_S3_BUCKET`: where to store Terraform state
-- `STATE_S3_KEY`: key for storing state
-- `STATE_S3_REGION`: region for deployment
-- `SSH_PRIVATE_KEY`: Private SSH key for the remote Docker machine
-- `SSH_PUBLIC_KEY` : Public SSH key for the remote Docker machine
 
 ## Bugs / Suggestions
 

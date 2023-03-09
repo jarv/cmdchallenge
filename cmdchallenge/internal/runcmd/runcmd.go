@@ -42,6 +42,7 @@ func (r *RunCmd) startOops(ctx context.Context) (*exec.Cmd, chan string, error) 
 		if err := cmd.Wait(); err != nil {
 			return nil, nil, err
 		}
+		r.log.Info(fmt.Sprintf("process pid: cmd.Process.Pid=%v oopsPid=%v", cmd.Process.Pid, oopsPid))
 		if cmd.Process.Pid >= (oopsPid - 1) {
 			break
 		}

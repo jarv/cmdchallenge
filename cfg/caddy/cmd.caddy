@@ -1,0 +1,42 @@
+(cmdLogging) {
+  log {
+    output file /var/log/caddy/{args.0}.access.log {
+        roll_size 10mb
+        roll_keep 20
+        roll_keep_for 720h
+    }
+  }
+}
+
+(proxyPrd) {
+  reverse_proxy localhost:8181
+}
+(proxyDev) {
+  reverse_proxy localhost:8282
+}
+
+cmd.jarv.org {
+  import proxyPrd
+  import cmdLogging cmd.jarv.org
+}
+oops.cmd.jarv.org {
+  import proxyPrd
+  import cmdLogging oops.cmd.jarv.org
+}
+12days.cmd.jarv.org {
+  import proxyPrd
+  import cmdLogging 12days.cmd.jarv.org
+}
+
+testing.cmd.jarv.org {
+  import proxyDev
+  import cmdLogging testing.cmd.jarv.org
+}
+oops.testing.jarv.org {
+  import proxyDev
+  import cmdLogging oops.testing.cmd.jarv.org
+}
+12days.testing.jarv.org {
+  import proxyDev
+  import cmdLogging 12days.testing.cmd.jarv.org
+}

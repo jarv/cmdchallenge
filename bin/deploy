@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -euf -o pipefail
+
+HOST="i.jarv.org"
+DEFAULT_ARCH="arm64"
+
+_BRED="\033[1;31m"
+_NORM="\033[0m"
+
+usage() {
+  cat <<EOF
+Usage: $0 [-t] [-a <amd64|arm64>]
+
+  -t : deploy to testing
+  -a : architecture (defaults to arm64)
+
+EOF
+}
+
+getImgID() {
+  local imgID
+  imgID=$(docker image ls -q "$1")
+  if [[ -z "$imgID" ]]; then
+    printf "Image not found for '%s'!\n" "$1" 1>&2
+    return 1
+  fi
+  return 0
+}
+
+loadImg() {
+  local img="$1"
+  local fname="/tmp/${img}.tar"
+
+  printf "%s\n" "$img" 1>&2
+  printf "  - Saving %s\n" "$img .." 1>&2
+  docker save "$img" > "$fname"
+  printf "  - Transfering ..\n" 1>&2
+  scp -q "$fname" "$HOST:$fname"
+  printf "  - Loading ..\n" 1>&2
+  # shellcheck disable=SC2029
+  ssh i.jarv.org "docker load -i $fname && rm -f $fname" >/dev/null
+  rm -f "$fname"
+}
+
+while getopts "h?ta:" opt; do
+  case "$opt" in
+    h | \?)
+      usage
+      exit 0
+      ;;
+    t)
+      is_testing=true
+      ;;
+    a)
+      arch=${OPTARG}
+  esac
+done
+
+
+arch=${arch:-$DEFAULT_ARCH}
+imgs=(
+  "runcmd:$arch"
+  "cmd:$arch"
+  "cmd-no-bin:$arch"
+)
+
+# Test that images exist
+for img in "${imgs[@]}"; do
+  if ! getImgID "$img"; then
+    printf "Image check failed!" 1>&2
+    exit 1
+  fi
+done
+
+if [[ -z ${is_testing:-} ]]; then
+  echo -ne "${_BRED}You are about to deploy to production, press enter to continue.${_NORM}"
+  read -rp ""
+fi
+
+for img in "${imgs[@]}"; do
+  if [[ -n ${is_testing:-} ]]; then
+    img_testing="${img}-testing"
+    docker tag "$img" "$img_testing"
+    loadImg "$img_testing"
+    docker image rm "$img_testing" >/dev/null
+    continue
+  fi
+  loadImg "$img"
+done

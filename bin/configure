@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euf -o pipefail
+
+HOST="i.jarv.org"
+dir=$(dirname "$0")
+cfg_dir="$dir/../cfg"
+
+ssh root@i.jarv.org "id -u cmd >/dev/null 2>&1 || useradd -u 510 -G docker -r cmd"
+ssh root@i.jarv.org "mkdir -p /var/opt/cmd && chown cmd /var/opt/cmd"
+
+scp "$cfg_dir"/systemd/{cmd,cmd-testing}.service root@$HOST:/etc/systemd/system/.
+scp "$cfg_dir"/caddy/cmd.caddy root@$HOST:/var/opt/caddy/servers/.
+scp "$cfg_dir"/prometheus/cmd.yml root@$HOST:/opt/prometheus/cfg/scrape_configs.d/.
+
+# shellcheck disable=SC2029
+ssh root@$HOST "$(printf '%s' \
+    'systemctl enable cmd' \
+    '&& systemctl start cmd' \
+    '&& systemctl enable cmd-testing' \
+    '&& systemctl start cmd-testing' \
+    '&& systemctl reload caddy' \
+    '&& systemctl reload prometheus')"

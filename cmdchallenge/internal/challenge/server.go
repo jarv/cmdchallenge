@@ -47,7 +47,6 @@ func NewServer(
 	m *metrics.Metrics,
 	r RunnerExecutor,
 	s store.CmdStorer,
-	rL bool,
 ) *Server {
 	return &Server{
 		log:            log,
@@ -55,7 +54,6 @@ func NewServer(
 		metrics:        m,
 		runnerExecutor: r,
 		cmdStorer:      s,
-		rateLimit:      rL,
 	}
 }
 
@@ -70,7 +68,7 @@ func (c *Server) httpError(w http.ResponseWriter, e error, statusCode int) {
 }
 
 func (c *Server) Handler() http.Handler {
-	if c.rateLimit {
+	if c.cfg.RateLimit {
 		lmt := tollbooth.NewLimiter(float64(maxServerRequestsSec), nil)
 		c.log.Info(fmt.Sprintf("Setting rate limit req/sec: %f burst: %d", maxServerRequestsSec, burst))
 		lmt.SetIPLookups([]string{"RemoteAddr"})
@@ -119,14 +117,7 @@ func (c *Server) runHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	chJSON, err := c.cfg.JSONForSlug(slug)
-	if err != nil {
-		c.log.Error(err, "Unable to open challenge file for slug", "slug", slug)
-		c.httpError(w, ErrServerInvalidChallenge, http.StatusInternalServerError)
-		return
-	}
-
-	ch, err := NewChallenge(chJSON)
+	ch, err := NewChallenge(ChallengeOptions{Slug: slug})
 	if err != nil {
 		c.log.Error(err, "Unable to parse challenge", "slug", slug)
 		c.httpError(w, ErrServerInvalidChallenge, http.StatusInternalServerError)
@@ -134,7 +125,7 @@ func (c *Server) runHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if slug != ch.Slug() {
-		c.log.Error(nil, "Challenge slug  doesn't match config", "slug", slug, "config", ch.Slug())
+		c.log.Error(nil, "Challenge slug doesn't match config", "slug", slug, "config", ch.Slug())
 		c.httpError(w, ErrServerUnknown, http.StatusInternalServerError)
 		return
 	}

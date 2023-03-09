@@ -9,7 +9,6 @@ BASE_PROM_DIR="/opt/prometheus"
 PROM_DATA_DIR="/var/opt/prometheus"
 CMD_DATA_DIR="/var/opt/cmd"
 SQLITE_DB_FILE="$CMD_DATA_DIR/db.sqlite3"
-RO_VOLUME_DIR="/var/opt/ro_volume"
 CMD_USER="cmd"
 
 prep() {
@@ -146,7 +145,6 @@ restoreDB() {
 }
 
 configCmd() {
-  rm -rf "$RO_VOLUME_DIR"
   rm -f /usr/local/bin/serve
 
   id -u $CMD_USER &>/dev/null || useradd $CMD_USER -G docker
@@ -155,9 +153,6 @@ configCmd() {
 
   restoreDB
 
-  aws s3 cp ${ro_volume_artifact} /tmp/ro_volume.tar.gz
-  tar xzf /tmp/ro_volume.tar.gz -C /var/opt
-  rm -f /tmp/ro_volume.tar.gz
   aws s3 cp ${serve_artifact} /usr/local/bin/serve
   chmod 755 /usr/local/bin/serve
   cat <<-CMD >/etc/systemd/system/cmd.service
@@ -167,9 +162,8 @@ configCmd() {
 
 		[Service]
 		Environment="SQLITE_DB_FILE=$SQLITE_DB_FILE"
-		Environment="RO_VOLUME_DIR=$RO_VOLUME_DIR"
 		Environment="CMD_IMG_SUFFIX=${cmd_img_suffix}"
-		PassEnvironment=SQLITE_DB_FILE RO_VOLUME_DIR SERVERPORT CMD_IMG_SUFFIX
+		PassEnvironment=SQLITE_DB_FILE SERVERPORT CMD_IMG_SUFFIX
 		User=$CMD_USER
 		Restart=on-failure
 
