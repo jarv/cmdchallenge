@@ -20,7 +20,7 @@
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.1.1",
-    "sass": "1.59.3",
+    "sass": "1.60.0",
     "typescript": "5.0.2",
     "vite": "4.2.1"
   }
