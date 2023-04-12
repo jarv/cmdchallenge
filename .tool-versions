@@ -1,4 +1,4 @@
-terraform 1.4.4
+terraform 1.4.5
 sqlite 3.36.0
 golang 1.19
 golangci-lint 1.49.0
