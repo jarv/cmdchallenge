@@ -9,7 +9,7 @@
   "dependencies": {
     "commonmark": "^0.30.0",
     "highlight.js": "11.8.0",
-    "jquery.terminal": "2.35.3",
+    "jquery.terminal": "2.36.0",
     "lodash": "4.17.21",
     "routie": "https://github.com/jgallen23/routie.git",
     "webfontloader": "1.6.28"
