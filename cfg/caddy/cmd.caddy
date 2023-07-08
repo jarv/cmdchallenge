@@ -15,28 +15,28 @@
   reverse_proxy localhost:8282
 }
 
-cmd.jarv.org {
+cmdchallenge.com {
   import proxyPrd
-  import cmdLogging cmd.jarv.org
+  import cmdLogging cmdchallenge.com
 }
-oops.cmd.jarv.org {
+oops.cmdchallenge.com {
   import proxyPrd
-  import cmdLogging oops.cmd.jarv.org
+  import cmdLogging oops.cmdchallenge.com
 }
-12days.cmd.jarv.org {
+12days.cmdchallenge.com {
   import proxyPrd
-  import cmdLogging 12days.cmd.jarv.org
+  import cmdLogging 12days.cmdchallenge.com
 }
 
-testing.cmd.jarv.org {
+testing.cmdchallenge.com {
   import proxyDev
-  import cmdLogging testing.cmd.jarv.org
+  import cmdLogging testing.cmdchallenge.com
 }
 oops.testing.jarv.org {
   import proxyDev
-  import cmdLogging oops.testing.cmd.jarv.org
+  import cmdLogging oops.testing.cmdchallenge.com
 }
 12days.testing.jarv.org {
   import proxyDev
-  import cmdLogging 12days.testing.cmd.jarv.org
+  import cmdLogging 12days.testing.cmdchallenge.com
 }
