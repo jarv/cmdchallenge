@@ -10,6 +10,7 @@ This repository contains the code for the site [cmdchallenge.com](https://cmdcha
 - [Install `rtx`](https://github.com/jdxcode/rtx#quickstart)
 - `rtx install`
 - `docker-compose build` (for M1 macs run `BUILD_PLATFORM=linux/arm64 docker-compose build`)
+- `docker-compose up runcmd --remove-orphans` (for M1 macs run `BUILD_PLATFORM=linux/arm64 docker-compose up runcmd --remove-orphans`)
 
 ## Testing
 
@@ -17,17 +18,7 @@ This repository contains the code for the site [cmdchallenge.com](https://cmdcha
 
 ## Local development
 
-### With Docker (recommended)
-
-```
-docker-compose build
-# Or `BUILD_ARCH=arm64 docker-compose build` for arm
-docker-compose up runcmd --remove-orphans
-```
-
-### Without Docker
-
-#### Static assets
+### Static assets
 
 ```
 cd site
@@ -35,12 +26,12 @@ npm install
 npx vite build
 ```
 
-#### Run the server
+### Run the server
 
 ```
 cd cmdchallenge
 # Start the backend the `-dev` option uses an in-memory db. Without it, a path to a sqlite db will be needed
-go run cmd/runcmd/runcmd.go -dev
+go run cmd/runcmd/runcmd.go -dev -staticDistDir=../site/dist
 ```
 
 ## Misc

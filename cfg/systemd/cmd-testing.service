@@ -6,7 +6,7 @@ After=network-online.target
 User=cmd
 Restart=on-failure
 
-ExecStart=/usr/bin/docker run --rm --name %n -p 8282:8181 \
+ExecStart=/usr/bin/docker run --user cmd --rm --name %n -p 8282:8181 \
   -e CMD_DB_FILE=/var/opt/cmd/db.sqlite3 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /var/opt/cmd:/var/opt/cmd \

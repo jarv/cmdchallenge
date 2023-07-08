@@ -20,7 +20,7 @@ COPY --from=site-builder /app/dist /app/dist
 RUN apt-get update && \
   groupadd --force -g 500 docker && \
   apt-get install -y docker.io && \
-  useradd -u 510 -G docker -r cmd
-USER cmd
+  useradd -u 510 -G docker -r cmd && \
+  chown cmd /app
 
 CMD ["/app/runcmd"]

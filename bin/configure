@@ -16,8 +16,8 @@ scp "$cfg_dir"/prometheus/cmd.yml root@$HOST:/opt/prometheus/cfg/scrape_configs.
 # shellcheck disable=SC2029
 ssh root@$HOST "$(printf '%s' \
     'systemctl enable cmd' \
+    '&& systemctl disable cmd-testing' \
     '&& systemctl start cmd' \
-    '&& systemctl enable cmd-testing' \
-    '&& systemctl start cmd-testing' \
     '&& systemctl reload caddy' \
-    '&& systemctl reload prometheus')"
+    '&& systemctl reload prometheus' \
+    '&& systemctl daemon-reload')"
