@@ -7,7 +7,7 @@ This repository contains the code for the site [cmdchallenge.com](https://cmdcha
 ## Installation
 
 - [Install Docker](https://docs.docker.com/get-docker/)
-- [Install `rtx`](https://github.com/jdxcode/rtx#quickstart)
+- [Install rtx](https://github.com/jdxcode/rtx#quickstart)
 - `rtx install`
 - `docker-compose build` (for M1 macs run `BUILD_PLATFORM=linux/arm64 docker-compose build`)
 - `docker-compose up runcmd --remove-orphans` (for M1 macs run `BUILD_PLATFORM=linux/arm64 docker-compose up runcmd --remove-orphans`)
