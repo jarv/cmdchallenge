@@ -17,15 +17,17 @@ This repository contains the code for the site [cmdchallenge.com](https://cmdcha
 
 ## Local development
 
-### Using Docker Compose
+### With Docker (recommended)
 
 ```
-docker-compose up runcmd
+docker-compose build
+# Or `BUILD_ARCH=arm64 docker-compose build` for arm
+docker-compose up runcmd --remove-orphans
 ```
 
-### Running locally
+### Without Docker
 
-#### Build static assets
+#### Static assets
 
 ```
 cd site
@@ -37,7 +39,7 @@ npx vite build
 
 ```
 cd cmdchallenge
-# Start the backend the `-dev` option uses an in-memory db. Without it, an sqlite db will be created `cmdchallenge/db.sql`.
+# Start the backend the `-dev` option uses an in-memory db. Without it, a path to a sqlite db will be needed
 go run cmd/runcmd/runcmd.go -dev
 ```
 
@@ -57,4 +59,4 @@ curl http://localhost:8181/c/s?slug=hello_world
 
 ## Bugs / Suggestions
 
-- Open [a GitLab issue](https://gitlab.com/jarv/cmdchallenge/-/issues).
+- Open [a GitHub issue](https://github.com/jarv/cmdchallenge/-/issues).
