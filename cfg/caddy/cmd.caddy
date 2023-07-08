@@ -1,0 +1,42 @@
+(cmdLogging) {
+  log {
+    output file /var/log/caddy/{args.0}.access.log {
+        roll_size 10mb
+        roll_keep 20
+        roll_keep_for 720h
+    }
+  }
+}
+
+(proxyPrd) {
+  reverse_proxy localhost:8181
+}
+(proxyDev) {
+  reverse_proxy localhost:8282
+}
+
+cmdchallenge.com {
+  import proxyPrd
+  import cmdLogging cmdchallenge.com
+}
+oops.cmdchallenge.com {
+  import proxyPrd
+  import cmdLogging oops.cmdchallenge.com
+}
+12days.cmdchallenge.com {
+  import proxyPrd
+  import cmdLogging 12days.cmdchallenge.com
+}
+
+testing.cmdchallenge.com {
+  import proxyDev
+  import cmdLogging testing.cmdchallenge.com
+}
+oops.testing.jarv.org {
+  import proxyDev
+  import cmdLogging oops.testing.cmdchallenge.com
+}
+12days.testing.jarv.org {
+  import proxyDev
+  import cmdLogging 12days.testing.cmdchallenge.com
+}

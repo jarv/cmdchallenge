@@ -1,24 +1,25 @@
 package challenge
 
 import (
-	"os"
-	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/go-logr/logr/testr"
 	"github.com/stretchr/testify/require"
 	"gitlab.com/jarv/cmdchallenge/internal/config"
+	"gopkg.in/yaml.v3"
 )
 
-const (
-	jsonExt string = ".json"
-)
+func chSlugs(t *testing.T) []string {
+	var challenges []ChInfo
+	var slugs []string
 
-func chSlugs(t *testing.T, path string) []os.DirEntry {
-	items, err := os.ReadDir(path)
+	err := yaml.Unmarshal([]byte(challengesYAML), &challenges)
 	require.NoError(t, err)
-	return items
+
+	for _, c := range challenges {
+		slugs = append(slugs, *c.Slug)
+	}
+	return slugs
 }
 
 func TestChallengesExpectPass(t *testing.T) {
@@ -28,23 +29,15 @@ func TestChallengesExpectPass(t *testing.T) {
 
 	ass := require.New(t)
 	req := require.New(t)
-	cfg := config.New()
+	cfg := config.New(config.ConfigOpts{})
 
-	for _, item := range chSlugs(t, cfg.ChallengePath()) {
-		item := item
-		if filepath.Ext(item.Name()) != jsonExt {
-			continue
-		}
+	for _, slug := range chSlugs(t) {
+		slug := slug
 
-		slug := strings.TrimSuffix(filepath.Base(item.Name()), filepath.Ext(item.Name()))
-
-		chJSON, err := cfg.JSONForSlug(slug)
+		ch, err := NewChallenge(ChallengeOptions{Slug: slug})
 		req.NoError(err)
 
-		ch, err := NewChallenge(chJSON)
-		req.NoError(err)
-
-		t.Run(ch.Slug(), func(t *testing.T) {
+		t.Run(slug, func(t *testing.T) {
 			t.Parallel()
 			runner := NewRunner(testr.New(t), cfg)
 			result, err := runner.RunContainer(ch.Example(), ch)
@@ -63,23 +56,15 @@ func TestChallengesExpectFailure(t *testing.T) {
 
 	ass := require.New(t)
 	req := require.New(t)
-	cfg := config.New()
+	cfg := config.New(config.ConfigOpts{})
 
-	for _, item := range chSlugs(t, cfg.ChallengePath()) {
-		item := item
-		if filepath.Ext(item.Name()) != jsonExt {
-			continue
-		}
+	for _, slug := range chSlugs(t) {
+		slug := slug
 
-		slug := strings.TrimSuffix(filepath.Base(item.Name()), filepath.Ext(item.Name()))
-
-		chJSON, err := cfg.JSONForSlug(slug)
+		ch, err := NewChallenge(ChallengeOptions{Slug: slug})
 		req.NoError(err)
 
-		ch, err := NewChallenge(chJSON)
-		req.NoError(err)
-
-		t.Run(ch.Slug(), func(t *testing.T) {
+		t.Run(slug, func(t *testing.T) {
 			t.Parallel()
 			runner := NewRunner(testr.New(t), cfg)
 			for _, failure := range ch.ExpectedFailures() {

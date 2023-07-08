@@ -17,8 +17,6 @@ import (
 	"gitlab.com/jarv/cmdchallenge/internal/store"
 )
 
-const ROVolumeDir string = "../../ro_volume"
-
 var (
 	fakeResponse = CmdResponse{
 		Correct:  toPtr(true),
@@ -35,7 +33,7 @@ var (
 	}
 )
 
-var cfg = config.New()
+var cfg = config.New(config.ConfigOpts{})
 
 type StubStor struct {
 	mock.Mock
@@ -113,7 +111,7 @@ func TestRequestNoCache(t *testing.T) {
 		helloWorldCh(t),
 	).Return(&fakeResponse, nil)
 
-	s := NewServer(testr.New(t), cfg, metrics.New(testr.New(t)), stubRunnerExecutor, stubStore, false)
+	s := NewServer(testr.New(t), cfg, metrics.New(testr.New(t)), stubRunnerExecutor, stubStore)
 	s.runHandler(resp, req)
 
 	stubStore.AssertExpectations(t)
@@ -152,7 +150,7 @@ func TestRequestCached(t *testing.T) {
 	// Expectation for Runner Executor
 	stubRunnerExecutor := &StubRunnerExecutor{}
 
-	s := NewServer(testr.New(t), cfg, metrics.New(testr.New(t)), stubRunnerExecutor, stubStore, false)
+	s := NewServer(testr.New(t), cfg, metrics.New(testr.New(t)), stubRunnerExecutor, stubStore)
 	s.runHandler(resp, req)
 
 	stubStore.AssertExpectations(t)
@@ -180,9 +178,7 @@ func createTestRequest() (*http.Request, *httptest.ResponseRecorder) {
 }
 
 func helloWorldCh(t *testing.T) *Challenge {
-	chJSON, err := cfg.JSONForSlug("hello_world")
-	require.NoError(t, err)
-	ch, err := NewChallenge(chJSON)
+	ch, err := NewChallenge(ChallengeOptions{Slug: "hello_world"})
 	require.NoError(t, err)
 	return ch
 }

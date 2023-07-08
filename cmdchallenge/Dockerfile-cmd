@@ -1,0 +1,22 @@
+# syntax = docker/dockerfile:1-experimental
+# vi: ft=dockerfile
+ARG BUILD_PLATFORM
+FROM --platform=${BUILD_PLATFORM} golang:1.20 as builder
+# linux/amd64,linux/arm64
+WORKDIR /app
+COPY . .
+RUN --mount=type=cache,target=/root/.cache/go-build \
+  go build -ldflags "-w" -o oops ./cmd/oops/oops.go
+RUN --mount=type=cache,target=/root/.cache/go-build \
+  go build -ldflags "-w" -o serve ./cmd/runcmd/runcmd.go
+
+FROM --platform=${BUILD_PLATFORM} ubuntu:22.04
+# linux/amd64,linux/arm64
+COPY --from=builder /app/serve /usr/local/bin/runcmd
+COPY --from=builder /app/oops /usr/local/bin/oops-this-will-delete-bin-dirs
+
+RUN apt-get update && \
+      apt-get install -y jq bc rename bsdmainutils man file && \
+      rm -f /etc/bash.bashrc && rm -rf /etc/bash_completion.d && \
+      rm -f /root/.bashrc
+ADD var/ /var/

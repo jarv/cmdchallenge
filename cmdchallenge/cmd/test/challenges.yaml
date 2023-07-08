@@ -1,0 +1,23 @@
+---
+# slug: name of the challenge (required)
+# description: describe teh challenge (required)
+# example: solution for the challenge (required)
+# expected_failures: A command that expects a failure because of randomizers
+# expected_output:
+#   lines: lines returned from the command, as an array.
+#          Values *must* be strings, not integers! (required)
+#   order: whether or not order matters (optional, default is true)
+#   ignore_non_matching: ignore non-matching lines (optional, default is false)
+#   re_sub: regex substitution on the output lines (optional)
+#   regex: lines are regular expressions (optional)
+#   version: *REQUIRED* if the challenge is modified this number should be bumped
+#            refresh the cache.
+#   author: Add a field for contributions.
+#   completions: Array of completions for challenge
+#   tags: Array of tags used to filter for different flavors of cmdchallenge
+#   cache_correct: Cache correct answers (defaults to True)
+#   cache_incorrect: Cache incorrect answers (defaults to True)
+#   dir: Directory for the challenge, by default uses the slug unless this is set
+#   disp_learn: Diaply the learn box by default (true/false), default false
+
+- slug: 12days_1

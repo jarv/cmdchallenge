@@ -7,66 +7,53 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const helloWorldJSON = `
-{
-  "slug": "hello_world",
-  "emoji": "emojis/1F40C",
-  "disp_title": "hello world",
-  "version": 5,
-  "example": "echo 'hello world'",
-  "expected_failures": [
-    "echo \"nope\""
-  ],
-  "expected_output": {
-    "lines": [
-      "hello world"
-    ]
-  }
-}
+const helloWorldYAML = `---
+- slug: hello_world
+  version: 5
+  example: echo 'hello world'
+  expected_failures:
+    - echo "nope"
+  expected_output:
+    lines:
+      - 'hello world'
 `
 
-const expectedMultiOrdered = `
-{
-  "expected_output": {
-    "lines": [
-      "1",
-      "2",
-      "3"
-    ]
-  }
-}`
-const expectedMultiNotOrdered = `
-{
-  "expected_output": {
-	"order": false,
-    "lines": [
-      "3",
-      "1",
-      "2"
-    ]
-  }
-}`
-const expectedMultiReSub = `
-{
-  "expected_output": {
-    "re_sub": ["^.*\/", ""],
-    "lines": [
-      "file1",
-      "file2",
-      "file3"
-    ]
-  }
-}`
+const expectedMultiOrdered = `---
+- slug: expectedMultiOrdered
+  expected_output:
+    lines:
+      - 1 
+      - 2 
+      - 3
+`
+const expectedMultiNotOrdered = `---
+- slug: expectedMultiNotOrdered
+  expected_output:
+    order: false
+    lines:
+      - 3 
+      - 2 
+      - 1
+`
+const expectedMultiReSub = `---
+- slug: expectedMultiReSub
+  expected_output:
+    re_sub: 
+      - "^.*/"
+      - ""
+    lines:
+      - file1
+      - file2
+      - file3
+`
 
-const expectedRemoveNonMatching = `
-{
-  "expected_output": {
-    "ignore_non_matching": true,
-    "lines": [
-      "single line that matches"
-    ]
-  }
-}`
+const expectedRemoveNonMatching = `---
+- slug: expectedRemoveNonMatching
+  expected_output:
+    ignore_non_matching: true
+    lines:
+      - single line that matches
+`
 
 func TestHasExpectedLines(t *testing.T) {
 	assert.True(t, fakeHelloWorldCh(t).HasExpectedLines())
@@ -107,61 +94,71 @@ func TestHasOrderedExpectedLines(t *testing.T) {
 func TestMatchesLines(t *testing.T) {
 	testCases := []struct {
 		name   string
-		chJSON string
+		slug   string
+		chYAML string
 		cmdOut string
 		want   bool
 	}{
 		{
 			name:   "match: single line",
-			chJSON: helloWorldJSON,
+			slug:   "hello_world",
+			chYAML: helloWorldYAML,
 			cmdOut: "hello world\n",
 			want:   true,
 		},
 		{
 			name:   "no match: single line",
-			chJSON: helloWorldJSON,
+			slug:   "hello_world",
+			chYAML: helloWorldYAML,
 			cmdOut: "no match\n",
 			want:   false,
 		},
 		{
 			name:   "no match: multi line",
-			chJSON: helloWorldJSON,
+			slug:   "hello_world",
+			chYAML: helloWorldYAML,
 			cmdOut: "no match\nhello world\nno match\n",
 			want:   false,
 		},
 		{
 			name:   "match: multi line, ordered",
-			chJSON: expectedMultiOrdered,
+			slug:   "expectedMultiOrdered",
+			chYAML: expectedMultiOrdered,
 			cmdOut: "1\n2\n3\n",
 			want:   true,
 		},
 		{
 			name:   "no match: multi line, ordered",
-			chJSON: expectedMultiOrdered,
+			slug:   "expectedMultiOrdered",
+			chYAML: expectedMultiOrdered,
 			cmdOut: "3\n1\n2\n",
 			want:   false,
 		},
 		{
 			name:   "match: multi line, not ordered",
-			chJSON: expectedMultiNotOrdered,
+			slug:   "expectedMultiNotOrdered",
+			chYAML: expectedMultiNotOrdered,
 			cmdOut: "3\n1\n2\n",
 			want:   true,
 		},
 		{
 			name:   "match: multi line, resub",
-			chJSON: expectedMultiReSub,
+			slug:   "expectedMultiReSub",
+			chYAML: expectedMultiReSub,
 			cmdOut: "/file1\n/file2\n/file3\n",
 			want:   true,
 		},
 		{
 			name:   "match: multi line, resub",
-			chJSON: expectedMultiReSub,
+			slug:   "expectedMultiReSub",
+			chYAML: expectedMultiReSub,
 			cmdOut: "file1\nfile2\nfile3\n",
 			want:   true,
 		},
 		{
 			name:   "match: multi line, remove non-matching",
-			chJSON: expectedRemoveNonMatching,
+			slug:   "expectedRemoveNonMatching",
+			chYAML: expectedRemoveNonMatching,
 			cmdOut: "junk\nsingle line that matches\njunk\n\njunk",
 			want:   true,
 		},
@@ -171,7 +168,7 @@ func TestMatchesLines(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			ch, err := NewChallenge([]byte(tt.chJSON))
+			ch, err := NewChallenge(ChallengeOptions{Slug: tt.slug, ChallengesYAML: tt.chYAML})
 			require.NoError(t, err)
 			actual, err := ch.MatchesLines(tt.cmdOut, nil)
 			require.NoError(t, err)
@@ -181,7 +178,7 @@ func TestMatchesLines(t *testing.T) {
 }
 
 func fakeHelloWorldCh(t *testing.T) *Challenge {
-	ch, err := NewChallenge([]byte(helloWorldJSON))
+	ch, err := NewChallenge(ChallengeOptions{Slug: "hello_world", ChallengesYAML: helloWorldYAML})
 	require.NoError(t, err)
 
 	return ch

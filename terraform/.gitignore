@@ -1,7 +1,0 @@
-*.zip
-terraform.tfstate*
-.terraform.tfstate*
-.terraform/
-.terraform
-*runcmd-api-gateway-endpoint
-crash.*
