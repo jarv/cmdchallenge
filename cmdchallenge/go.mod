@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/didip/tollbooth/v7 v7.0.1
-	github.com/docker/docker/v23 v23.0.2
+	github.com/docker/docker/v24 v24.0.4
 	github.com/go-logr/logr v1.2.3
 	github.com/go-logr/zerologr v1.2.3
 	github.com/google/go-cmp v0.5.9
