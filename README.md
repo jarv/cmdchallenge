@@ -9,8 +9,18 @@ This repository contains the code for the site [cmdchallenge.com](https://cmdcha
 - [Install Docker](https://docs.docker.com/get-docker/)
 - [Install rtx](https://github.com/jdxcode/rtx#quickstart)
 - `rtx install`
-- `docker-compose build` (for M1 macs run `BUILD_PLATFORM=linux/arm64 docker-compose build`)
-- `docker-compose up runcmd --remove-orphans` (for M1 macs run `BUILD_PLATFORM=linux/arm64 docker-compose up runcmd --remove-orphans`)
+
+```
+docker-compose build
+# For ARM (M1 mac for example) run
+#   BUILD_PLATFORM=linux/arm64 docker-compose build
+
+docker-compose up runcmd --remove-orphans
+# For ARM (M1 mac for example) run
+# BUILD_PLATFORM=linux/arm64 docker-compose up runcmd --remove-orphans
+```
+
+- Connect your browser to http://localhost:8181
 
 ## Testing
 
@@ -30,7 +40,7 @@ npx vite build
 
 ```
 cd cmdchallenge
-# Start the backend the `-dev` option uses an in-memory db. Without it, a path to a sqlite db will be needed
+# Start the backend the `-dev` option uses an in-memory db.
 go run cmd/runcmd/runcmd.go -dev -staticDistDir=../site/dist
 ```
 
