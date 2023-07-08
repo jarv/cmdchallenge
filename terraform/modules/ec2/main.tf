@@ -14,17 +14,15 @@ locals {
   backup_bucket      = "${terraform.workspace}-cmd-backups"
   bootstrap_fname    = "bootstrap.sh"
   serve_artifact     = "s3://${local.release_bucket}/serve"
-  ro_volume_artifact = "s3://${local.release_bucket}/ro_volume.tar.gz"
   bootstrap_artifact = "s3://${local.release_bucket}/${local.bootstrap_fname}"
   dist_artifact      = "s3://${local.release_bucket}/dist.tar.gz"
   backup_artifact    = "s3://${local.backup_bucket}/db.sqlite3.bak.gz"
   bootstrap_content = templatefile("${path.module}/bootstrap.tpl", {
-    serve_artifact     = local.serve_artifact
-    ro_volume_artifact = local.ro_volume_artifact
-    backup_artifact    = local.backup_artifact
-    cmd_img_suffix     = local.is_prod ? "" : "-testing"
-    cmd_extra_opts     = local.is_prod ? "-setRateLimit" : ""
-    dist_artifact      = local.dist_artifact
+    serve_artifact  = local.serve_artifact
+    backup_artifact = local.backup_artifact
+    cmd_img_suffix  = local.is_prod ? "" : "-testing"
+    cmd_extra_opts  = local.is_prod ? "-setRateLimit" : ""
+    dist_artifact   = local.dist_artifact
   })
   user_data_content = templatefile("${path.module}/userdata.tpl", {
     bootstrap_artifact = local.bootstrap_artifact

@@ -31,14 +31,11 @@ run --platform "linux/amd64"
 go build -a -ldflags "-linkmode external -extldflags '-static' -s -w"
 )
 
-docker "${docker_args[@]}" cmd/serve/serve.go
+docker "${docker_args[@]}" cmd/runcmd/runcmd.go
 docker "${docker_args[@]}" cmd/oops/oops.go
 
 echo "Uploading release..."
 $aws s3 cp cmdchallenge/serve "s3://$s3_release_bucket/serve"
-tar zcf /tmp/ro_volume.tar.gz -C cmdchallenge ro_volume/
-$aws s3 cp /tmp/ro_volume.tar.gz "s3://$s3_release_bucket/ro_volume.tar.gz"
-rm -f /tmp/ro_volume.tar.gz
 if [[ ${1:-} == "testing" ]]; then
   cp site/public/robots.txt.disable site/public/robots.txt
 fi

@@ -1,0 +1,10 @@
+scrape_configs:
+  - job_name: cmd
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['localhost:8181']
+        labels:
+          env: 'prd'
+      - targets: ['localhost:8282']
+        labels:
+          env: 'dev'

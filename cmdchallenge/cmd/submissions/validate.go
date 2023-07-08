@@ -62,7 +62,7 @@ func disp(results []string) {
 }
 
 func main() {
-	cfg := config.New()
+	cfg := config.New(config.ConfigOpts{})
 	log := newLogger(true)
 	discardLog := logr.Discard()
 
@@ -97,9 +97,7 @@ func main() {
 				log.Info(fmt.Sprintf("> %d --->%d<---", i, len(results)))
 			}
 		}
-		chJSON, err := cfg.JSONForSlug(a.Slug)
-		noError(err)
-		ch, err := challenge.NewChallenge(chJSON)
+		ch, err := challenge.NewChallenge(challenge.ChallengeOptions{Slug: a.Slug})
 		noError(err)
 
 		runner := challenge.NewRunner(discardLog, cfg)

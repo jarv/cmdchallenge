@@ -35,13 +35,12 @@ test:
 
 .PHONY: cmdshell
 cmdshell:
-	docker run -it --privileged --mount type=bind,source="$(DIR_CMDCHALLENGE)/ro_volume",target=/ro_volume $(CI_REGISTRY_IMAGE)/cmd:latest bash
+	docker run -it --privileged $(CI_REGISTRY_IMAGE)/cmd:latest bash
 
 .PHONY: oopsshell
 oopsshell:
-	docker run -it --privileged --mount type=bind,source="$(DIR_CMDCHALLENGE)/ro_volume",target=/ro_volume $(CI_REGISTRY_IMAGE)/cmd-no-bin:latest bash
+	docker run -it --privileged $(CI_REGISTRY_IMAGE)/cmd-no-bin:latest bash
 
 .PHONY: clean
 clean:
-	rm -f $(DIR_CMDCHALLENGE)/ro_volume/ch/*
 	rm -f $(DIR_SITE)/challenges.json

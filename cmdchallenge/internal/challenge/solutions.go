@@ -29,13 +29,13 @@ type Solutions struct {
 	rateLimit bool
 }
 
-func NewSolutions(log logr.Logger, cfg *config.Config, m *metrics.Metrics, s store.CmdStorer, rateLimit bool) *Solutions {
+func NewSolutions(log logr.Logger, cfg *config.Config, m *metrics.Metrics, s store.CmdStorer) *Solutions {
 	return &Solutions{
 		log:       log,
 		cfg:       cfg,
 		metrics:   m,
 		cmdStorer: s,
-		rateLimit: rateLimit,
+		rateLimit: cfg.RateLimit,
 	}
 }
 

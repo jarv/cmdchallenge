@@ -1,0 +1,33 @@
+---
+# To build for M1:
+#   BUILD_ARCH=arm64 docker-compose build
+# To run:
+#   docker-compose up runcmd --remove-orphans
+
+version: '3.9'
+services:
+  cmd:
+    build:
+      context: cmdchallenge
+      dockerfile: Dockerfile-cmd
+      args:
+        BUILD_PLATFORM: linux/${BUILD_ARCH:-amd64}
+    image: cmd:${BUILD_ARCH:-amd64}
+  cmd-no-bin:
+    build:
+      context: cmdchallenge
+      dockerfile: Dockerfile-cmd-no-bin
+      args:
+        BUILD_PLATFORM: linux/${BUILD_ARCH:-amd64}
+    image: cmd-no-bin:${BUILD_ARCH:-amd64}
+  runcmd:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_PLATFORM: linux/${BUILD_ARCH:-amd64}
+    image: runcmd:${BUILD_ARCH:-amd64}
+    ports:
+      - 8181:8181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
