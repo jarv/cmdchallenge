@@ -1,0 +1,6 @@
+:80 {
+    handle {
+            root * /app/dist
+            file_server
+    }
+}

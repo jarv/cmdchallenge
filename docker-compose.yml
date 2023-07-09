@@ -27,7 +27,15 @@ services:
       args:
         BUILD_PLATFORM: linux/${BUILD_ARCH:-amd64}
     image: runcmd:${BUILD_ARCH:-amd64}
-    ports:
-      - 8181:8181
     volumes:
+      - dist:/app/dist
       - /var/run/docker.sock:/var/run/docker.sock
+  caddy:
+    image: caddy
+    volumes:
+      - dist:/app/dist
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    ports:
+      - 8100:80
+volumes:
+  dist:
