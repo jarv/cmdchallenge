@@ -2,8 +2,8 @@
 # To build for M1:
 #   BUILD_ARCH=arm64 docker-compose build
 # To run:
-#   docker-compose down -v --remove-orphans
-#   BUILD_ARCH=arm64 docker-compose up runcmd caddy -V
+#   docker-compose down -v
+#   BUILD_ARCH=arm64 docker-compose up runcmd caddy -V --remove-orphans
 
 version: '3.9'
 services:
