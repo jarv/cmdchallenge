@@ -2,7 +2,8 @@
 # To build for M1:
 #   BUILD_ARCH=arm64 docker-compose build
 # To run:
-#   docker-compose up runcmd --remove-orphans
+#   docker-compose down -v --remove-orphans
+#   BUILD_ARCH=arm64 docker-compose up runcmd caddy -V
 
 version: '3.9'
 services:
@@ -37,5 +38,6 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
     ports:
       - 8100:80
+      - 8110:8110
 volumes:
   dist:

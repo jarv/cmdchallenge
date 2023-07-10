@@ -30,8 +30,8 @@ const SITES = {
 
 const FLAVOR = ['oops', '12days'].includes(HOSTNAME[0]) ? HOSTNAME[0] : 'cmdchallenge'
 
-const CMD_URL = window.location.hostname.match(/local|127.0.0.1/) ? 'http://localhost:8181/c/r' : '/c/r'
-const SOLUTIONS_URL = window.location.hostname.match(/local|127.0.0.1/) ? 'http://localhost:8181/c/s' : '/c/s'
+const CMD_URL = '/c/r'
+const SOLUTIONS_URL = '/c/s'
 
 const TAB_COMPLETION = FLAVOR === SITES.OOPS ? ['echo', 'read'] : ['find', 'echo', 'awk', 'sed', 'perl', 'wc', 'grep', 'cat', 'sort', 'cut', 'ls', 'tac', 'jq', 'paste', 'tr', 'rm', 'tail', 'comm', 'egrep']
 

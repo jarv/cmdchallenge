@@ -8,35 +8,40 @@
   }
 }
 
-(proxyPrd) {
-  reverse_proxy localhost:8181
-}
-(proxyDev) {
-  reverse_proxy localhost:8282
+(handles) {
+  handle /c/* {
+          reverse_proxy localhost:{args.1}
+  }
+  handle {
+          root * /var/opt/www/{args.0}
+          file_server {
+            precompressed gzip
+          }
+  }
 }
 
 cmdchallenge.com {
-  import proxyPrd
+  import handles cmd 8181
   import cmdLogging cmdchallenge.com
 }
 oops.cmdchallenge.com {
-  import proxyPrd
+  import handles cmd 8181
   import cmdLogging oops.cmdchallenge.com
 }
 12days.cmdchallenge.com {
-  import proxyPrd
+  import handles cmd 8181
   import cmdLogging 12days.cmdchallenge.com
 }
 
-testing.cmdchallenge.com {
-  import proxyDev
+dev.cmdchallenge.com {
+  import handles cmd-dev 8282
   import cmdLogging testing.cmdchallenge.com
 }
-oops.testing.jarv.org {
-  import proxyDev
+oops.dev.cmdchallenge.com {
+  import handles cmd-dev 8282
   import cmdLogging oops.testing.cmdchallenge.com
 }
-12days.testing.jarv.org {
-  import proxyDev
+12days.dev.cmdchallenge.com {
+  import handles cmd-dev 8282
   import cmdLogging 12days.testing.cmdchallenge.com
 }

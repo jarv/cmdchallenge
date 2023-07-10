@@ -12,7 +12,7 @@ usage() {
   cat <<EOF
 Usage: $0 [-t] [-a <amd64|arm64>]
 
-  -t : deploy to testing
+  -d : deploy to dev
   -a : architecture (defaults to arm64)
 
 EOF
@@ -43,14 +43,14 @@ loadImg() {
   rm -f "$fname"
 }
 
-while getopts "h?ta:" opt; do
+while getopts "h?da:" opt; do
   case "$opt" in
     h | \?)
       usage
       exit 0
       ;;
-    t)
-      is_testing=true
+    d)
+      is_dev=true
       ;;
     a)
       arch=${OPTARG}
@@ -73,17 +73,17 @@ for img in "${imgs[@]}"; do
   fi
 done
 
-if [[ -z ${is_testing:-} ]]; then
+if [[ -z ${is_dev:-} ]]; then
   echo -ne "${_BRED}You are about to deploy to production, press enter to continue.${_NORM}"
   read -rp ""
 fi
 
 for img in "${imgs[@]}"; do
-  if [[ -n ${is_testing:-} ]]; then
-    img_testing="${img}-testing"
-    docker tag "$img" "$img_testing"
-    loadImg "$img_testing"
-    docker image rm "$img_testing" >/dev/null
+  if [[ -n ${is_dev:-} ]]; then
+    img_dev="${img}-dev"
+    docker tag "$img" "$img_dev"
+    loadImg "$img_dev"
+    docker image rm "$img_dev" >/dev/null
     continue
   fi
   loadImg "$img"

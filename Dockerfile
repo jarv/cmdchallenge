@@ -11,6 +11,7 @@ FROM node:20.3.1-bullseye-slim as site-builder
 WORKDIR /app
 COPY site .
 RUN npm install && \
+  rm -rf ./dist && \
   npx vite build
 
 FROM --platform=${BUILD_PLATFORM} debian:bookworm-slim

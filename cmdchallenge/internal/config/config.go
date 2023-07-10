@@ -8,6 +8,7 @@ import (
 )
 
 const oopsBin = "oops-this-will-delete-bin-dirs"
+const devTagSuffix = "-testing"
 
 var (
 	ErrInvalidRegistryImgURI = errors.New("registry image doesn't exist")
@@ -16,7 +17,7 @@ var (
 type ConfigOpts struct {
 	DevMode       bool
 	RateLimit     bool
-	Testing       bool
+	DevTag        bool
 	DBFile        string
 	StaticDistDir string
 }
@@ -42,8 +43,8 @@ type Config struct {
 
 func New(c ConfigOpts) *Config {
 	tagSuffix := ""
-	if c.Testing {
-		tagSuffix = "-testing"
+	if c.DevTag {
+		tagSuffix = devTagSuffix
 	}
 
 	return &Config{

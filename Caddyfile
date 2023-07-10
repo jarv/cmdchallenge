@@ -1,6 +1,11 @@
 :80 {
+    handle /c/* {
+            reverse_proxy runcmd:8181
+    }
     handle {
             root * /app/dist
-            file_server
+            file_server {
+              precompressed gzip
+            }
     }
 }

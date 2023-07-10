@@ -1,19 +1,19 @@
 [Unit]
-Description=cmd
+Description=cmd-dev
 After=network-online.target
 
 [Service]
-ExecStartPre=docker run --rm -v /var/opt/www/%p:/mnt/out runcmd:arm64 /bin/cp -r /app/dist/. /mnt/out
+ExecStartPre=docker run --rm -v /var/opt/www/%p:/mnt/out runcmd:arm64-dev /bin/cp -r /app/dist/. /mnt/out
 ExecStartPre=+chown -R cmd /var/opt/www/%p
 User=cmd
 Restart=on-failure
 
-ExecStart=/usr/bin/docker run --user cmd --rm --name %n -p 8181:8181 \
+ExecStart=/usr/bin/docker run --user %u --rm --name %n -p 8282:8181 \
   -e CMD_DB_FILE=/var/opt/cmd/db.sqlite3 \
-  -e CMD_SET_RATE_LIMIT=true \
+  -e CMD_DEV_TAG=true \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /var/opt/cmd:/var/opt/cmd \
-  runcmd:arm64
+  runcmd:arm64-dev
 
 [Install]
 WantedBy=multi-user.target

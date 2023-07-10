@@ -119,7 +119,7 @@ func newLogger(color bool) logr.Logger {
 func main() {
 	devMode := flag.Bool("dev", lookupEnvOrVal("CMD_DEV_MODE", false), "run in development mode")
 	rateLimit := flag.Bool("setRateLimit", lookupEnvOrVal("CMD_SET_RATE_LIMIT", false), "set rate limits")
-	testing := flag.Bool("testing", lookupEnvOrVal("CMD_TESTING", false), "run in testing mode")
+	devTag := flag.Bool("devTag", lookupEnvOrVal("CMD_DEV_TAG", false), "use a dev tag for container images")
 	dbFile := flag.String("dbFile", lookupEnvOrVal("CMD_DB_FILE", "/app/db.sqlite3"), "path to the db file")
 	staticDistDir := flag.String("staticDistDir", lookupEnvOrVal("CMD_STATIC_DIST_DIR", "/app/dist"), "path to static files")
 	cmd := flag.Bool("cmd", false, "execute a command inside the runner")
@@ -133,7 +133,7 @@ func main() {
 	cfg := config.New(config.ConfigOpts{
 		DevMode:       *devMode,
 		RateLimit:     *rateLimit,
-		Testing:       *testing,
+		DevTag:        *devTag,
 		DBFile:        *dbFile,
 		StaticDistDir: *staticDistDir,
 	})
