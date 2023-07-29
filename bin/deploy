@@ -39,7 +39,7 @@ loadImg() {
   scp -q "$fname" "$HOST:$fname"
   printf "  - Loading ..\n" 1>&2
   # shellcheck disable=SC2029
-  ssh i.jarv.org "docker load -i $fname && rm -f $fname" >/dev/null
+  ssh $HOST "docker load -i $fname && rm -f $fname" >/dev/null
   rm -f "$fname"
 }
 

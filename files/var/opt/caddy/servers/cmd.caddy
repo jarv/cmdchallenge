@@ -1,7 +1,7 @@
 (cmdLogging) {
   log {
     output file /var/log/caddy/{args.0}.access.log {
-        roll_size 10mb
+        roll_size 100mb
         roll_keep 20
         roll_keep_for 720h
     }
@@ -21,27 +21,27 @@
 }
 
 cmdchallenge.com {
-  import handles cmd 8181
+  import handles cmdchallenge 8181
   import cmdLogging cmdchallenge.com
 }
 oops.cmdchallenge.com {
-  import handles cmd 8181
+  import handles cmdchallenge 8181
   import cmdLogging oops.cmdchallenge.com
 }
 12days.cmdchallenge.com {
-  import handles cmd 8181
+  import handles cmdchallenge 8181
   import cmdLogging 12days.cmdchallenge.com
 }
 
 dev.cmdchallenge.com {
-  import handles cmd-dev 8282
+  import handles cmdchallenge-dev 8282
   import cmdLogging testing.cmdchallenge.com
 }
 oops.dev.cmdchallenge.com {
-  import handles cmd-dev 8282
+  import handles cmdchallenge-dev 8282
   import cmdLogging oops.testing.cmdchallenge.com
 }
 12days.dev.cmdchallenge.com {
-  import handles cmd-dev 8282
+  import handles cmdchallenge-dev 8282
   import cmdLogging 12days.testing.cmdchallenge.com
 }

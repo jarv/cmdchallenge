@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -euf -o pipefail
+
+id -u cmd >/dev/null 2>&1 || useradd -u 510 -G docker -r cmd
+chown cmd /var/opt/cmdchallenge
+chmod 700 /var/opt/cmdchallenge/pprof
+
+systemctl enable cmd.service cmd-pprof.service cmd-pprof.timer
+systemctl disable cmd-dev.service
+systemctl start cmd cmd-pprof.timer
+systemctl reload caddy
+systemctl reload prometheus
+systemctl daemon-reload

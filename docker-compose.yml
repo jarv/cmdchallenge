@@ -31,6 +31,8 @@ services:
     volumes:
       - dist:/app/dist
       - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8181:8181
   caddy:
     image: caddy
     volumes:
@@ -38,6 +40,5 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
     ports:
       - 8100:80
-      - 8110:8110
 volumes:
   dist:

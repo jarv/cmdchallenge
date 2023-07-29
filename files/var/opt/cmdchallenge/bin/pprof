@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+set -efo pipefail
+
+date=$(/usr/bin/date -u +'%Y%m%d_%H:%M')
+pprof_dir="/var/opt/cmd/pprof"
+
+curl -f -s localhost:8181/debug/pprof/heap > "$pprof_dir/heap.$date"
+curl -f -s localhost:8181/debug/pprof/goroutine > "$pprof_dir/goroutine.$date"
+
+find "$pprof_dir" -type f -mtime +7 -delete

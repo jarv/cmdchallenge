@@ -77,8 +77,8 @@ func handleServer(log logr.Logger, cfg *config.Config, addr string) {
 	router.PathPrefix("/c/s").Handler(handlers.ProxyHeaders(solutions.Handler()))
 	router.PathPrefix("/c/r").Handler(handlers.ProxyHeaders(server.Handler()))
 	router.Path("/metrics").Handler(handlers.ProxyHeaders(promhttp.Handler()))
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.StaticDistDir)))
 	router.PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir(cfg.StaticDistDir)))
 
 	log.Info("Listening on " + addr)
 

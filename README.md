@@ -13,11 +13,11 @@ This repository contains the code for the site [cmdchallenge.com](https://cmdcha
 ```
 docker-compose build
 # For ARM (M1 mac for example) run
-#   BUILD_PLATFORM=linux/arm64 docker-compose build
+#   BUILD_ARCH=arm64 docker-compose build
 
 docker-compose up runcmd --remove-orphans
 # For ARM (M1 mac for example) run
-#   BUILD_PLATFORM=linux/arm64 docker-compose up runcmd caddy -V --remove-orphans
+#   BUILD_ARCH=arm64 docker-compose up runcmd caddy -V --remove-orphans
 ```
 
 - Connect your browser to http://localhost:8100
