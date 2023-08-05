@@ -32,14 +32,13 @@ loadImg() {
   local img="$1"
   local fname="/tmp/${img}.tar"
 
-  printf "%s\n" "$img" 1>&2
-  printf "  - Saving %s\n" "$img .." 1>&2
+  printf "Saving %s ... " "$img"
   docker save "$img" > "$fname"
-  printf "  - Transfering ..\n" 1>&2
+  printf "Transfering ... "
   scp -q "$fname" "$HOST:$fname"
-  printf "  - Loading ..\n" 1>&2
+  printf "Loading ...\n"
   # shellcheck disable=SC2029
-  ssh $HOST "docker load -i $fname && rm -f $fname" >/dev/null
+  ssh $HOST "sudo bootstrap dockerLoad $fname"
   rm -f "$fname"
 }
 
@@ -88,3 +87,8 @@ for img in "${imgs[@]}"; do
   fi
   loadImg "$img"
 done
+
+[[ -n ${is_dev:-} ]] && svc="cmd-dev.service" || svc="cmd.service"
+
+# shellcheck disable=SC2029
+ssh $HOST "sudo bootstrap restartService $svc"
