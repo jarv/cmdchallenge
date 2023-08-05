@@ -1,9 +1,0 @@
-[Unit]
-Description=Runs periodic pprof dumps
-After=network-online.target
-
-[Service]
-Type=oneshot
-ExecStart=/var/opt/cmdchallenge/bin/pprof
-[Install]
-WantedBy=multi-user.target
