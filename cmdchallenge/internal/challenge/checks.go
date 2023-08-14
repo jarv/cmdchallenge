@@ -188,7 +188,15 @@ func (c *Check) chCreateFile() (string, error) {
 }
 
 func (c *Check) chCreateDirectory() (string, error) {
-	chk, err := isDir("tmp/files")
+	chk, err := isFile("tmp")
+	if err != nil {
+		return "", err
+	}
+	if chk {
+		return "Test failed, did you create a file?", nil
+	}
+
+	chk, err = isDir("tmp/files")
 	if err != nil {
 		return "", err
 	}
@@ -254,13 +262,23 @@ func (c *Check) chMoveFile() (string, error) {
 }
 
 func (c *Check) chCreateSymlink() (string, error) {
-	chk, err := isSymlink("take-the-command-challenge")
+	const linkName string = "take-the-command-challenge"
+	chk, err := isSymlink(linkName)
 	if err != nil {
 		return "", err
 	}
 
 	if !chk {
 		return "Test failed, symlink does not exist", nil
+	}
+
+	link, err := os.Readlink(linkName)
+	if err != nil {
+		return "", err
+	}
+
+	if link == linkName {
+		return "Test failed, link points to itself!", nil
 	}
 
 	fpath, err := filepath.EvalSymlinks("/var/challenges/create_symlink/take-the-command-challenge")
