@@ -53,6 +53,7 @@ while getopts "h?da:" opt; do
       ;;
     a)
       arch=${OPTARG}
+      ;;
   esac
 done
 
