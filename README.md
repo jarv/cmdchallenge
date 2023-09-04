@@ -18,6 +18,8 @@ docker-compose build
 docker-compose up runcmd --remove-orphans
 # For ARM (M1 mac for example) run
 #   BUILD_ARCH=arm64 docker-compose up runcmd caddy -V --remove-orphans
+
+# Connect your browser to http://localhost:8181/
 ```
 
 - Connect your browser to http://localhost:8100

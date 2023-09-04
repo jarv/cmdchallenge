@@ -4,6 +4,7 @@
 # To run:
 #   docker-compose down -v
 #   BUILD_ARCH=arm64 docker-compose up runcmd caddy -V --remove-orphans
+#   http://localhost:8181/
 
 version: '3.9'
 services:

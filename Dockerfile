@@ -7,7 +7,7 @@ COPY cmdchallenge .
 RUN --mount=type=cache,target=/root/.cache/go-build \
   go build -ldflags "-w" -o runcmd ./cmd/runcmd/runcmd.go
 
-FROM node:20.3.1-bullseye-slim as site-builder
+FROM node:20.2.0-bullseye-slim as site-builder
 WORKDIR /app
 COPY site .
 RUN npm install && \
