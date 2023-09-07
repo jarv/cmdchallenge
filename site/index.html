@@ -11,9 +11,22 @@
 
     <meta name="description" content="One-line shell challenges, to help improve your skill on the commandline."/>
   <script>
-    window.goatcounter = {
-      path: function(p) { return location.host.split('.')[0] + p + window.location.hash }
-    }
+    window.goatcounter = {no_onload: true}
+    window.addEventListener('hashchange', function(e) {
+      switch (location.host.split('.')[0]) {
+        case "oops":
+          emoji = "🤭";
+          break;
+        case "12days":
+          emoji = "🎄";
+          break;
+        default:
+          emoji = "";
+      }
+      window.goatcounter.count({
+          path: emoji + location.pathname + location.search + location.hash,
+      })
+    })
   </script>
     <script data-goatcounter="https://s.cmdchallenge.com/c"
           async src="//s.cmdchallenge.com/cjs"></script>

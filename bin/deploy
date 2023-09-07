@@ -38,7 +38,7 @@ loadImg() {
   scp -q "$fname" "$HOST:$fname"
   printf "Loading ...\n"
   # shellcheck disable=SC2029
-  ssh $HOST "sudo bootstrap dockerLoad $fname"
+  ssh $HOST "sudo bootstrap docker_load $fname"
   rm -f "$fname"
 }
 
@@ -92,4 +92,4 @@ done
 [[ -n ${is_dev:-} ]] && svc="cmd-dev.service" || svc="cmd.service"
 
 # shellcheck disable=SC2029
-ssh $HOST "sudo bootstrap restartService $svc"
+ssh $HOST "sudo bootstrap restart_service $svc"
