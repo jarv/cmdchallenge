@@ -7,7 +7,6 @@ import (
 	"os"
 	"path"
 	"strconv"
-	"time"
 
 	"github.com/go-logr/logr"
 )
@@ -36,7 +35,6 @@ var rndTable = map[string]RandomizerFuncType{
 }
 
 func NewRandomizer(log logr.Logger, ch *Challenge) *Randomizer {
-	rand.Seed(time.Now().UnixNano())
 	return &Randomizer{log, ch}
 }
 

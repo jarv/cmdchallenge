@@ -56,13 +56,14 @@ func NewChallenge(opt ChallengeOptions) (*Challenge, error) {
 	}
 
 	for _, c := range challenges {
+		c := c
 		if *c.Slug == opt.Slug {
 			return &Challenge{
 				chInfo: &c,
 			}, nil
 		}
 	}
-	return nil, fmt.Errorf("Unable to find challenge for slug %s", opt.Slug)
+	return nil, fmt.Errorf("unable to find challenge for slug %s", opt.Slug)
 }
 
 func (c *Challenge) HasExpectedLines() bool {

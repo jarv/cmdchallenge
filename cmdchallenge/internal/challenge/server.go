@@ -7,10 +7,9 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"strconv"
 
 	// "github.com/gdexlab/go-render/render"
-	"github.com/didip/tollbooth"
+	"github.com/didip/tollbooth/v7"
 	"github.com/go-logr/logr"
 	"gitlab.com/jarv/cmdchallenge/internal/config"
 	"gitlab.com/jarv/cmdchallenge/internal/metrics"
@@ -29,7 +28,6 @@ type Server struct {
 	metrics        *metrics.Metrics
 	runnerExecutor RunnerExecutor
 	cmdStorer      store.CmdStorer
-	rateLimit      bool
 }
 
 type CmdResponse struct {
@@ -76,7 +74,7 @@ func (c *Server) Handler() http.Handler {
 		lmt.SetMessage("Your are sending command too fast, slow down!")
 		lmt.SetOnLimitReached(func(w http.ResponseWriter, r *http.Request) {
 			c.log.Info("Rate limit reached", "RemoteAddr", r.RemoteAddr, "RequestURI", r.RequestURI)
-			c.metrics.ResponseStatus.WithLabelValues(strconv.Itoa(lmt.GetStatusCode()), r.RequestURI).Inc()
+			c.metrics.ResponseStatus.WithLabelValues("429", r.RequestURI).Inc()
 		})
 		return tollbooth.LimitHandler(lmt, http.HandlerFunc(c.runHandler))
 	} else {
