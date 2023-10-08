@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/didip/tollbooth/v7"
 	"github.com/go-logr/logr"
@@ -51,7 +52,7 @@ func (s *Solutions) Handler() http.Handler {
 		lmt.SetMessage("Your are sending requests too fast, slow down!")
 		lmt.SetOnLimitReached(func(w http.ResponseWriter, r *http.Request) {
 			s.log.Info("Rate limit reached", "RemoteAddr", r.RemoteAddr, "RequestURI", r.RequestURI)
-			s.metrics.ResponseStatus.WithLabelValues("429", r.RequestURI).Inc()
+			s.metrics.ResponseStatus.WithLabelValues(strconv.Itoa(lmt.GetStatusCode()), r.RequestURI).Inc()
 		})
 		return tollbooth.LimitHandler(lmt, http.HandlerFunc(s.runHandler))
 	} else {
