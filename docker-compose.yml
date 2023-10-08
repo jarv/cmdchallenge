@@ -29,6 +29,8 @@ services:
       args:
         BUILD_PLATFORM: linux/${BUILD_ARCH:-amd64}
     image: runcmd:${BUILD_ARCH:-amd64}
+    environment:
+      - CMD_SET_RATE_LIMIT=true
     volumes:
       - dist:/app/dist
       - /var/run/docker.sock:/var/run/docker.sock
