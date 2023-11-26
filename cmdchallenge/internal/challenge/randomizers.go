@@ -3,19 +3,18 @@ package challenge
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"math/rand"
 	"os"
 	"path"
 	"strconv"
-
-	"github.com/go-logr/logr"
 )
 
 var ErrRandomizerNotExist = errors.New("randomizer does not exist")
 var ErrRandomizerNotImplemented = errors.New("randomizer not implemented")
 
 type Randomizer struct {
-	log logr.Logger
+	log *slog.Logger
 	ch  *Challenge
 }
 
@@ -34,7 +33,7 @@ var rndTable = map[string]RandomizerFuncType{
 	"oops_list_files":                      (*Randomizer).rndOopsListFiles,
 }
 
-func NewRandomizer(log logr.Logger, ch *Challenge) *Randomizer {
+func NewRandomizer(log *slog.Logger, ch *Challenge) *Randomizer {
 	return &Randomizer{log, ch}
 }
 

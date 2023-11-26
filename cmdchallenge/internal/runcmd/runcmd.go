@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strings"
 	"syscall"
 
-	"github.com/go-logr/logr"
 	"gitlab.com/jarv/cmdchallenge/internal/challenge"
 	"gitlab.com/jarv/cmdchallenge/internal/config"
 )
@@ -24,12 +24,12 @@ var ErrTimeout = errors.New("timed out executing command")
 var ErrCombinedOutput = errors.New("error getting combined output")
 
 type RunCmd struct {
-	log     logr.Logger
+	log     *slog.Logger
 	config  *config.Config
 	oopsCmd *exec.Cmd
 }
 
-func New(log logr.Logger, cfg *config.Config) *RunCmd {
+func New(log *slog.Logger, cfg *config.Config) *RunCmd {
 	return &RunCmd{log, cfg, nil}
 }
 
@@ -69,7 +69,7 @@ func (r *RunCmd) stopOops(oops *exec.Cmd) {
 		if errors.Is(err, os.ErrProcessDone) {
 			return
 		}
-		r.log.Error(err, "unable to kill oops process")
+		r.log.Error("unable to kill oops process", "err", err)
 	}
 }
 
@@ -167,7 +167,7 @@ func updateCorrect(resp *challenge.CmdResponse, correct bool) {
 func (r *RunCmd) marshalIncorrectErrInt(err error, resp *challenge.CmdResponse, errMsg string) string {
 	resp.ErrorInternal = toPtr(errMsg)
 	// Internal errors are logged
-	r.log.Error(err, *resp.ErrorInternal)
+	r.log.Error(*resp.ErrorInternal, "err", err)
 	updateCorrect(resp, false)
 	return marshalOrPanic(resp)
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,13 +14,10 @@ import (
 	//nolint:gosec,G108
 	_ "net/http/pprof"
 
-	"github.com/go-logr/logr"
-	"github.com/go-logr/zerologr"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rs/zerolog"
 	"gitlab.com/jarv/cmdchallenge/internal/challenge"
 	"gitlab.com/jarv/cmdchallenge/internal/config"
 	"gitlab.com/jarv/cmdchallenge/internal/metrics"
@@ -27,7 +25,7 @@ import (
 	"gitlab.com/jarv/cmdchallenge/internal/store"
 )
 
-func handleCmd(log logr.Logger, slug string, cfg *config.Config) error {
+func handleCmd(log *slog.Logger, slug string, cfg *config.Config) error {
 	if slug == "" {
 		return errors.New("you must provide a slug name for the command runner")
 	}
@@ -53,7 +51,7 @@ func handleCmd(log logr.Logger, slug string, cfg *config.Config) error {
 	return nil
 }
 
-func handleServer(log logr.Logger, cfg *config.Config, addr string) {
+func handleServer(log *slog.Logger, cfg *config.Config, addr string) {
 	cmdMetrics := metrics.New(log)
 	router := mux.NewRouter()
 	runner := challenge.NewRunner(log, cfg)
@@ -66,7 +64,7 @@ func handleServer(log logr.Logger, cfg *config.Config, addr string) {
 		cmdStorer, err = store.NewSQLStore(log, cmdMetrics, cfg.DBFile)
 	}
 	if err != nil {
-		log.Error(err, "Unable to initialize db!")
+		log.Error("Unable to initialize db!", "err", err)
 		return
 	}
 
@@ -90,30 +88,9 @@ func handleServer(log logr.Logger, cfg *config.Config, addr string) {
 		ReadHeaderTimeout: 2 * time.Second,
 	}
 
-	log.Error(srv.ListenAndServe(), "Finished")
-}
-
-func newLogger(color bool) logr.Logger {
-	output := zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339, NoColor: !color}
-	zl := zerolog.New(output).With().Caller().Timestamp().Logger()
-	zerologr.VerbosityFieldName = ""
-
-	zerolog.TimestampFunc = func() time.Time {
-		return time.Now().UTC()
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("Failed to setup listener!", "err", err)
 	}
-	zerolog.CallerMarshalFunc = func(_ uintptr, file string, line int) string {
-		short := file
-		for i := len(file) - 1; i > 0; i-- {
-			if file[i] == '/' {
-				short = file[i+1:]
-				break
-			}
-		}
-		file = short
-		return file + ":" + strconv.Itoa(line)
-	}
-
-	return zerologr.New(&zl)
 }
 
 func main() {
@@ -128,8 +105,7 @@ func main() {
 
 	flag.Parse()
 
-	log := newLogger(true)
-	logNoColor := newLogger(false)
+	log := slog.New(slog.NewJSONHandler(os.Stderr, nil))
 	cfg := config.New(config.ConfigOpts{
 		DevMode:       *devMode,
 		RateLimit:     *rateLimit,
@@ -139,8 +115,8 @@ func main() {
 	})
 
 	if *cmd {
-		if err := handleCmd(logNoColor, *slug, cfg); err != nil {
-			log.Error(err, "Command failed")
+		if err := handleCmd(log, *slug, cfg); err != nil {
+			log.Error("Command failed", "err", err)
 			os.Exit(1)
 		}
 		os.Exit(0)

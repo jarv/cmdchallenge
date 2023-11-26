@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"regexp"
 	"strconv"
 
 	// "github.com/gdexlab/go-render/render"
 	"github.com/didip/tollbooth/v7"
-	"github.com/go-logr/logr"
 	"gitlab.com/jarv/cmdchallenge/internal/config"
 	"gitlab.com/jarv/cmdchallenge/internal/metrics"
 	"gitlab.com/jarv/cmdchallenge/internal/store"
@@ -24,7 +24,7 @@ const (
 )
 
 type Server struct {
-	log            logr.Logger
+	log            *slog.Logger
 	cfg            *config.Config
 	metrics        *metrics.Metrics
 	runnerExecutor RunnerExecutor
@@ -41,7 +41,7 @@ type CmdResponse struct {
 }
 
 func NewServer(
-	log logr.Logger,
+	log *slog.Logger,
 	cfg *config.Config,
 	m *metrics.Metrics,
 	r RunnerExecutor,
@@ -94,7 +94,7 @@ func (c *Server) runHandler(w http.ResponseWriter, req *http.Request) {
 	)
 
 	if req.Method != http.MethodPost {
-		c.log.Error(nil, "expect POST, got "+req.Method)
+		c.log.Error("expect POST", "method", req.Method)
 		c.httpError(w, ErrServerInvalidMethod, http.StatusMethodNotAllowed)
 		return
 	}
@@ -103,7 +103,7 @@ func (c *Server) runHandler(w http.ResponseWriter, req *http.Request) {
 	cmd := req.PostFormValue("cmd")
 
 	if err := isValidRequest(slug, cmd); err != nil {
-		c.log.Error(nil, "Invalid request", "slug", slug, "cmd", cmd)
+		c.log.Error("Invalid request", "slug", slug, "cmd", cmd)
 		c.httpError(w, err, http.StatusInternalServerError)
 		return
 	}
@@ -111,20 +111,20 @@ func (c *Server) runHandler(w http.ResponseWriter, req *http.Request) {
 	cmd = decodeCmd(cmd)
 
 	if len(cmd) > MaxCMDLength {
-		c.log.Error(nil, "Command is too long", "len", len(cmd))
+		c.log.Error("Command is too long", "len", len(cmd))
 		c.httpError(w, ErrServerCmdTooLong, http.StatusForbidden)
 		return
 	}
 
 	ch, err := NewChallenge(ChallengeOptions{Slug: slug})
 	if err != nil {
-		c.log.Error(err, "Unable to parse challenge", "slug", slug)
+		c.log.Error("Unable to parse challenge", "slug", slug)
 		c.httpError(w, ErrServerInvalidChallenge, http.StatusInternalServerError)
 		return
 	}
 
 	if slug != ch.Slug() {
-		c.log.Error(nil, "Challenge slug doesn't match config", "slug", slug, "config", ch.Slug())
+		c.log.Error("Challenge slug doesn't match config", "slug", slug, "config", ch.Slug())
 		c.httpError(w, ErrServerUnknown, http.StatusInternalServerError)
 		return
 	}
@@ -148,11 +148,11 @@ func (c *Server) runHandler(w http.ResponseWriter, req *http.Request) {
 func (c *Server) runAndStoreCmd(cmd string, ch *Challenge) (*store.CmdStore, error) {
 	cmdResp, err := c.runnerExecutor.RunContainer(cmd, ch)
 	if err == ErrRunnerTimeout {
-		c.log.Error(err, "Timeout running command")
+		c.log.Error("Timeout running command", "err", err)
 		return nil, &ChallengeError{msg: RunnerTimeout, typ: TypeRunner}
 	}
 	if err != nil {
-		c.log.Error(err, "Runner error")
+		c.log.Error("Runner error", "err", err)
 		return nil, &ChallengeError{msg: RunnerError, typ: TypeRunner}
 	}
 
@@ -161,7 +161,7 @@ func (c *Server) runAndStoreCmd(cmd string, ch *Challenge) (*store.CmdStore, err
 	}
 
 	if cmdResp.Correct == nil || cmdResp.ExitCode == nil {
-		c.log.Error(nil, "Invalid response from runner, `Correct`, `ExitCode` must be set for responses that aren't internal errors")
+		c.log.Error("Invalid response from runner, `Correct`, `ExitCode` must be set for responses that aren't internal errors")
 		return nil, &ChallengeError{msg: RunCmdInvalid, typ: TypeRunCmd}
 	}
 
@@ -179,7 +179,7 @@ func (c *Server) runAndStoreCmd(cmd string, ch *Challenge) (*store.CmdStore, err
 	}
 
 	if err = c.cmdStorer.CreateResult(cmdStore); err != nil {
-		c.log.Error(err, "Unable to create result")
+		c.log.Error("Unable to create result", "err", err)
 		return nil, &ChallengeError{msg: StoreError, typ: TypeStore}
 	}
 
@@ -212,13 +212,13 @@ func (c *Server) runCmd(cmd string, ch *Challenge) (string, error) {
 	}
 
 	if err != nil {
-		c.log.Error(err, "Unable to query result")
+		c.log.Error("Unable to query result", "err", err)
 		return "", &ChallengeError{msg: StoreQueryError, typ: TypeStore}
 	}
 
 	c.log.Info("Incrementing result", "cmd", cmd, "version", ch.Version())
 	if err = c.cmdStorer.IncrementResult(cmd, ch.Slug(), ch.Version()); err != nil {
-		c.log.Error(err, "Unable to increment result counter")
+		c.log.Error("Unable to increment result counter", "err", err)
 		return "", &ChallengeError{msg: StoreQueryError, typ: TypeStore}
 	}
 

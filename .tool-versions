@@ -1,6 +1,6 @@
 terraform 1.5.2
 sqlite 3.36.0
-golang 1.19
+golang 1.21
 shfmt 3.7.0
 golangci-lint 1.52.2
 shellcheck 0.9.0

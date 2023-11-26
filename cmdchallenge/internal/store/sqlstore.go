@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-logr/logr"
 	_ "github.com/mattn/go-sqlite3"
 	"gitlab.com/jarv/cmdchallenge/internal/metrics"
+	"log/slog"
 )
 
 const (
@@ -71,14 +71,14 @@ SELECT
 )
 
 type DB struct {
-	log           logr.Logger
+	log           *slog.Logger
 	mu            sync.Mutex
 	sql           *sql.DB
 	insertStmt    *sql.Stmt
 	incrementStmt *sql.Stmt
 }
 
-func NewSQLStore(log logr.Logger, cmdMetrics *metrics.Metrics, dbFile string) (*DB, error) {
+func NewSQLStore(log *slog.Logger, cmdMetrics *metrics.Metrics, dbFile string) (*DB, error) {
 	log.Info("Opening db", "dbFile", dbFile)
 	sqlDB, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
@@ -122,7 +122,6 @@ func (d *DB) TopCmdsForSlug(slug string) ([]string, error) {
 
 	d.log.Info("Running TopCmds Query",
 		"slug", slug,
-		"openConns", d.sql.Stats().OpenConnections,
 	)
 
 	rows, err := d.sql.Query(cmdsQuery, slug)

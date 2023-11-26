@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
@@ -11,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-logr/logr"
 	"golang.org/x/exp/slices"
 )
 
@@ -23,7 +23,7 @@ const (
 )
 
 type Check struct {
-	log      logr.Logger
+	log      *slog.Logger
 	ch       *Challenge
 	oopsDone chan string
 }
@@ -46,7 +46,7 @@ var checkTable = map[string]CheckFuncType{
 	"12days_8":                       (*Check).chTwelveDays8,
 }
 
-func NewCheck(log logr.Logger, ch *Challenge, oopsDone chan string) *Check {
+func NewCheck(log *slog.Logger, ch *Challenge, oopsDone chan string) *Check {
 	return &Check{log, ch, oopsDone}
 }
 

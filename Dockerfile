@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1-experimental
 
 ARG BUILD_PLATFORM
-FROM --platform=${BUILD_PLATFORM} golang:1.20 as runcmd-builder
+FROM --platform=${BUILD_PLATFORM} golang:1.21 as runcmd-builder
 WORKDIR /app
 COPY cmdchallenge .
 RUN --mount=type=cache,target=/root/.cache/go-build \

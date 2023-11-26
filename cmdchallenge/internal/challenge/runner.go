@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"log/slog"
 	"path"
 	"strings"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 
-	"github.com/go-logr/logr"
 	"gitlab.com/jarv/cmdchallenge/internal/config"
 )
 
@@ -26,12 +26,12 @@ type RunnerExecutor interface {
 }
 
 type Runner struct {
-	log logr.Logger
+	log *slog.Logger
 	cfg *config.Config
 	cli *client.Client
 }
 
-func NewRunner(log logr.Logger, cfg *config.Config) *Runner {
+func NewRunner(log *slog.Logger, cfg *config.Config) *Runner {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		panic(err)
@@ -132,7 +132,7 @@ func (r *Runner) RunContainer(cmd string, ch *Challenge) (*CmdResponse, error) {
 		stderr := r.containerLogs(ctx, resp.ID, false, true)
 
 		if stderr != "" {
-			r.log.Error(nil, "Container logs:\n"+"--------------\n"+stderr+"--------------")
+			r.log.Error("Container logs:\n" + "--------------\n" + stderr + "--------------")
 		}
 
 		r.log.Info("Got response from runner",
@@ -141,7 +141,7 @@ func (r *Runner) RunContainer(cmd string, ch *Challenge) (*CmdResponse, error) {
 			"stdout", stdout)
 
 		if status.StatusCode != 0 {
-			r.log.Error(nil, "Container completed with a non-zero status code!",
+			r.log.Error("Container completed with a non-zero status code!",
 				"statusCode", status.StatusCode,
 			)
 			return nil, ErrRunnerNonZeroReturn
@@ -150,7 +150,7 @@ func (r *Runner) RunContainer(cmd string, ch *Challenge) (*CmdResponse, error) {
 		var cmdResponse CmdResponse
 
 		if err := json.Unmarshal([]byte(stdout), &cmdResponse); err != nil {
-			r.log.Error(nil, "Unable to decode result", "stdout", stdout)
+			r.log.Error("Unable to decode result", "stdout", stdout)
 			return nil, ErrRunnerDecodeResult
 		}
 
@@ -174,7 +174,7 @@ func (r *Runner) removeImage(id string) error {
 		Force:         true,
 	}
 	if err := r.cli.ContainerRemove(ctx, id, removeOptions); err != nil {
-		r.log.Error(err, "Unable to remove container")
+		r.log.Error("Unable to remove container", "err", err)
 		return err
 	}
 	return nil

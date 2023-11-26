@@ -2,10 +2,10 @@ package metrics
 
 import (
 	"database/sql"
+	"log/slog"
 	"net/http"
 	"strconv"
 
-	"github.com/go-logr/logr"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
@@ -19,7 +19,7 @@ type CmdProcessedLabels struct {
 }
 
 type Metrics struct {
-	log            logr.Logger
+	log            *slog.Logger
 	CmdProcessed   *prometheus.CounterVec
 	CmdErrors      *prometheus.CounterVec
 	TotalRequests  *prometheus.CounterVec
@@ -43,7 +43,7 @@ func (rw *responseWriter) WriteHeader(code int) {
 	rw.ResponseWriter.WriteHeader(code)
 }
 
-func New(log logr.Logger) *Metrics {
+func New(log *slog.Logger) *Metrics {
 	if singleMetrics != nil {
 		return singleMetrics
 	}
