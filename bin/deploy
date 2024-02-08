@@ -34,7 +34,7 @@ loadImg() {
 
   printf "Saving %s ... " "$img"
   docker save "$img" > "$fname"
-  printf "Transfering ... "
+  printf "Transferring ... "
   scp -q "$fname" "$HOST:$fname"
   printf "Loading ...\n"
   # shellcheck disable=SC2029
