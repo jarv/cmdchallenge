@@ -166,16 +166,36 @@ div.navbar {
       }
     }
   }
+
   div#links {
     width: 100%;
     text-align: right;
+
     ul {
       margin: 0;
       padding: 0;
+      list-style: none;
+      display: flex;
+      align-items: center; /* Align items vertically */
+      justify-content: flex-end; /* Push items to the right */
     }
+
     li.link {
-       display: inline;
+      display: inline-flex; /* Use inline-flex for better alignment of content */
+      align-items: center;
+      margin-left: 5px; /* Add some spacing between links */
     }
+
+    li.link:first-child {
+      a {
+        font-size: 0.7em; /* Smaller text for the first link */
+        vertical-align: middle;
+        display: inline-block;
+        line-height: 1; /* Ensure proper line height for vertical centering */
+        text-decoration: none; /* Remove underline */
+      }
+    }
+
     img {
       width: 40px;
     }
