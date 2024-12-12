@@ -1,0 +1,2 @@
+export CLOUDFLARE_API_KEY={{ op://personal/direnv/CMDCHALLENGE_CF_API_KEY }}
+export TF_VAR_cf_account_id={{ op://personal/direnv/CF_ACCOUNT_ID }}

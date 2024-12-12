@@ -1,0 +1,7 @@
+[env]
+CLOUDFLARE_EMAIL = "john@jarv.org"
+# DOCKER_HOST = "unix://$HOME/.colima/docker.sock"
+
+[hooks.enter]
+shell = "bash"
+script = "echo -e '⏳Setting secrets in environment ..'; source <(cat .1pass | op --account my.1password.com inject); echo -e '☑️ Done!'"
