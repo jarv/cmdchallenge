@@ -8,8 +8,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 
@@ -44,7 +44,7 @@ func NewRunner(log *slog.Logger, cfg *config.Config) *Runner {
 func (r *Runner) PullImages() error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.cfg.PullImageTimeout)
 	defer cancel()
-	opts := &types.ImagePullOptions{
+	opts := image.PullOptions{
 		// RegistryAuth: r.cfg.RegistryAuth,
 	}
 
@@ -55,7 +55,7 @@ func (r *Runner) PullImages() error {
 		}
 
 		r.log.Info("Starting image pull", "imgURI", imgURI)
-		_, err = r.cli.ImagePull(ctx, imgURI, *opts)
+		_, err = r.cli.ImagePull(ctx, imgURI, opts)
 		if err != nil {
 			return err
 		}
@@ -69,7 +69,7 @@ func (r *Runner) containerLogs(ctx context.Context, id string, showStdout, showS
 	ioCloser, err := r.cli.ContainerLogs(
 		ctx,
 		id,
-		types.ContainerLogsOptions{ShowStdout: showStdout, ShowStderr: showStderr},
+		container.LogsOptions{ShowStdout: showStdout, ShowStderr: showStderr},
 	)
 	if err != nil {
 		panic(err)
@@ -117,7 +117,7 @@ func (r *Runner) RunContainer(cmd string, ch *Challenge) (*CmdResponse, error) {
 		return nil, err
 	}
 
-	if err := r.cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+	if err := r.cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
 		return nil, err
 	}
 
@@ -169,7 +169,7 @@ func (r *Runner) RunContainer(cmd string, ch *Challenge) (*CmdResponse, error) {
 func (r *Runner) removeImage(id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.cfg.RemoveImageTimeout)
 	defer cancel()
-	removeOptions := types.ContainerRemoveOptions{
+	removeOptions := container.RemoveOptions{
 		RemoveVolumes: true,
 		Force:         true,
 	}
