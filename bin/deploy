@@ -33,30 +33,29 @@ loadImg() {
   local fname="/tmp/${img}.tar"
 
   printf "Saving %s ... " "$img"
-  docker save "$img" > "$fname"
+  docker save "$img" >"$fname"
   printf "Transferring ... "
   scp -q "$fname" "$HOST:$fname"
   printf "Loading ...\n"
   # shellcheck disable=SC2029
-  ssh $HOST "sudo bootstrap docker_load $fname"
+  ssh $HOST "sudo bash -c 'docker load -i "$fname" && rm -f "$fname"'"
   rm -f "$fname"
 }
 
 while getopts "h?da:" opt; do
   case "$opt" in
-    h | \?)
-      usage
-      exit 0
-      ;;
-    d)
-      is_dev=true
-      ;;
-    a)
-      arch=${OPTARG}
-      ;;
+  h | \?)
+    usage
+    exit 0
+    ;;
+  d)
+    is_dev=true
+    ;;
+  a)
+    arch=${OPTARG}
+    ;;
   esac
 done
-
 
 arch=${arch:-$DEFAULT_ARCH}
 imgs=(
@@ -92,4 +91,4 @@ done
 [[ -n ${is_dev:-} ]] && svc="cmd-dev.service" || svc="cmd.service"
 
 # shellcheck disable=SC2029
-ssh $HOST "sudo bootstrap restart_service $svc"
+ssh $HOST "sudo systemctl restart $svc"
