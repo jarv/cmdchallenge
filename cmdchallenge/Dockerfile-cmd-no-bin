@@ -1,14 +1,16 @@
 # syntax = docker/dockerfile:1-experimental
 # vi: ft=dockerfile
 ARG BUILD_PLATFORM
-FROM --platform=${BUILD_PLATFORM} golang:1.24 as builder
+FROM golang:1.26 as builder
 # linux/amd64,linux/arm64
+ARG BUILD_PLATFORM
+RUN echo "${BUILD_PLATFORM}" | sed 's|linux/||' > /tmp/goarch
 WORKDIR /app
 COPY . .
 RUN --mount=type=cache,target=/root/.cache/go-build \
-  go build -ldflags "-w" -o oops ./cmd/oops/oops.go
+  CGO_ENABLED=0 GOARCH=$(cat /tmp/goarch) GOOS=linux go build -ldflags "-w" -o oops ./cmd/oops/oops.go
 RUN --mount=type=cache,target=/root/.cache/go-build \
-  go build -ldflags "-w" -o serve ./cmd/runcmd/runcmd.go
+  CGO_ENABLED=0 GOARCH=$(cat /tmp/goarch) GOOS=linux go build -ldflags "-w" -o serve ./cmd/runcmd/runcmd.go
 
 FROM --platform=${BUILD_PLATFORM} ubuntu:22.04
 # linux/amd64,linux/arm64

@@ -1,17 +1,13 @@
 package store
 
-// Your main or test packages require this import so
-// the sql package is properly initialized.
-// _ "github.com/mattn/go-sqlite3"
-
 import (
 	"database/sql"
+	"log/slog"
 	"sync"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/ncruces/go-sqlite3/driver"
 	"gitlab.com/jarv/cmdchallenge/internal/metrics"
-	"log/slog"
 )
 
 const (

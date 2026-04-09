@@ -1,11 +1,13 @@
 # syntax = docker/dockerfile:1-experimental
 
 ARG BUILD_PLATFORM
-FROM --platform=${BUILD_PLATFORM} golang:1.24 as runcmd-builder
+FROM golang:1.26 as runcmd-builder
+ARG BUILD_PLATFORM
+RUN echo "${BUILD_PLATFORM}" | sed 's|linux/||' > /tmp/goarch
 WORKDIR /app
 COPY cmdchallenge .
 RUN --mount=type=cache,target=/root/.cache/go-build \
-  go build -ldflags "-w" -o runcmd ./cmd/runcmd/runcmd.go
+  CGO_ENABLED=0 GOARCH=$(cat /tmp/goarch) GOOS=linux go build -ldflags "-w" -o runcmd ./cmd/runcmd/runcmd.go
 
 FROM node:20.2.0-bullseye-slim as site-builder
 WORKDIR /app
