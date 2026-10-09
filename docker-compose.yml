@@ -7,7 +7,10 @@
 #   http://localhost:8181/
 
 services:
+  # Runner images are built explicitly and launched on demand by runcmd.
+  # Exclude them from a normal `docker-compose up`.
   cmd:
+    profiles: [runner-images]
     build:
       context: cmdchallenge
       dockerfile: Dockerfile-cmd
@@ -15,6 +18,7 @@ services:
         BUILD_PLATFORM: linux/${BUILD_ARCH:-amd64}
     image: cmd:${BUILD_ARCH:-amd64}
   cmd-no-bin:
+    profiles: [runner-images]
     build:
       context: cmdchallenge
       dockerfile: Dockerfile-cmd-no-bin

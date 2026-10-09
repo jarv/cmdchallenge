@@ -21,3 +21,19 @@ lint:
     - yamllint --strict *.yaml
   rules:
     - if: $CI_COMMIT_BRANCH != 'master'
+
+frontend:
+  stage: test
+  image: node:22-bookworm
+  script:
+    - cd site
+    - npm ci
+    - npm run lint
+    - npm test
+    - npm run build
+    - npx playwright install --with-deps chromium
+    - npm run test:browser
+  artifacts:
+    when: on_failure
+    paths:
+      - site/test-results/

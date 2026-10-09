@@ -12,9 +12,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 FROM node:20.2.0-bullseye-slim as site-builder
 WORKDIR /app
 COPY site .
-RUN npm install && \
-  rm -rf ./dist && \
-  npx vite build
+RUN npm ci && npm run build
 
 FROM --platform=${BUILD_PLATFORM} debian:bookworm-slim
 COPY --from=runcmd-builder /app/runcmd /app/runcmd
