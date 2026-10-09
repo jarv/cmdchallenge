@@ -66,39 +66,9 @@ li {
   list-style-type: none;
 }
 
-// Workaround for min-height issue :(
-.terminal-output div {
-  min-height: 14px;
+[hidden] {
+  display: none !important;
 }
-
-// terminal ------------------
-
-#term-spinner {
-  color: rgb(3, 242, 0);
-  img {
-    height: 44px;
-  }
-}
-
-.terminal {
-  border-radius: 8px;
-  padding-left: 5px;
-  // --color: rgb(156, 204, 156);
-  --color: rgb(3, 242, 0);
-
-  //--color: rgb(0,128,0);
-  --background: #1a1a1a;
-}
-
-.terminal, .cmd, .terminal .terminal-output div div, .cmd .prompt {
-    font-size: 20px;
-    line-height: 30px;
-}
-.terminal {
-  --size: 1.2;
-}
-
-// --------------------
 
 noscript {
   color: white;
@@ -136,14 +106,7 @@ div.navbar {
     .title {
       display: table-cell;
       vertical-align: middle;
-      #header-text {
-        display: none;
-      }
-      #header-img {
-        display: none;
-      }
       .won {
-        display: none;
         img {
           width: 40px;
         }
@@ -206,12 +169,10 @@ div#info-wrapper {
   display: inline-block;
   width: 100%;
   div#completions {
-    display: none;
     font-size: 1.2em;
     color: $cmdblue;
   }
   div#info-box {
-    display: none;
     color: white;
     div.gradient {
       padding-left: 1em;
@@ -238,13 +199,6 @@ div#info-wrapper {
       vertical-align: middle;
       display: table-cell;
     }
-  }
-}
-
-div#term-challenge {
-  height: 80px;
-  .cmd {
-    margin-bottom: 0;
   }
 }
 
@@ -450,9 +404,6 @@ div#badges {
 
 //---- accordian for learn
 
-#learn-box {
-  display: none;
-}
 #learn {
   color: white;
   background-color: darken($cmdblue, 50%);
@@ -489,7 +440,7 @@ div#badges {
 
 //---- accordian for solutions
 
-input {
+.tab > input[type="checkbox"] {
   position: absolute;
   opacity: 0;
   z-index: -1;
@@ -556,7 +507,7 @@ input {
 }
 
 // :checked
-input:checked {
+.tab > input:checked {
   + .tab-label {
     background: lighten($gray, 5%);
     &::after {
@@ -592,6 +543,6 @@ input:checked {
 div.tree {
   position: absolute;
   height: 600px;
-  background-image: url("../img/xmas_tree_color.png");
+  background-image: url("/img/xmas_tree_color.png");
   background-repeat: no-repeat;
 }

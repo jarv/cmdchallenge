@@ -1,0 +1,160 @@
+#term-challenge {
+  min-height: 80px;
+  margin-bottom: .5em;
+  border-radius: 8px;
+  background: #1a1a1a;
+  color: rgb(3, 242, 0);
+  padding: .5em;
+
+  &.running {
+    background: transparent;
+  }
+}
+
+#command-form {
+  display: flex;
+  align-items: flex-start;
+  gap: .4em;
+  font-size: 20px;
+  line-height: 30px;
+
+  .command-prompt {
+    white-space: nowrap;
+  }
+
+  .command-editor {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  textarea {
+    display: block;
+    width: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    caret-color: transparent;
+    outline: none;
+    resize: none;
+    overflow-y: auto;
+    max-height: 12em;
+  }
+
+  textarea.composing {
+    caret-color: currentColor;
+  }
+
+  .command-mirror {
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    font: inherit;
+    pointer-events: none;
+  }
+
+  .command-cursor {
+    position: absolute;
+    width: 1ch;
+    height: 1em;
+    line-height: 1em;
+    background: rgb(3, 242, 0);
+    color: #1a1a1a;
+    pointer-events: none;
+    animation: command-cursor-blink 1s step-end infinite;
+  }
+
+  button {
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    padding: 0 .4em;
+    font: inherit;
+    font-size: .8em;
+    line-height: inherit;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  button:disabled {
+    opacity: .5;
+    cursor: wait;
+  }
+
+  button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  [readonly] {
+    opacity: .6;
+  }
+}
+
+@keyframes command-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #command-form .command-cursor,
+  #term-spinner .command-spinner,
+  #term-spinner .command-spinner::before {
+    animation: none;
+  }
+}
+
+#command-exit-code.failed {
+  color: #ff6666;
+}
+
+#term-spinner {
+  position: relative;
+  height: 30px;
+  font-size: 20px;
+  line-height: 30px;
+  overflow: hidden;
+
+  .command-spinner {
+    position: absolute;
+    left: 0;
+    width: 1ch;
+    animation: command-spinner-travel 2s linear infinite alternate;
+
+    &::before {
+      content: '|';
+      animation: command-spinner-rotate .4s step-end infinite;
+    }
+  }
+}
+
+@keyframes command-spinner-travel {
+  from { left: 0; }
+  to { left: calc(100% - 1ch); }
+}
+
+@keyframes command-spinner-rotate {
+  0%, 100% { content: '|'; }
+  25% { content: '/'; }
+  50% { content: '-'; }
+  75% { content: '\\'; }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

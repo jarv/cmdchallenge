@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html class="no-js" lang="">
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link href="./css/jquery.terminal.min.css" rel="stylesheet"/>
+    <!-- build:css -->
     <title></title>
 
     <meta name="description" content="One-line shell challenges, to help improve your skill on the commandline."/>
   <script>
     window.goatcounter = {no_onload: true}
     window.addEventListener('hashchange', function(e) {
+      if (!window.goatcounter.count) return;
+      let emoji;
       switch (location.host.split('.')[0]) {
         case "oops":
           emoji = "🤭";
@@ -53,7 +53,7 @@
           </div>
           <div class="title">
             <div><a id="header-text" href="/"></a></div>
-            <div class="won"></div>
+            <div class="won" hidden></div>
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
                 <label class="tab-label" for="chck1">View Solutions</label>
                 <div class="tab-content">
                   <div id="solutions-wrapper">
-                    <div class="solutions-status"></div>
+                    <div id="solutions-status" role="status"></div>
                   <pre><code id="solutions" class="language-bash bash hljs"></code></pre>
                   </div>
                 </div>
@@ -77,7 +77,7 @@
           </div>
         </div>
 
-        <div id="learn-box" class="row">
+        <div id="learn-box" class="row" hidden>
           <div class="col">
             <div class="tabs-learn">
               <div class="tab">
@@ -99,28 +99,38 @@
         </div>
 
 
-        <div id="term-spinner" style="display: none;"><img src="img/spinner.gif" alt="" /></div>
-        <div id="term-challenge"></div>
+        <div id="term-challenge">
+          <form id="command-form" aria-label="Run a shell command">
+            <label class="command-prompt" for="command-input">(<span id="command-exit-code">0</span>)&gt; <span class="sr-only">Shell command</span></label>
+            <div class="command-editor">
+              <textarea id="command-input" name="command" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-describedby="command-help"></textarea>
+              <div class="command-mirror" aria-hidden="true"></div>
+              <span class="command-cursor" aria-hidden="true" hidden></span>
+            </div>
+            <button type="submit">Run</button>
+          </form>
+          <span id="command-help" class="sr-only">Enter to run, Shift+Enter for a new line, Up and Down for history, Tab to complete, double Tab for suggestions. Ctrl+A moves to the start of the line, Ctrl+E to the end. Type clear or use Ctrl+L to clear. Shift+Tab moves focus out of the command field.</span>
+          <div id="term-spinner" role="status" hidden>
+            <span class="sr-only">Running command…</span>
+            <span class="command-spinner" aria-hidden="true"></span>
+          </div>
+        </div>
         <div id="info-wrapper">
-          <div id="info-box">
+          <div id="info-box" role="status" aria-live="polite" hidden>
             <div class="img"></div>
             <div class="text"></div>
             <div class="gradient"></div>
           </div>
-          <div id="completions"></div>
+          <div id="completions" role="status" hidden></div>
         </div>
-        <pre id="challenge-output"></pre>
+        <pre id="challenge-output" aria-label="Command output" hidden></pre>
       </div>
       <div class="footer">
         <p>
-        Site built with ♡ using <a href="https://terminal.jcubic.pl/">jquery.terminal</a> / <a href="https://openmoji.org/">Openmoji</a> / <a href="https://golang.org/">Golang</a><br />
+        Site built with ♡ using JavaScript / <a href="https://openmoji.org/">Openmoji</a> / <a href="https://golang.org/">Golang</a><br />
         <a href="https://jarv.org/tags/cmdchallenge/">Read more about cmdchallenge</a>
         </p>
       </div>
-      <script src="js/jquery.min.js"></script>
-      <script src="js/jquery.mousewheel-min.js"></script>
-      <script src="js/keyboard-polyfill-0.1.42.js"></script>
-      <script src="js/jquery.terminal.min.js"></script>
       <script type="module" src="/main.js"></script>
   </body>
 </html>

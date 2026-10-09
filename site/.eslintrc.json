@@ -1,4 +1,5 @@
 {
+    "root": true,
     "env": {
         "browser": true,
         "es2021": true
@@ -7,10 +8,17 @@
         "standard"
     ],
     "parserOptions": {
-        "ecmaVersion": 12,
+        "ecmaVersion": 2022,
         "sourceType": "module"
     },
     "rules": {
       "max-len": "off"
-    }
+    },
+    "overrides": [
+      {
+        "files": ["build.js", "playwright.config.js", "test/*.js"],
+        "env": { "node": true },
+        "rules": { "import/no-unresolved": "off" }
+      }
+    ]
 }

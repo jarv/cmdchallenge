@@ -9,3 +9,4 @@ private/
 *.html-e
 db.sqlite3
 .envrc
+.playwright-mcp/

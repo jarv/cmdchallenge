@@ -1,0 +1,6 @@
+.git
+.playwright-mcp
+site/node_modules
+site/dist
+site/test-results
+site/playwright-report
