@@ -17,9 +17,9 @@ docker-compose build runcmd cmd cmd-no-bin
 
 docker-compose up --remove-orphans
 # For ARM (M1 mac for example) run
-#   BUILD_ARCH=arm64 docker-compose up runcmd caddy -V --remove-orphans
+#   BUILD_ARCH=arm64 docker-compose up runcmd caddy --remove-orphans
 
-# Connect your browser to http://localhost:8181/
+# Connect your browser to http://localhost:8100/
 ```
 
 `cmd` and `cmd-no-bin` are runner images launched on demand by the Go server.
@@ -27,7 +27,39 @@ They use the `runner-images` Compose profile so a normal `docker-compose up`
 starts only the web server and Caddy. Build them explicitly as shown above;
 they are not long-running services.
 
-- Connect your browser to http://localhost:8100
+### Switching versions or seeing an old frontend
+
+After switching commits or branches (including checking out an older version),
+`docker-compose up` can still serve the frontend from the previous version:
+
+- Existing images are reused unless you explicitly rebuild them.
+- The named `dist` volume is shared by the Go server and Caddy at `/app/dist`.
+  It persists between runs and hides the frontend files in the image, so even
+  `docker-compose up --build` does not refresh an existing volume.
+
+To run the checked-out version, remove the frontend volume, rebuild the images,
+and start the web services:
+
+```sh
+docker-compose down -v
+docker-compose build runcmd cmd cmd-no-bin
+docker-compose up runcmd caddy --remove-orphans
+```
+
+For ARM64, use the same architecture for both build and startup:
+
+```sh
+docker-compose down -v
+BUILD_ARCH=arm64 docker-compose build runcmd cmd cmd-no-bin
+BUILD_ARCH=arm64 docker-compose up runcmd caddy --remove-orphans
+```
+
+`down -v` deletes Compose-managed volumes; this configuration declares only the
+`dist` frontend volume. Docker populates the new volume from the rebuilt image
+on startup. The `up -V` flag only renews anonymous volumes and does not reset
+the named `dist` volume. Repeat this reset when switching back to a newer version,
+too. If the browser still shows the previous UI, hard-refresh
+<http://localhost:8100/>.
 
 ## Testing
 
