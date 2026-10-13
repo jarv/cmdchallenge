@@ -2,13 +2,13 @@ package challenge
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
 
-	"github.com/go-logr/logr/testr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -111,7 +111,7 @@ func TestRequestNoCache(t *testing.T) {
 		helloWorldCh(t),
 	).Return(&fakeResponse, nil)
 
-	s := NewServer(testr.New(t), cfg, metrics.New(testr.New(t)), stubRunnerExecutor, stubStore)
+	s := NewServer(slog.Default(), cfg, metrics.New(slog.Default()), stubRunnerExecutor, stubStore)
 	s.runHandler(resp, req)
 
 	stubStore.AssertExpectations(t)
@@ -150,7 +150,7 @@ func TestRequestCached(t *testing.T) {
 	// Expectation for Runner Executor
 	stubRunnerExecutor := &StubRunnerExecutor{}
 
-	s := NewServer(testr.New(t), cfg, metrics.New(testr.New(t)), stubRunnerExecutor, stubStore)
+	s := NewServer(slog.Default(), cfg, metrics.New(slog.Default()), stubRunnerExecutor, stubStore)
 	s.runHandler(resp, req)
 
 	stubStore.AssertExpectations(t)

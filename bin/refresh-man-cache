@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  printf 'Usage: %s /path/to/db.sqlite3\n' "$0" >&2
+  exit 1
+fi
+
+script_dir=$(dirname -- "$(realpath -- "$0")")
+
+# Python keeps the preview and deletion in the same transaction, so another
+# writer cannot change the reviewed entries while waiting for confirmation.
+exec python3 -c '
+import json
+from pathlib import Path
+import sqlite3
+import sys
+
+path = Path(sys.argv[1]).resolve()
+migration = Path(sys.argv[2]).read_text()
+preview = migration.replace(
+    "DELETE FROM challenges",
+    "SELECT cmd, slug, version, count AS submissions FROM challenges",
+    1,
+)
+if preview == migration:
+    sys.exit("Migration must contain DELETE FROM challenges")
+
+# mode=rw refuses to create a database if the supplied path does not exist.
+with sqlite3.connect(path.as_uri() + "?mode=rw", uri=True, timeout=5) as db:
+    db.row_factory = sqlite3.Row
+    db.execute("BEGIN IMMEDIATE")
+    rows = db.execute(preview).fetchall()
+    print(f"Database: {path}")
+    print(f"Matching unsuccessful cache entries: {len(rows)}")
+    for row in rows:
+        print(json.dumps(dict(row), ensure_ascii=True))
+    if not rows:
+        db.rollback()
+        sys.exit(0)
+    try:
+        answer = input("Type delete to remove exactly these entries: ")
+    except EOFError:
+        answer = ""
+    if answer != "delete":
+        db.rollback()
+        print("Cancelled; no entries deleted.")
+        sys.exit(0)
+    result = db.execute(migration)
+    db.commit()
+    print(f"Deleted {result.rowcount} cache entries.")
+' "$1" "$script_dir/../migrations/restore-man-pages.sql"

@@ -129,6 +129,34 @@ normally. These shortcuts apply only while the command field has focus.
 
 ## Misc
 
+### Manual pages
+
+The standard `cmd` runner image includes manual pages for its installed utilities.
+Use commands such as `man grep`, `man ls`, or `man bash`; the runner disables the
+interactive pager so the manual is displayed in the browser output. The stripped
+down `cmd-no-bin` image used by the Oops challenges does not include `man`.
+
+After upgrading an older installation, rebuild the `cmd` image. Existing cached
+responses can still contain Ubuntu's minimized-system notice. After deploying
+the new image, run the one-time migration manually on the host containing the
+SQLite database:
+
+```sh
+bash bin/refresh-man-cache /var/opt/cmdchallenge/db.sqlite3
+```
+
+The script requires Python 3 and permission to write the database. It lists the
+matching commands, challenge slugs, versions, and submission counts, then asks you
+to type `delete` to confirm. Any other answer or EOF cancels. The preview and
+deletion share a transaction that blocks other writers while awaiting your answer,
+so run it during a brief maintenance window with the backend stopped.
+
+The SQL is in `migrations/restore-man-pages.sql`. Only unsuccessful results whose
+entire output matches the minimized-system notice are deleted. Other cached
+results and successful solutions are preserved, and rerunning the script is safe.
+The next request executes again with the restored manuals. Resetting the frontend
+`dist` volume does not refresh the command-result cache.
+
 **Test a single command:**
 
 ```

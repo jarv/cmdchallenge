@@ -1,9 +1,9 @@
 package challenge
 
 import (
+	"log/slog"
 	"testing"
 
-	"github.com/go-logr/logr/testr"
 	"github.com/stretchr/testify/require"
 	"gitlab.com/jarv/cmdchallenge/internal/config"
 	"gopkg.in/yaml.v3"
@@ -39,7 +39,7 @@ func TestChallengesExpectPass(t *testing.T) {
 
 		t.Run(slug, func(t *testing.T) {
 			t.Parallel()
-			runner := NewRunner(testr.New(t), cfg)
+			runner := NewRunner(slog.Default(), cfg)
 			result, err := runner.RunContainer(ch.Example(), ch)
 			ass.NoError(err)
 			ass.NotNil(result.Correct)
@@ -66,13 +66,35 @@ func TestChallengesExpectFailure(t *testing.T) {
 
 		t.Run(slug, func(t *testing.T) {
 			t.Parallel()
-			runner := NewRunner(testr.New(t), cfg)
+			runner := NewRunner(slog.Default(), cfg)
 			for _, failure := range ch.ExpectedFailures() {
 				result, err := runner.RunContainer(failure, ch)
 				req.NoError(err)
 				ass.NotNil(result.Correct)
 				ass.False(*result.Correct)
 			}
+		})
+	}
+}
+
+func TestRunnerManPages(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping Docker integration test in short mode.")
+	}
+	runner := NewRunner(slog.Default(), config.New(config.ConfigOpts{}))
+	ch := helloWorldCh(t)
+	for _, command := range []string{"man grep", "man ls", "man bash", "man awk"} {
+		t.Run(command, func(t *testing.T) {
+			result, err := runner.RunContainer(command, ch)
+			require.NoError(t, err)
+			require.NotNil(t, result)
+			require.Nil(t, result.ErrorInternal)
+			require.NotNil(t, result.ExitCode)
+			require.Equal(t, 0, *result.ExitCode)
+			require.NotNil(t, result.Output)
+			require.Contains(t, *result.Output, "NAME")
+			require.Contains(t, *result.Output, "SYNOPSIS")
+			require.NotContains(t, *result.Output, "This system has been minimized")
 		})
 	}
 }

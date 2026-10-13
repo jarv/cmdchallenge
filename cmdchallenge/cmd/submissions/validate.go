@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"strconv"
 	"time"
@@ -100,7 +101,7 @@ func main() {
 		ch, err := challenge.NewChallenge(challenge.ChallengeOptions{Slug: a.Slug})
 		noError(err)
 
-		runner := challenge.NewRunner(discardLog, cfg)
+		runner := challenge.NewRunner(slog.New(logr.ToSlogHandler(discardLog)), cfg)
 		result, err := runner.RunContainer(a.Cmd, ch)
 		noError(err)
 		if result.Correct == nil {
